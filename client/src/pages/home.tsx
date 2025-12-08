@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import type { FreezerItem, Category } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
@@ -35,6 +36,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiry");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: items = [], isLoading } = useQuery<FreezerItem[]>({
     queryKey: ["/api/items"],
@@ -42,6 +44,14 @@ export default function Home() {
 
   const filteredAndSortedItems = useMemo(() => {
     let result = [...items];
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((item) => 
+        item.name.toLowerCase().includes(query) ||
+        item.notes?.toLowerCase().includes(query)
+      );
+    }
 
     if (selectedCategory) {
       result = result.filter((item) => item.category === selectedCategory);
@@ -71,7 +81,7 @@ export default function Home() {
     }
 
     return result;
-  }, [items, selectedCategory, sortBy]);
+  }, [items, selectedCategory, sortBy, searchQuery]);
 
   const handleEditItem = (item: FreezerItem) => {
     navigate(`/item/${item.id}`);
@@ -82,9 +92,9 @@ export default function Home() {
       {activeTab === "inventory" && (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {!isLoading && items.length > 0 && (
-            <div className="flex justify-end mb-3">
+            <div className="flex items-center justify-between gap-3 mb-3">
               <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-                <SelectTrigger className="w-[160px]" data-testid="select-sort">
+                <SelectTrigger className="w-[140px]" data-testid="select-sort">
                   <ArrowUpDown className="h-4 w-4 mr-2" />
                   <SelectValue />
                 </SelectTrigger>
@@ -96,6 +106,17 @@ export default function Home() {
                   ))}
                 </SelectContent>
               </Select>
+              <div className="relative flex-1 max-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                  data-testid="input-search"
+                />
+              </div>
             </div>
           )}
           {isLoading ? (
