@@ -26,14 +26,25 @@ export function FreezerItemCard({ item, onEdit, onDelete }: FreezerItemCardProps
       data-testid={`card-freezer-item-${item.id}`}
     >
       <CardContent className="p-4">
-        {/* Header row: Name left, Category right */}
+        {/* Header row: Name + Qty left, Category right */}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 
-            className="font-medium text-base truncate flex-1"
-            data-testid={`text-item-name-${item.id}`}
-          >
-            {item.name}
-          </h3>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <h3 
+              className="font-medium text-base truncate"
+              data-testid={`text-item-name-${item.id}`}
+            >
+              {item.name}
+            </h3>
+            <span className="text-sm text-muted-foreground shrink-0">
+              x{item.quantity}
+            </span>
+            {isLowStock && (
+              <Badge variant="destructive" className="text-xs gap-1 shrink-0">
+                <AlertCircle className="h-3 w-3" />
+                Low
+              </Badge>
+            )}
+          </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <CategoryIcon category={item.category} />
             <span className="text-xs text-muted-foreground">
@@ -44,22 +55,12 @@ export function FreezerItemCard({ item, onEdit, onDelete }: FreezerItemCardProps
 
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm text-muted-foreground">
-                {item.quantity} {item.unit}{item.quantity > 1 && item.unit !== "item" ? "s" : ""}
-              </span>
-              {isLowStock && (
-                <Badge variant="destructive" className="text-xs gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  Low Stock
-                </Badge>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              <MapPin className="h-3 w-3" />
-              <span>{locationLabels[item.location]}</span>
-            </div>
+            {item.location && item.location !== "unassigned" && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                <MapPin className="h-3 w-3" />
+                <span>{locationLabels[item.location]}</span>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 flex-wrap">
               <ExpirationBadge expirationDate={item.expirationDate} />
