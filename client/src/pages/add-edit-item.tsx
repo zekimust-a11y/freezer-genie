@@ -33,7 +33,7 @@ import {
   type FreezerItem, 
   type FreezerItemFormData 
 } from "@shared/schema";
-import { X, Loader2, MapPin, Minus, Plus } from "lucide-react";
+import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export default function AddEditItemPage() {
@@ -173,32 +173,32 @@ export default function AddEditItemPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-50 bg-background border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          <h1 className="text-lg font-semibold">
-            {isEditing ? "Edit Item" : "Add Item"}
-          </h1>
+        <div className="flex items-center gap-2 px-4 py-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/")}
-            data-testid="button-close"
+            data-testid="button-back"
           >
-            <X className="h-5 w-5" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
+          <h1 className="text-lg font-semibold">
+            {isEditing ? "Edit Item" : "Add Item"}
+          </h1>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 py-6">
+      <div className="px-4 py-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Item Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <div className="flex gap-2">
                       <Input
@@ -227,7 +227,7 @@ export default function AddEditItemPage() {
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="category"
@@ -237,7 +237,7 @@ export default function AddEditItemPage() {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-category">
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder="Select" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -273,7 +273,7 @@ export default function AddEditItemPage() {
                     <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
                       <FormControl>
                         <SelectTrigger data-testid="select-location">
-                          <SelectValue placeholder="Select location" />
+                          <SelectValue placeholder="Select" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -309,7 +309,7 @@ export default function AddEditItemPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="quantity"
@@ -317,11 +317,12 @@ export default function AddEditItemPage() {
                   <FormItem>
                     <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <Button
                           type="button"
                           variant="outline"
                           size="icon"
+                          className="shrink-0"
                           onClick={() => field.onChange(Math.max(1, (field.value || 1) - 1))}
                           data-testid="button-quantity-minus"
                         >
@@ -344,6 +345,7 @@ export default function AddEditItemPage() {
                           type="button"
                           variant="outline"
                           size="icon"
+                          className="shrink-0"
                           onClick={() => field.onChange((field.value || 1) + 1)}
                           data-testid="button-quantity-plus"
                         >
@@ -365,19 +367,18 @@ export default function AddEditItemPage() {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-unit">
-                          <SelectValue placeholder="Select unit" />
+                          <SelectValue placeholder="Select" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="item" data-testid="select-unit-item">Item(s)</SelectItem>
-                        <SelectItem value="lb" data-testid="select-unit-lb">Pound(s)</SelectItem>
-                        <SelectItem value="kg" data-testid="select-unit-kg">Kilogram(s)</SelectItem>
-                        <SelectItem value="oz" data-testid="select-unit-oz">Ounce(s)</SelectItem>
-                        <SelectItem value="g" data-testid="select-unit-g">Gram(s)</SelectItem>
+                        <SelectItem value="lb" data-testid="select-unit-lb">lb</SelectItem>
+                        <SelectItem value="kg" data-testid="select-unit-kg">kg</SelectItem>
+                        <SelectItem value="oz" data-testid="select-unit-oz">oz</SelectItem>
+                        <SelectItem value="g" data-testid="select-unit-g">g</SelectItem>
                         <SelectItem value="bag" data-testid="select-unit-bag">Bag(s)</SelectItem>
                         <SelectItem value="box" data-testid="select-unit-box">Box(es)</SelectItem>
                         <SelectItem value="pack" data-testid="select-unit-pack">Pack(s)</SelectItem>
-                        <SelectItem value="container" data-testid="select-unit-container">Container(s)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -386,13 +387,13 @@ export default function AddEditItemPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="expirationDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expiration Date</FormLabel>
+                    <FormLabel>Expiry</FormLabel>
                     <FormControl>
                       <Input
                         type="date"
@@ -412,13 +413,13 @@ export default function AddEditItemPage() {
                 name="lowStockThreshold"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Low Stock Alert</FormLabel>
+                    <FormLabel>Low Stock</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
-                        placeholder="0 = disabled"
+                        placeholder="0"
                         data-testid="input-low-stock"
                         {...field}
                         value={field.value || ""}
@@ -436,10 +437,11 @@ export default function AddEditItemPage() {
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (optional)</FormLabel>
+                  <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Add any notes..."
+                      placeholder="Optional notes..."
+                      className="min-h-[60px]"
                       data-testid="input-notes"
                       {...field}
                       value={field.value || ""}
@@ -449,34 +451,44 @@ export default function AddEditItemPage() {
                 </FormItem>
               )}
             />
-
-            <div className="flex flex-col gap-3 pt-4">
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="w-full"
-                data-testid="button-save"
-              >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditing ? "Save Changes" : "Add Item"}
-              </Button>
-
-              {isEditing && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => deleteMutation.mutate()}
-                  disabled={deleteMutation.isPending}
-                  className="w-full"
-                  data-testid="button-delete"
-                >
-                  {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Delete Item
-                </Button>
-              )}
-            </div>
           </form>
         </Form>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1"
+            onClick={() => navigate("/")}
+            data-testid="button-cancel"
+          >
+            Cancel
+          </Button>
+          {isEditing && (
+            <Button
+              type="button"
+              variant="destructive"
+              size="icon"
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+              data-testid="button-delete"
+            >
+              {deleteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            </Button>
+          )}
+          <Button 
+            type="button"
+            className="flex-1"
+            onClick={form.handleSubmit(handleSubmit)}
+            disabled={isLoading}
+            data-testid="button-save"
+          >
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isEditing ? "Save" : "Add"}
+          </Button>
+        </div>
       </div>
 
       <BarcodeScanner
