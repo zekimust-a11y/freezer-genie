@@ -32,9 +32,9 @@ function getExpirationStatus(expirationDate: string | null): { status: Expiratio
   }
 }
 
-const statusConfig: Record<ExpirationStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusConfig: Record<ExpirationStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
   fresh: { label: "Fresh", variant: "secondary" },
-  use_soon: { label: "Use Soon", variant: "outline" },
+  use_soon: { label: "Use Soon", variant: "default", className: "bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700" },
   urgent: { label: "Urgent", variant: "destructive" },
   expired: { label: "Expired", variant: "destructive" },
   unknown: { label: "No Date", variant: "outline" },
@@ -58,7 +58,7 @@ export function ExpirationBadge({ expirationDate }: ExpirationBadgeProps) {
   return (
     <Badge 
       variant={config.variant} 
-      className="text-xs"
+      className={`text-xs ${config.className || ""}`}
       data-testid={`badge-expiration-${status}`}
     >
       {displayText}
