@@ -35,6 +35,15 @@ const defaultExpiryOptions: { value: DefaultExpiry; label: string }[] = [
   { value: "365", label: "1 year" },
 ];
 
+const defaultLowStockOptions: { value: string; label: string }[] = [
+  { value: "0", label: "Disabled" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "5", label: "5" },
+  { value: "10", label: "10" },
+];
+
 export function getDefaultCategory(): Category {
   const stored = localStorage.getItem("defaultCategory");
   if (stored && categories.includes(stored as Category)) {
@@ -88,11 +97,21 @@ export function getDefaultExpiryDate(): string | null {
   return date.toISOString().split("T")[0];
 }
 
+export function getDefaultLowStock(): number {
+  const stored = localStorage.getItem("defaultLowStock");
+  if (stored) {
+    const val = parseInt(stored);
+    if (!isNaN(val)) return val;
+  }
+  return 2;
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(getWeightUnit);
   const [defaultExpiry, setDefaultExpiry] = useState<DefaultExpiry>(getDefaultExpiry);
+  const [defaultLowStock, setDefaultLowStock] = useState<number>(getDefaultLowStock);
   const [customLocations, setCustomLocations] = useState<string[]>(getCustomLocations);
   const [newLocation, setNewLocation] = useState("");
 
@@ -115,6 +134,10 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("defaultExpiry", defaultExpiry);
   }, [defaultExpiry]);
+
+  useEffect(() => {
+    localStorage.setItem("defaultLowStock", defaultLowStock.toString());
+  }, [defaultLowStock]);
 
   const handleAddLocation = () => {
     const trimmed = newLocation.trim();
@@ -188,6 +211,21 @@ export function SettingsPanel() {
               </SelectTrigger>
               <SelectContent>
                 {defaultExpiryOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Low Stock Alert</span>
+            <Select value={defaultLowStock.toString()} onValueChange={(v) => setDefaultLowStock(parseInt(v))}>
+              <SelectTrigger className="w-[160px]" data-testid="select-default-low-stock">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {defaultLowStockOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>

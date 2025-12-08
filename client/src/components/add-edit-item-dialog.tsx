@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { categoryConfig } from "@/components/category-icon";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock } from "@/components/settings-panel";
 import { 
   categories, 
   locations,
@@ -67,7 +67,7 @@ export function AddEditItemDialog({
       unit: "item",
       expirationDate: getDefaultExpiryDate(),
       notes: "",
-      lowStockThreshold: 0,
+      lowStockThreshold: getDefaultLowStock(),
       location: "unassigned",
     },
   });
@@ -93,7 +93,7 @@ export function AddEditItemDialog({
           unit: "item",
           expirationDate: getDefaultExpiryDate(),
           notes: "",
-          lowStockThreshold: 0,
+          lowStockThreshold: getDefaultLowStock(),
           location: "unassigned",
         });
       }
