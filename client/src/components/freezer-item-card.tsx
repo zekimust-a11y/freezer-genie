@@ -17,8 +17,13 @@ interface FreezerItemCardProps {
 const weightUnits = ["lb", "kg", "oz", "g"];
 
 function ExpirationRing({ expirationDate }: { expirationDate: string }) {
-  const today = new Date();
   const expiry = parseISO(expirationDate);
+  
+  if (!isValid(expiry)) {
+    return null;
+  }
+  
+  const today = new Date();
   const daysUntilExpiry = differenceInDays(expiry, today);
   
   const maxDays = 90;

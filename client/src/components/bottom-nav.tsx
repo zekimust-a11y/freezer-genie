@@ -88,7 +88,7 @@ export function BottomNav({
   }, [activeTab]);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background border-t">
+    <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background/95 backdrop-blur-md border-t">
       <div ref={containerRef} className="relative flex items-center justify-around h-18 max-w-lg mx-auto px-2 py-1">
         {/* Animated highlight indicator */}
         <motion.div
