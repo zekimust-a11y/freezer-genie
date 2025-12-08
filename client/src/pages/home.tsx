@@ -9,7 +9,6 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SettingsPanel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -109,7 +108,6 @@ export default function Home() {
               <h1 className="text-lg font-semibold">Freezer Inventory</h1>
             </div>
             <div className="flex items-center gap-2">
-              <ThemeToggle />
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
                 <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
