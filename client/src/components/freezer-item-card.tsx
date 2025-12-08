@@ -1,9 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Pencil, Trash2, MapPin, AlertCircle } from "lucide-react";
 import { CategoryIcon, getCategoryLabel } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
-import type { FreezerItem } from "@shared/schema";
+import { locationLabels, type FreezerItem } from "@shared/schema";
 import { format, parseISO, isValid } from "date-fns";
 
 interface FreezerItemCardProps {
@@ -16,6 +17,8 @@ export function FreezerItemCard({ item, onEdit, onDelete }: FreezerItemCardProps
   const formattedDate = item.expirationDate && isValid(parseISO(item.expirationDate))
     ? format(parseISO(item.expirationDate), "MMM d, yyyy")
     : null;
+
+  const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
 
   return (
     <Card 
@@ -39,9 +42,22 @@ export function FreezerItemCard({ item, onEdit, onDelete }: FreezerItemCardProps
               {item.name}
             </h3>
             
-            <p className="text-sm text-muted-foreground mb-3">
-              {item.quantity} {item.unit}{item.quantity > 1 && item.unit !== "item" ? "s" : ""}
-            </p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm text-muted-foreground">
+                {item.quantity} {item.unit}{item.quantity > 1 && item.unit !== "item" ? "s" : ""}
+              </span>
+              {isLowStock && (
+                <Badge variant="destructive" className="text-xs gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  Low Stock
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+              <MapPin className="h-3 w-3" />
+              <span>{locationLabels[item.location]}</span>
+            </div>
 
             <div className="flex items-center gap-2 flex-wrap">
               <ExpirationBadge expirationDate={item.expirationDate} />

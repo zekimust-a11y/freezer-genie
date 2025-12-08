@@ -31,7 +31,7 @@ export function CategoryIcon({ category, showLabel = false, className = "" }: Ca
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Icon className={`h-5 w-5 ${config.color}`} />
+      <Icon className={`h-7 w-7 ${config.color}`} />
       {showLabel && <span className="text-sm text-muted-foreground">{config.label}</span>}
     </div>
   );

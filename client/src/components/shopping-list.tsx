@@ -20,7 +20,7 @@ interface ShoppingListProps {
 
 function getLowStockItems(items: FreezerItem[]): FreezerItem[] {
   return items.filter(
-    (item) => item.lowStockThreshold > 0 && item.quantity <= item.lowStockThreshold
+    (item) => (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0)
   );
 }
 

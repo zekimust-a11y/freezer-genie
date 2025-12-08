@@ -4,24 +4,34 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/header";
 import { CategoryFilter } from "@/components/category-filter";
+import { LocationFilter } from "@/components/location-filter";
 import { FreezerItemCard } from "@/components/freezer-item-card";
 import { AddEditItemDialog } from "@/components/add-edit-item-dialog";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { ShoppingList } from "@/components/shopping-list";
+import { ExpirationAlerts } from "@/components/expiration-alerts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { FreezerItem, FreezerItemFormData, Category } from "@shared/schema";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LayoutGrid, List } from "lucide-react";
+import type { FreezerItem, FreezerItemFormData, Category, Location } from "@shared/schema";
 
-type SortOption = "name" | "expiration" | "category";
+type SortOption = "name" | "expiration" | "category" | "location";
+type ViewMode = "grid" | "list";
 
 export default function Home() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiration");
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FreezerItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<FreezerItem | null>(null);
+  const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
+  const [isExpirationAlertsOpen, setIsExpirationAlertsOpen] = useState(false);
 
   const { data: items = [], isLoading } = useQuery<FreezerItem[]>({
     queryKey: ["/api/items"],
@@ -110,6 +120,11 @@ export default function Home() {
       result = result.filter((item) => item.category === selectedCategory);
     }
 
+    // Filter by location
+    if (selectedLocation) {
+      result = result.filter((item) => item.location === selectedLocation);
+    }
+
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
@@ -122,15 +137,17 @@ export default function Home() {
           return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
         case "category":
           return a.category.localeCompare(b.category);
+        case "location":
+          return a.location.localeCompare(b.location);
         default:
           return 0;
       }
     });
 
     return result;
-  }, [items, searchQuery, selectedCategory, sortBy]);
+  }, [items, searchQuery, selectedCategory, selectedLocation, sortBy]);
 
-  const hasFilters = searchQuery.trim() !== "" || selectedCategory !== null;
+  const hasFilters = searchQuery.trim() !== "" || selectedCategory !== null || selectedLocation !== null;
 
   const handleAddSubmit = (data: FreezerItemFormData) => {
     createMutation.mutate(data);
@@ -148,23 +165,41 @@ export default function Home() {
     }
   };
 
+  const handleEditFromAlerts = (item: FreezerItem) => {
+    setIsExpirationAlertsOpen(false);
+    setEditingItem(item);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onAddItem={() => setIsAddDialogOpen(true)}
-        itemCount={items.length}
+        onOpenShoppingList={() => setIsShoppingListOpen(true)}
+        onOpenExpirationAlerts={() => setIsExpirationAlertsOpen(true)}
+        items={items}
       />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Filters and Sort */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        {/* Category Filters */}
+        <div className="mb-4">
           <CategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
           />
-          
+        </div>
+
+        {/* Location Filters */}
+        <div className="mb-6">
+          <LocationFilter
+            selectedLocation={selectedLocation}
+            onLocationChange={setSelectedLocation}
+          />
+        </div>
+
+        {/* Sort and View Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Sort by:</span>
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
@@ -175,9 +210,21 @@ export default function Home() {
                 <SelectItem value="expiration" data-testid="select-sort-expiration">Expiration</SelectItem>
                 <SelectItem value="name" data-testid="select-sort-name">Name</SelectItem>
                 <SelectItem value="category" data-testid="select-sort-category">Category</SelectItem>
+                <SelectItem value="location" data-testid="select-sort-location">Location</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+            <TabsList>
+              <TabsTrigger value="grid" data-testid="button-view-grid">
+                <LayoutGrid className="h-4 w-4" />
+              </TabsTrigger>
+              <TabsTrigger value="list" data-testid="button-view-list">
+                <List className="h-4 w-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Content */}
@@ -188,7 +235,11 @@ export default function Home() {
         ) : filteredAndSortedItems.length === 0 ? (
           <EmptyState onAddItem={() => setIsAddDialogOpen(true)} hasFilters />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className={
+            viewMode === "grid" 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              : "flex flex-col gap-3"
+          }>
             {filteredAndSortedItems.map((item) => (
               <FreezerItemCard
                 key={item.id}
@@ -225,6 +276,21 @@ export default function Home() {
         item={deletingItem}
         onConfirm={handleDeleteConfirm}
         isLoading={deleteMutation.isPending}
+      />
+
+      {/* Shopping List */}
+      <ShoppingList
+        open={isShoppingListOpen}
+        onOpenChange={setIsShoppingListOpen}
+        items={items}
+      />
+
+      {/* Expiration Alerts */}
+      <ExpirationAlerts
+        open={isExpirationAlertsOpen}
+        onOpenChange={setIsExpirationAlertsOpen}
+        items={items}
+        onEditItem={handleEditFromAlerts}
       />
     </div>
   );
