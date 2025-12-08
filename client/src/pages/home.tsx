@@ -9,14 +9,32 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SettingsPanel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowUpDown } from "lucide-react";
 import type { FreezerItem, Category } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
+type SortOption = "expiry" | "name" | "category" | "quantity" | "recent";
+
+const sortLabels: Record<SortOption, string> = {
+  expiry: "Expiry Date",
+  name: "Name",
+  category: "Category",
+  quantity: "Quantity",
+  recent: "Recently Added",
+};
 
 export default function Home() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>("expiry");
 
   const { data: items = [], isLoading } = useQuery<FreezerItem[]>({
     queryKey: ["/api/items"],
@@ -29,15 +47,31 @@ export default function Home() {
       result = result.filter((item) => item.category === selectedCategory);
     }
 
-    result.sort((a, b) => {
-      if (!a.expirationDate && !b.expirationDate) return 0;
-      if (!a.expirationDate) return 1;
-      if (!b.expirationDate) return -1;
-      return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
-    });
+    switch (sortBy) {
+      case "expiry":
+        result.sort((a, b) => {
+          if (!a.expirationDate && !b.expirationDate) return 0;
+          if (!a.expirationDate) return 1;
+          if (!b.expirationDate) return -1;
+          return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
+        });
+        break;
+      case "name":
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "category":
+        result.sort((a, b) => a.category.localeCompare(b.category));
+        break;
+      case "quantity":
+        result.sort((a, b) => b.quantity - a.quantity);
+        break;
+      case "recent":
+        result.reverse();
+        break;
+    }
 
     return result;
-  }, [items, selectedCategory]);
+  }, [items, selectedCategory, sortBy]);
 
   const handleEditItem = (item: FreezerItem) => {
     navigate(`/item/${item.id}`);
@@ -47,6 +81,23 @@ export default function Home() {
     <div className="min-h-screen bg-background pb-36">
       {activeTab === "inventory" && (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {!isLoading && items.length > 0 && (
+            <div className="flex justify-end mb-3">
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+                <SelectTrigger className="w-[160px]" data-testid="select-sort">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(sortLabels) as SortOption[]).map((option) => (
+                    <SelectItem key={option} value={option} data-testid={`select-sort-${option}`}>
+                      {sortLabels[option]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {isLoading ? (
             <LoadingSkeleton />
           ) : items.length === 0 ? (
