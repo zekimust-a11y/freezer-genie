@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { categoryConfig } from "@/components/category-icon";
+import { getDefaultCategory } from "@/components/settings-panel";
 import { 
   categories, 
   locations,
@@ -61,7 +62,7 @@ export function AddEditItemDialog({
     resolver: zodResolver(freezerItemFormSchema),
     defaultValues: {
       name: "",
-      category: "meat",
+      category: getDefaultCategory(),
       quantity: 1,
       unit: "item",
       expirationDate: null,
@@ -87,7 +88,7 @@ export function AddEditItemDialog({
       } else {
         form.reset({
           name: "",
-          category: "meat",
+          category: getDefaultCategory(),
           quantity: 1,
           unit: "item",
           expirationDate: null,
