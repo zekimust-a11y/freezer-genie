@@ -56,7 +56,7 @@ export function BottomNav({
   listCount = 0,
 }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t">
+    <nav className="fixed bottom-0 left-0 right-0 z-[60] bg-background border-t">
       <div className="flex items-center justify-around h-18 max-w-lg mx-auto px-2 py-1">
         <NavItem
           icon={Package}

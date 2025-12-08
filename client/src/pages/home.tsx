@@ -78,7 +78,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-36">
+    <div className="min-h-screen bg-background pb-44">
       {activeTab === "inventory" && (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {!isLoading && items.length > 0 && (
@@ -137,7 +137,7 @@ export default function Home() {
       )}
 
       {activeTab === "inventory" && (
-        <div className="fixed bottom-[72px] left-0 right-0 z-40 bg-background border-t px-4 py-2">
+        <div className="fixed bottom-[72px] left-0 right-0 z-50 bg-background border-t px-4 py-2">
           <CategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
