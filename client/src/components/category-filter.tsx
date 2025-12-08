@@ -9,20 +9,20 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryFilterProps) {
   return (
-    <div className="flex items-center justify-center gap-1" data-testid="category-filter-container">
+    <div className="flex items-center justify-between w-full" data-testid="category-filter-container">
       <button
         onClick={() => onCategoryChange(null)}
-        className={`flex flex-col items-center gap-0.5 min-w-[48px] p-1.5 rounded-lg transition-all ${
+        className={`flex flex-col items-center gap-1 flex-1 p-2 rounded-lg transition-all ${
           selectedCategory === null 
             ? "bg-primary/15 text-primary" 
             : "text-muted-foreground"
         }`}
         data-testid="button-filter-all"
       >
-        <div className={`p-1.5 rounded-md ${selectedCategory === null ? "bg-orange-500 text-white" : "bg-orange-100 dark:bg-orange-900/30"}`}>
-          <LayoutGrid className="h-5 w-5" />
+        <div className={`p-2.5 rounded-lg ${selectedCategory === null ? "bg-orange-500 text-white" : "bg-orange-100 dark:bg-orange-900/30"}`}>
+          <LayoutGrid className="h-6 w-6" />
         </div>
-        <span className="text-[9px] font-medium">All</span>
+        <span className="text-[10px] font-medium">All</span>
       </button>
       {categories.map((category) => {
         const config = categoryConfig[category];
@@ -33,17 +33,17 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
           <button
             key={category}
             onClick={() => onCategoryChange(isActive ? null : category)}
-            className={`flex flex-col items-center gap-0.5 min-w-[48px] p-1.5 rounded-lg transition-all ${
+            className={`flex flex-col items-center gap-1 flex-1 p-2 rounded-lg transition-all ${
               isActive 
                 ? "bg-primary/15" 
                 : "text-muted-foreground"
             }`}
             data-testid={`button-filter-${category}`}
           >
-            <div className={`p-1.5 rounded-md ${isActive ? "bg-orange-500 text-white" : "bg-orange-100 dark:bg-orange-900/30"}`}>
-              <Icon className={`h-5 w-5 ${isActive ? "" : config.color}`} />
+            <div className={`p-2.5 rounded-lg ${isActive ? "bg-orange-500 text-white" : "bg-orange-100 dark:bg-orange-900/30"}`}>
+              <Icon className={`h-6 w-6 ${isActive ? "" : config.color}`} />
             </div>
-            <span className={`text-[9px] font-medium ${isActive ? "text-primary" : ""}`}>
+            <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
               {config.label.split(" ")[0]}
             </span>
           </button>
