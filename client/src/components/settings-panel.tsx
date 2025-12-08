@@ -301,7 +301,7 @@ export function SettingsPanel() {
               <Snowflake className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-medium">Freezer Inventory</h3>
+              <h3 className="font-medium">Freezer Genie</h3>
               <p className="text-xs text-muted-foreground">Version 1.0.0</p>
             </div>
           </div>
