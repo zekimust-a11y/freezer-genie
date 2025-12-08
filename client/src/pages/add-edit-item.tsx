@@ -25,10 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { categoryConfig } from "@/components/category-icon";
 import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock } from "@/components/settings-panel";
 import { 
-  categories, 
   locations,
   locationLabels,
   freezerItemFormSchema, 
@@ -198,42 +196,6 @@ export default function AddEditItemPage() {
       <div className="px-4 py-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <div className="flex flex-wrap gap-2">
-                      {categories.map((category) => {
-                        const config = categoryConfig[category];
-                        const Icon = config.icon;
-                        const isSelected = field.value === category;
-                        return (
-                          <button
-                            key={category}
-                            type="button"
-                            onClick={() => field.onChange(category)}
-                            className={`flex items-center gap-1.5 px-3 py-2 rounded-md border transition-colors ${
-                              isSelected 
-                                ? "border-primary bg-primary/10" 
-                                : "border-border hover-elevate"
-                            }`}
-                            data-testid={`button-category-${category}`}
-                          >
-                            <Icon className={`h-4 w-4 ${config.color}`} />
-                            <span className="text-sm">{config.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="name"
