@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BarcodeScanner } from "@/components/barcode-scanner";
 import {
   Dialog,
   DialogContent,
@@ -36,7 +37,7 @@ import {
   type FreezerItem, 
   type FreezerItemFormData 
 } from "@shared/schema";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, ScanBarcode } from "lucide-react";
 
 interface AddEditItemDialogProps {
   open: boolean;
@@ -54,6 +55,7 @@ export function AddEditItemDialog({
   isLoading = false,
 }: AddEditItemDialogProps) {
   const isEditing = !!item;
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const form = useForm<FreezerItemFormData>({
     resolver: zodResolver(freezerItemFormSchema),
@@ -101,6 +103,10 @@ export function AddEditItemDialog({
     onSubmit(data);
   };
 
+  const handleBarcodeScanned = (productName: string) => {
+    form.setValue("name", productName);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
@@ -121,13 +127,26 @@ export function AddEditItemDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g., Chicken breast"
-                      data-testid="input-item-name"
-                      {...field}
-                    />
-                  </FormControl>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Chicken breast"
+                        data-testid="input-item-name"
+                        {...field}
+                      />
+                    </FormControl>
+                    {!isEditing && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setIsScannerOpen(true)}
+                        data-testid="button-scan-barcode"
+                      >
+                        <ScanBarcode className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -336,6 +355,12 @@ export function AddEditItemDialog({
           </form>
         </Form>
       </DialogContent>
+
+      <BarcodeScanner
+        open={isScannerOpen}
+        onOpenChange={setIsScannerOpen}
+        onBarcodeScanned={handleBarcodeScanned}
+      />
     </Dialog>
   );
 }
