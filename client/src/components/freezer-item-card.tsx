@@ -28,7 +28,7 @@ function ExpirationRing({ expirationDate }: { expirationDate: string }) {
   
   const maxDays = 90;
   const percentage = Math.max(0, Math.min(100, ((maxDays - daysUntilExpiry) / maxDays) * 100));
-  const circumference = 2 * Math.PI * 18;
+  const circumference = 2 * Math.PI * 16;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
   
   let strokeColor = "stroke-green-500";
@@ -37,19 +37,19 @@ function ExpirationRing({ expirationDate }: { expirationDate: string }) {
   else if (daysUntilExpiry <= 14) strokeColor = "stroke-yellow-500";
 
   return (
-    <svg className="absolute inset-0 -rotate-90" viewBox="0 0 44 44">
+    <svg className="absolute inset-0 -rotate-90" viewBox="0 0 40 40">
       <circle
-        cx="22"
-        cy="22"
-        r="18"
+        cx="20"
+        cy="20"
+        r="16"
         fill="none"
         className="stroke-muted/30"
         strokeWidth="3"
       />
       <motion.circle
-        cx="22"
-        cy="22"
-        r="18"
+        cx="20"
+        cy="20"
+        r="16"
         fill="none"
         className={strokeColor}
         strokeWidth="3"
@@ -92,9 +92,9 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
           {/* Category color stripe */}
           <div className={`w-1.5 ${config.stripeColor} shrink-0`} />
           
-          <CardContent className="p-4 flex-1">
+          <CardContent className="p-3 flex-1">
             {/* Top: Name, quantity, and category icon with ring */}
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-3 mb-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 
@@ -103,7 +103,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                   >
                     {item.name}
                   </h3>
-                  <span className="text-sm font-medium text-muted-foreground">
+                  <span className="text-sm text-muted-foreground">
                     x {item.quantity}{isWeightUnit && ` ${item.unit}`}
                   </span>
                 </div>
@@ -111,7 +111,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
               
               {/* Category icon with expiration ring */}
               <div className="flex flex-col items-center shrink-0">
-                <div className="relative w-11 h-11">
+                <div className="relative w-10 h-10">
                   {item.expirationDate && (
                     <ExpirationRing expirationDate={item.expirationDate} />
                   )}
@@ -119,7 +119,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                     <CategoryIcon category={item.category} />
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground mt-1">
+                <span className="text-[10px] text-muted-foreground mt-0.5">
                   {getCategoryLabel(item.category)}
                 </span>
               </div>
@@ -127,13 +127,13 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
 
             {/* Middle: Notes */}
             {item.notes && (
-              <p className="text-xs text-muted-foreground mb-2 line-clamp-2 pl-0.5">
+              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
                 {item.notes}
               </p>
             )}
 
             {/* Bottom: Low stock, expiration and location */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               {isLowStock && (
                 <Badge variant="destructive" className="text-xs gap-1 w-fit">
                   <AlertCircle className="h-3 w-3" />
