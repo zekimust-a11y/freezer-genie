@@ -4,7 +4,6 @@ import {
   Apple, 
   UtensilsCrossed, 
   Milk, 
-  Snowflake,
   Package
 } from "lucide-react";
 import type { Category } from "@shared/schema";
@@ -15,7 +14,6 @@ const categoryConfig: Record<Category, { icon: typeof Beef; label: string; color
   fruits: { icon: Apple, label: "Fruits", color: "text-orange-500 dark:text-orange-400" },
   prepared_meals: { icon: UtensilsCrossed, label: "Prepared Meals", color: "text-amber-600 dark:text-amber-400" },
   dairy: { icon: Milk, label: "Dairy", color: "text-blue-500 dark:text-blue-400" },
-  frozen_goods: { icon: Snowflake, label: "Frozen Goods", color: "text-cyan-500 dark:text-cyan-400" },
   other: { icon: Package, label: "Other", color: "text-gray-500 dark:text-gray-400" },
 };
 
