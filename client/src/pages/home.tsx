@@ -9,6 +9,8 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SettingsPanel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
+import { Notifications } from "@/components/notifications";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Select,
   SelectContent,
@@ -16,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { FreezerItem, Category } from "@shared/schema";
 
@@ -89,6 +91,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background pb-44">
+      <header className="sticky top-0 z-50 bg-background border-b">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Snowflake className="h-6 w-6 text-cyan-500" />
+              <h1 className="text-lg font-semibold">Freezer Inventory</h1>
+            </div>
+            <div className="flex items-center gap-1">
+              <Notifications items={items} onNavigateToItem={handleEditItem} />
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+      </header>
+
       {activeTab === "inventory" && (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {!isLoading && items.length > 0 && (

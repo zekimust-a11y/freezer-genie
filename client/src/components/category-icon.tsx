@@ -21,15 +21,17 @@ interface CategoryIconProps {
   category: Category;
   showLabel?: boolean;
   className?: string;
+  size?: "sm" | "default";
 }
 
-export function CategoryIcon({ category, showLabel = false, className = "" }: CategoryIconProps) {
+export function CategoryIcon({ category, showLabel = false, className = "", size = "default" }: CategoryIconProps) {
   const config = categoryConfig[category];
   const Icon = config.icon;
+  const iconSize = size === "sm" ? "h-3 w-3" : "h-4 w-4";
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Icon className={`h-4 w-4 ${config.color}`} />
+      <Icon className={`${iconSize} ${config.color}`} />
       {showLabel && <span className="text-sm text-muted-foreground">{config.label}</span>}
     </div>
   );
