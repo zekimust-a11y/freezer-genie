@@ -9,6 +9,10 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SettingsPanel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -16,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { FreezerItem, Category } from "@shared/schema";
 

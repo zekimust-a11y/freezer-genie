@@ -1,14 +1,21 @@
 import { 
   freezerItems, 
+  users,
   type FreezerItem, 
   type InsertFreezerItem, 
   type Category,
-  type Location
+  type Location,
+  type User,
+  type UpsertUser
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
+  // User operations for Replit Auth
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  // Freezer item operations
   getAllItems(): Promise<FreezerItem[]>;
   getItem(id: string): Promise<FreezerItem | undefined>;
   createItem(item: InsertFreezerItem): Promise<FreezerItem>;
@@ -17,6 +24,28 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // User operations for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // Freezer item operations
   async getAllItems(): Promise<FreezerItem[]> {
     return await db.select().from(freezerItems);
   }

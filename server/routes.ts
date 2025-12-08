@@ -3,13 +3,29 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertFreezerItemSchema } from "@shared/schema";
 import { fromError } from "zod-validation-error";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Get all freezer items
-  app.get("/api/items", async (_req, res) => {
+  // Setup authentication
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Get all freezer items (protected)
+  app.get("/api/items", isAuthenticated, async (_req, res) => {
     try {
       const items = await storage.getAllItems();
       res.json(items);
@@ -19,8 +35,8 @@ export async function registerRoutes(
     }
   });
 
-  // Get a single item by ID
-  app.get("/api/items/:id", async (req, res) => {
+  // Get a single item by ID (protected)
+  app.get("/api/items/:id", isAuthenticated, async (req, res) => {
     try {
       const item = await storage.getItem(req.params.id);
       if (!item) {
@@ -33,8 +49,8 @@ export async function registerRoutes(
     }
   });
 
-  // Create a new item
-  app.post("/api/items", async (req, res) => {
+  // Create a new item (protected)
+  app.post("/api/items", isAuthenticated, async (req, res) => {
     try {
       const result = insertFreezerItemSchema.safeParse(req.body);
       if (!result.success) {
@@ -49,8 +65,8 @@ export async function registerRoutes(
     }
   });
 
-  // Update an existing item
-  app.put("/api/items/:id", async (req, res) => {
+  // Update an existing item (protected)
+  app.put("/api/items/:id", isAuthenticated, async (req, res) => {
     try {
       const result = insertFreezerItemSchema.safeParse(req.body);
       if (!result.success) {
@@ -68,8 +84,8 @@ export async function registerRoutes(
     }
   });
 
-  // Delete an item
-  app.delete("/api/items/:id", async (req, res) => {
+  // Delete an item (protected)
+  app.delete("/api/items/:id", isAuthenticated, async (req, res) => {
     try {
       const deleted = await storage.deleteItem(req.params.id);
       if (!deleted) {
