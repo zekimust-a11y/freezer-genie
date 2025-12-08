@@ -86,7 +86,7 @@ export default function Home() {
       )}
 
       {activeTab === "inventory" && (
-        <div className="fixed bottom-[72px] left-0 right-0 z-40 bg-orange-500 dark:bg-orange-600 px-4 py-2">
+        <div className="fixed bottom-[72px] left-0 right-0 z-40 bg-background border-t px-4 py-2">
           <CategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
