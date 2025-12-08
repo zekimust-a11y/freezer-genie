@@ -7,6 +7,7 @@ export const categories = [
   "vegetables",
   "fruits",
   "prepared_meals",
+  "frozen_goods",
   "other",
 ] as const;
 
