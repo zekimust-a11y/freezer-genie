@@ -1,37 +1,59 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type FreezerItem, type InsertFreezerItem } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getAllItems(): Promise<FreezerItem[]>;
+  getItem(id: string): Promise<FreezerItem | undefined>;
+  createItem(item: InsertFreezerItem): Promise<FreezerItem>;
+  updateItem(id: string, item: InsertFreezerItem): Promise<FreezerItem | undefined>;
+  deleteItem(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private items: Map<string, FreezerItem>;
 
   constructor() {
-    this.users = new Map();
+    this.items = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getAllItems(): Promise<FreezerItem[]> {
+    return Array.from(this.items.values());
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getItem(id: string): Promise<FreezerItem | undefined> {
+    return this.items.get(id);
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async createItem(insertItem: InsertFreezerItem): Promise<FreezerItem> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const item: FreezerItem = { 
+      ...insertItem, 
+      id,
+      expirationDate: insertItem.expirationDate || null,
+      notes: insertItem.notes || null,
+    };
+    this.items.set(id, item);
+    return item;
+  }
+
+  async updateItem(id: string, updateData: InsertFreezerItem): Promise<FreezerItem | undefined> {
+    const existing = this.items.get(id);
+    if (!existing) {
+      return undefined;
+    }
+    const updated: FreezerItem = {
+      ...existing,
+      ...updateData,
+      id,
+      expirationDate: updateData.expirationDate || null,
+      notes: updateData.notes || null,
+    };
+    this.items.set(id, updated);
+    return updated;
+  }
+
+  async deleteItem(id: string): Promise<boolean> {
+    return this.items.delete(id);
   }
 }
 

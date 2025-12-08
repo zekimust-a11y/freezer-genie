@@ -1,0 +1,273 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { categoryConfig } from "@/components/category-icon";
+import { 
+  categories, 
+  freezerItemFormSchema, 
+  type FreezerItem, 
+  type FreezerItemFormData 
+} from "@shared/schema";
+import { Loader2 } from "lucide-react";
+
+interface AddEditItemDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  item?: FreezerItem | null;
+  onSubmit: (data: FreezerItemFormData) => void;
+  isLoading?: boolean;
+}
+
+export function AddEditItemDialog({
+  open,
+  onOpenChange,
+  item,
+  onSubmit,
+  isLoading = false,
+}: AddEditItemDialogProps) {
+  const isEditing = !!item;
+
+  const form = useForm<FreezerItemFormData>({
+    resolver: zodResolver(freezerItemFormSchema),
+    defaultValues: {
+      name: "",
+      category: "other",
+      quantity: 1,
+      unit: "item",
+      expirationDate: null,
+      notes: "",
+    },
+  });
+
+  useEffect(() => {
+    if (open) {
+      if (item) {
+        form.reset({
+          name: item.name,
+          category: item.category,
+          quantity: item.quantity,
+          unit: item.unit,
+          expirationDate: item.expirationDate,
+          notes: item.notes || "",
+        });
+      } else {
+        form.reset({
+          name: "",
+          category: "other",
+          quantity: 1,
+          unit: "item",
+          expirationDate: null,
+          notes: "",
+        });
+      }
+    }
+  }, [open, item, form]);
+
+  const handleSubmit = (data: FreezerItemFormData) => {
+    onSubmit(data);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>
+            {isEditing ? "Edit Item" : "Add New Item"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Chicken breast"
+                      data-testid="input-item-name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-category">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => {
+                          const config = categoryConfig[category];
+                          const Icon = config.icon;
+                          return (
+                            <SelectItem 
+                              key={category} 
+                              value={category}
+                              data-testid={`select-option-${category}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon className={`h-4 w-4 ${config.color}`} />
+                                {config.label}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="expirationDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Expiration Date</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="date"
+                        data-testid="input-expiration-date"
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantity</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        data-testid="input-quantity"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="unit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Unit</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-unit">
+                          <SelectValue placeholder="Select unit" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="item" data-testid="select-unit-item">Item(s)</SelectItem>
+                        <SelectItem value="lb" data-testid="select-unit-lb">Pound(s)</SelectItem>
+                        <SelectItem value="kg" data-testid="select-unit-kg">Kilogram(s)</SelectItem>
+                        <SelectItem value="oz" data-testid="select-unit-oz">Ounce(s)</SelectItem>
+                        <SelectItem value="g" data-testid="select-unit-g">Gram(s)</SelectItem>
+                        <SelectItem value="bag" data-testid="select-unit-bag">Bag(s)</SelectItem>
+                        <SelectItem value="box" data-testid="select-unit-box">Box(es)</SelectItem>
+                        <SelectItem value="pack" data-testid="select-unit-pack">Pack(s)</SelectItem>
+                        <SelectItem value="container" data-testid="select-unit-container">Container(s)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Add any notes about this item..."
+                      className="resize-none"
+                      rows={3}
+                      data-testid="input-notes"
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isLoading}
+                data-testid="button-cancel"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading} data-testid="button-save">
+                {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {isEditing ? "Save Changes" : "Add Item"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
