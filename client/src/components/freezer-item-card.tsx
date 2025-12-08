@@ -12,12 +12,16 @@ interface FreezerItemCardProps {
   onEdit: (item: FreezerItem) => void;
 }
 
+const weightUnits = ["lb", "kg", "oz", "g"];
+
 export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
   const formattedDate = item.expirationDate && isValid(parseISO(item.expirationDate))
     ? format(parseISO(item.expirationDate), getDateFormat())
     : null;
 
   const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
+  const isWeightUnit = weightUnits.includes(item.unit);
+  const hasLocation = item.location && item.location !== "unassigned";
 
   return (
     <Card 
@@ -26,8 +30,7 @@ export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
       data-testid={`card-freezer-item-${item.id}`}
     >
       <CardContent className="p-4">
-        {/* Header row: Name + Qty left, Category right */}
-        <div className="flex items-start justify-between gap-2 mb-2">
+        <div className="flex items-start justify-between gap-2 mb-1">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <h3 
               className="font-medium text-base truncate"
@@ -36,7 +39,7 @@ export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
               {item.name}
             </h3>
             <span className="text-sm text-muted-foreground shrink-0">
-              x{item.quantity}
+              x{item.quantity}{isWeightUnit && ` ${item.unit}`}
             </span>
             {isLowStock && (
               <Badge variant="destructive" className="text-xs gap-1 shrink-0">
@@ -53,29 +56,33 @@ export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
           </div>
         </div>
 
-        {item.location && item.location !== "unassigned" && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <MapPin className="h-3 w-3" />
-            <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
-          </div>
-        )}
-
-        {item.expirationDate && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <ExpirationBadge expirationDate={item.expirationDate} />
-            {formattedDate && (
-              <span className="text-xs text-muted-foreground">
-                Expiry date: {formattedDate}
-              </span>
-            )}
-          </div>
-        )}
-
         {item.notes && (
-          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+          <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
             {item.notes}
           </p>
         )}
+
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          {item.expirationDate ? (
+            <div className="flex items-center gap-2">
+              <ExpirationBadge expirationDate={item.expirationDate} />
+              {formattedDate && (
+                <span className="text-xs text-muted-foreground">
+                  {formattedDate}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div />
+          )}
+          
+          {hasLocation && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
