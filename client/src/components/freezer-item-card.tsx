@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, AlertCircle } from "lucide-react";
 import { CategoryIcon, getCategoryLabel } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
+import { getDateFormat } from "@/components/settings-panel";
 import { locationLabels, type FreezerItem } from "@shared/schema";
 import { format, parseISO, isValid } from "date-fns";
 
@@ -13,7 +14,7 @@ interface FreezerItemCardProps {
 
 export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
   const formattedDate = item.expirationDate && isValid(parseISO(item.expirationDate))
-    ? format(parseISO(item.expirationDate), "MMM d, yyyy")
+    ? format(parseISO(item.expirationDate), getDateFormat())
     : null;
 
   const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
