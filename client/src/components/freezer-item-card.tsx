@@ -103,8 +103,6 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                   >
                     {item.name}
                   </h3>
-                </div>
-                <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-sm font-medium text-muted-foreground">
                     x {item.quantity}{isWeightUnit && ` ${item.unit}`}
                   </span>
