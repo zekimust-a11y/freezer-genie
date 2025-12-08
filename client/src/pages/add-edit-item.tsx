@@ -217,7 +217,7 @@ export default function AddEditItemPage() {
                             }`}
                             data-testid={`button-category-${category}`}
                           >
-                            <Icon className="h-4 w-4" style={{ color: config.color }} />
+                            <Icon className={`h-4 w-4 ${config.color}`} />
                             <span className="text-sm">{config.label}</span>
                           </button>
                         );
