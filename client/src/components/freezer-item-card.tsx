@@ -26,22 +26,24 @@ export function FreezerItemCard({ item, onEdit, onDelete }: FreezerItemCardProps
       data-testid={`card-freezer-item-${item.id}`}
     >
       <CardContent className="p-4">
+        {/* Header row: Name left, Category right */}
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 
+            className="font-medium text-base truncate flex-1"
+            data-testid={`text-item-name-${item.id}`}
+          >
+            {item.name}
+          </h3>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <CategoryIcon category={item.category} />
+            <span className="text-xs text-muted-foreground">
+              {getCategoryLabel(item.category)}
+            </span>
+          </div>
+        </div>
+
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <CategoryIcon category={item.category} />
-              <span className="text-xs text-muted-foreground">
-                {getCategoryLabel(item.category)}
-              </span>
-            </div>
-            
-            <h3 
-              className="font-medium text-base truncate mb-1"
-              data-testid={`text-item-name-${item.id}`}
-            >
-              {item.name}
-            </h3>
-            
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm text-muted-foreground">
                 {item.quantity} {item.unit}{item.quantity > 1 && item.unit !== "item" ? "s" : ""}
