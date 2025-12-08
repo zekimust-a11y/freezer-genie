@@ -39,7 +39,7 @@ export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
               {item.name}
             </h3>
             <span className="text-sm text-muted-foreground shrink-0">
-              x{item.quantity}{isWeightUnit && ` ${item.unit}`}
+              x {item.quantity}{isWeightUnit && ` ${item.unit}`}
             </span>
             {isLowStock && (
               <Badge variant="destructive" className="text-xs gap-1 shrink-0">
