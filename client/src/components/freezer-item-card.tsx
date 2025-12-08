@@ -25,7 +25,7 @@ export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
 
   return (
     <Card 
-      className="cursor-pointer hover-elevate transition-all"
+      className="cursor-pointer hover-elevate transition-all shadow-sm border-border/80"
       onClick={() => onEdit(item)}
       data-testid={`card-freezer-item-${item.id}`}
     >
