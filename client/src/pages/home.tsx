@@ -12,21 +12,14 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SettingsPanel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutGrid, List } from "lucide-react";
 import type { FreezerItem, FreezerItemFormData, Category } from "@shared/schema";
 
-type SortOption = "name" | "expiration" | "category" | "location";
-type ViewMode = "grid" | "list";
 type Tab = "inventory" | "alerts" | "list" | "settings";
 
 export default function Home() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [sortBy, setSortBy] = useState<SortOption>("expiration");
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FreezerItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<FreezerItem | null>(null);
@@ -107,26 +100,16 @@ export default function Home() {
       result = result.filter((item) => item.category === selectedCategory);
     }
 
+    // Sort by expiration date by default
     result.sort((a, b) => {
-      switch (sortBy) {
-        case "name":
-          return a.name.localeCompare(b.name);
-        case "expiration":
-          if (!a.expirationDate && !b.expirationDate) return 0;
-          if (!a.expirationDate) return 1;
-          if (!b.expirationDate) return -1;
-          return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
-        case "category":
-          return a.category.localeCompare(b.category);
-        case "location":
-          return a.location.localeCompare(b.location);
-        default:
-          return 0;
-      }
+      if (!a.expirationDate && !b.expirationDate) return 0;
+      if (!a.expirationDate) return 1;
+      if (!b.expirationDate) return -1;
+      return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
     });
 
     return result;
-  }, [items, selectedCategory, sortBy]);
+  }, [items, selectedCategory]);
 
   const handleAddSubmit = (data: FreezerItemFormData) => {
     createMutation.mutate(data);
@@ -160,34 +143,6 @@ export default function Home() {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Sort:</span>
-              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                <SelectTrigger className="w-[120px]" data-testid="select-sort">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="expiration">Expiration</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="category">Category</SelectItem>
-                  <SelectItem value="location">Location</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
-              <TabsList>
-                <TabsTrigger value="grid" data-testid="button-view-grid">
-                  <LayoutGrid className="h-4 w-4" />
-                </TabsTrigger>
-                <TabsTrigger value="list" data-testid="button-view-list">
-                  <List className="h-4 w-4" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-
           {isLoading ? (
             <LoadingSkeleton />
           ) : items.length === 0 ? (
@@ -195,11 +150,7 @@ export default function Home() {
           ) : filteredAndSortedItems.length === 0 ? (
             <EmptyState onAddItem={() => setIsAddDialogOpen(true)} hasFilters />
           ) : (
-            <div className={
-              viewMode === "grid" 
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                : "flex flex-col gap-3"
-            }>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAndSortedItems.map((item) => (
                 <FreezerItemCard
                   key={item.id}
