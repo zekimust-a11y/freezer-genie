@@ -14,15 +14,15 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
         onClick={() => onCategoryChange(null)}
         className={`flex flex-col items-center gap-0.5 min-w-[48px] p-1.5 rounded-lg transition-all ${
           selectedCategory === null 
-            ? "bg-primary/15 text-primary" 
-            : "text-muted-foreground"
+            ? "bg-white/30 dark:bg-black/30" 
+            : ""
         }`}
         data-testid="button-filter-all"
       >
-        <div className={`p-1.5 rounded-md ${selectedCategory === null ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+        <div className={`p-1.5 rounded-md ${selectedCategory === null ? "bg-white dark:bg-gray-800 text-orange-600" : "bg-white/80 dark:bg-gray-700 text-gray-600 dark:text-gray-300"}`}>
           <LayoutGrid className="h-5 w-5" />
         </div>
-        <span className="text-[9px] font-medium">All</span>
+        <span className="text-[9px] font-medium text-white">All</span>
       </button>
       {categories.map((category) => {
         const config = categoryConfig[category];
@@ -35,15 +35,15 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
             onClick={() => onCategoryChange(isActive ? null : category)}
             className={`flex flex-col items-center gap-0.5 min-w-[48px] p-1.5 rounded-lg transition-all ${
               isActive 
-                ? "bg-primary/15" 
-                : "text-muted-foreground"
+                ? "bg-white/30 dark:bg-black/30" 
+                : ""
             }`}
             data-testid={`button-filter-${category}`}
           >
-            <div className={`p-1.5 rounded-md ${isActive ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+            <div className={`p-1.5 rounded-md ${isActive ? "bg-white dark:bg-gray-800 text-orange-600" : "bg-white/80 dark:bg-gray-700"}`}>
               <Icon className={`h-5 w-5 ${isActive ? "" : config.color}`} />
             </div>
-            <span className={`text-[9px] font-medium ${isActive ? "text-primary" : ""}`}>
+            <span className="text-[9px] font-medium text-white">
               {config.label.split(" ")[0]}
             </span>
           </button>
