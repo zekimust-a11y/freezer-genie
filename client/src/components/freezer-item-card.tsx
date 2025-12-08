@@ -62,14 +62,16 @@ export function FreezerItemCard({ item, onEdit, onDelete }: FreezerItemCardProps
               </div>
             )}
 
-            <div className="flex items-center gap-2 flex-wrap">
-              <ExpirationBadge expirationDate={item.expirationDate} />
-              {formattedDate && (
-                <span className="text-xs text-muted-foreground">
-                  {formattedDate}
-                </span>
-              )}
-            </div>
+            {item.expirationDate && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <ExpirationBadge expirationDate={item.expirationDate} />
+                {formattedDate && (
+                  <span className="text-xs text-muted-foreground">
+                    {formattedDate}
+                  </span>
+                )}
+              </div>
+            )}
 
             {item.notes && (
               <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
