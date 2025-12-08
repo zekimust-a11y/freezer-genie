@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { categoryConfig } from "@/components/category-icon";
 import { categories, type Category } from "@shared/schema";
-import { X } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 
 interface CategoryFilterProps {
   selectedCategory: Category | null;
@@ -10,46 +9,46 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryFilterProps) {
   return (
-    <div className="flex items-center gap-2 flex-wrap" data-testid="category-filter-container">
-      <Button
-        variant={selectedCategory === null ? "secondary" : "ghost"}
-        size="sm"
+    <div className="flex items-center justify-center gap-3 overflow-x-auto" data-testid="category-filter-container">
+      <button
         onClick={() => onCategoryChange(null)}
+        className={`flex flex-col items-center gap-1 min-w-[56px] p-2 rounded-xl transition-all ${
+          selectedCategory === null 
+            ? "bg-primary/15 text-primary" 
+            : "text-muted-foreground"
+        }`}
         data-testid="button-filter-all"
       >
-        All
-      </Button>
+        <div className={`p-2 rounded-lg ${selectedCategory === null ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+          <LayoutGrid className="h-6 w-6" />
+        </div>
+        <span className="text-[10px] font-medium">All</span>
+      </button>
       {categories.map((category) => {
         const config = categoryConfig[category];
         const Icon = config.icon;
         const isActive = selectedCategory === category;
 
         return (
-          <Button
+          <button
             key={category}
-            variant={isActive ? "secondary" : "ghost"}
-            size="sm"
             onClick={() => onCategoryChange(isActive ? null : category)}
-            className="gap-1.5"
+            className={`flex flex-col items-center gap-1 min-w-[56px] p-2 rounded-xl transition-all ${
+              isActive 
+                ? "bg-primary/15" 
+                : "text-muted-foreground"
+            }`}
             data-testid={`button-filter-${category}`}
           >
-            <Icon className={`h-12 w-12 ${config.color}`} />
-            <span className="hidden sm:inline">{config.label}</span>
-          </Button>
+            <div className={`p-2 rounded-lg ${isActive ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+              <Icon className={`h-6 w-6 ${isActive ? "" : config.color}`} />
+            </div>
+            <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
+              {config.label.split(" ")[0]}
+            </span>
+          </button>
         );
       })}
-      {selectedCategory && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onCategoryChange(null)}
-          className="text-muted-foreground"
-          data-testid="button-clear-filter"
-        >
-          <X className="h-4 w-4 mr-1" />
-          Clear
-        </Button>
-      )}
     </div>
   );
 }

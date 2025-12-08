@@ -132,17 +132,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-36">
       {/* Inventory Tab */}
       {activeTab === "inventory" && (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="mb-4">
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
-          </div>
-
           {isLoading ? (
             <LoadingSkeleton />
           ) : items.length === 0 ? (
@@ -182,6 +175,16 @@ export default function Home() {
       {activeTab === "settings" && (
         <div className="max-w-6xl mx-auto">
           <SettingsPanel />
+        </div>
+      )}
+
+      {/* Category Filter - Fixed above bottom nav (only on inventory tab) */}
+      {activeTab === "inventory" && (
+        <div className="fixed bottom-[72px] left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t px-4 py-2">
+          <CategoryFilter
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+          />
         </div>
       )}
 
