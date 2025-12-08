@@ -114,20 +114,22 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                   <span className="text-sm font-medium text-muted-foreground">
                     x {item.quantity}{isWeightUnit && ` ${item.unit}`}
                   </span>
-                  <span className="text-xs text-muted-foreground">
-                    {getCategoryLabel(item.category)}
-                  </span>
                 </div>
               </div>
               
               {/* Category icon with expiration ring */}
-              <div className="relative w-11 h-11 shrink-0">
-                {item.expirationDate && (
-                  <ExpirationRing expirationDate={item.expirationDate} />
-                )}
-                <div className={`absolute inset-0 flex items-center justify-center rounded-full ${config.bgColor}`}>
-                  <CategoryIcon category={item.category} />
+              <div className="flex flex-col items-center shrink-0">
+                <div className="relative w-11 h-11">
+                  {item.expirationDate && (
+                    <ExpirationRing expirationDate={item.expirationDate} />
+                  )}
+                  <div className={`absolute inset-0 flex items-center justify-center rounded-full ${config.bgColor}`}>
+                    <CategoryIcon category={item.category} />
+                  </div>
                 </div>
+                <span className="text-xs text-muted-foreground mt-1">
+                  {getCategoryLabel(item.category)}
+                </span>
               </div>
             </div>
 
