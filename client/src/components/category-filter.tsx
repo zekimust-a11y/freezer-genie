@@ -33,7 +33,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
             className="gap-1.5"
             data-testid={`button-filter-${category}`}
           >
-            <Icon className={`h-4 w-4 ${config.color}`} />
+            <Icon className={`h-6 w-6 ${config.color}`} />
             <span className="hidden sm:inline">{config.label}</span>
           </Button>
         );
