@@ -94,7 +94,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
           
           <CardContent className="p-4 flex-1">
             {/* Top: Name, quantity, and category icon with ring */}
-            <div className="flex items-start justify-between gap-3 mb-2">
+            <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 
