@@ -149,7 +149,6 @@ export default function Home() {
                   key={item.id}
                   item={item}
                   onEdit={setEditingItem}
-                  onDelete={setDeletingItem}
                 />
               ))}
             </div>
