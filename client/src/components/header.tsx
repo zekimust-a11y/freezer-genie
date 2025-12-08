@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ShoppingListBadge } from "@/components/shopping-list";
 import { ExpirationAlertsBadge } from "@/components/expiration-alerts";
-import { ExportData } from "@/components/export-data";
 import type { FreezerItem } from "@shared/schema";
 
 interface HeaderProps {
@@ -79,7 +78,6 @@ export function Header({
               <ShoppingListBadge items={items} />
             </div>
 
-            <ExportData items={items} />
             <ThemeToggle />
             
             <Button onClick={onAddItem} data-testid="button-add-item">
