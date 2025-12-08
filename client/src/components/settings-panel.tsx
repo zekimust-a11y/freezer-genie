@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Snowflake, Plus, X } from "lucide-react";
+import { Snowflake, Plus, X, LogOut } from "lucide-react";
 import { categories, type Category } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
@@ -310,6 +310,13 @@ export function SettingsPanel() {
           </p>
         </CardContent>
       </Card>
+
+      <Button variant="outline" className="w-full" asChild data-testid="button-logout">
+        <a href="/api/logout">
+          <LogOut className="h-4 w-4 mr-2" />
+          Log Out
+        </a>
+      </Button>
     </div>
   );
 }

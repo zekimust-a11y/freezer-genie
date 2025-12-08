@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake, LogOut } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { FreezerItem, Category } from "@shared/schema";
 
@@ -107,17 +107,10 @@ export default function Home() {
               <Snowflake className="h-6 w-6 text-cyan-500" />
               <h1 className="text-lg font-semibold">Freezer Inventory</h1>
             </div>
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
-                <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
-              </Avatar>
-              <Button variant="ghost" size="icon" asChild data-testid="button-logout">
-                <a href="/api/logout">
-                  <LogOut className="h-4 w-4" />
-                </a>
-              </Button>
-            </div>
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
+              <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </header>
