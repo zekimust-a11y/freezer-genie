@@ -38,7 +38,7 @@ import {
   type FreezerItem, 
   type FreezerItemFormData 
 } from "@shared/schema";
-import { Loader2, MapPin, ScanBarcode } from "lucide-react";
+import { Loader2, MapPin, ScanBarcode, Minus, Plus } from "lucide-react";
 
 interface AddEditItemDialogProps {
   open: boolean;
@@ -243,13 +243,39 @@ export function AddEditItemDialog({
                   <FormItem>
                     <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        min={1}
-                        data-testid="input-quantity"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => field.onChange(Math.max(1, (field.value || 1) - 1))}
+                          data-testid="button-quantity-minus"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          className="text-center text-lg font-medium"
+                          data-testid="input-quantity"
+                          {...field}
+                          value={field.value || 1}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 1;
+                            field.onChange(Math.max(1, val));
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => field.onChange((field.value || 1) + 1)}
+                          data-testid="button-quantity-plus"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
