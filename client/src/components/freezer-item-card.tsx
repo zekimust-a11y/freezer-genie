@@ -103,12 +103,6 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                   >
                     {item.name}
                   </h3>
-                  {isLowStock && (
-                    <Badge variant="destructive" className="text-xs gap-1">
-                      <AlertCircle className="h-3 w-3" />
-                      Low
-                    </Badge>
-                  )}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-sm font-medium text-muted-foreground">
@@ -142,18 +136,26 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
 
             {/* Bottom: Expiration and location */}
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              {item.expirationDate ? (
-                <div className="flex items-center gap-2">
-                  <ExpirationBadge expirationDate={item.expirationDate} />
-                  {formattedDate && (
-                    <span className="text-xs text-muted-foreground">
-                      Expiry date: {formattedDate}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <span className="text-xs text-muted-foreground italic">No expiry set</span>
-              )}
+              <div className="flex items-center gap-2 flex-wrap">
+                {isLowStock && (
+                  <Badge variant="destructive" className="text-xs gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    Low Stock
+                  </Badge>
+                )}
+                {item.expirationDate ? (
+                  <>
+                    <ExpirationBadge expirationDate={item.expirationDate} />
+                    {formattedDate && (
+                      <span className="text-xs text-muted-foreground">
+                        Expiry date: {formattedDate}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-xs text-muted-foreground italic">No expiry set</span>
+                )}
+              </div>
               
               {hasLocation && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
