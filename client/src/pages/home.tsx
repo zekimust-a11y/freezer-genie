@@ -15,10 +15,7 @@ import { SearchPanel } from "@/components/search-panel";
 import { SettingsPanel } from "@/components/settings-panel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { LayoutGrid, List, Plus, ShoppingCart, AlertTriangle, Snowflake } from "lucide-react";
-import { ShoppingListBadge } from "@/components/shopping-list";
-import { ExpirationAlertsBadge } from "@/components/expiration-alerts";
+import { LayoutGrid, List } from "lucide-react";
 import type { FreezerItem, FreezerItemFormData, Category } from "@shared/schema";
 
 type SortOption = "name" | "expiration" | "category" | "location";
@@ -159,124 +156,70 @@ export default function Home() {
     <div className="min-h-screen bg-background pb-20">
       {/* Inventory Tab */}
       {activeTab === "inventory" && (
-        <>
-          <header className="sticky top-0 z-50 bg-background border-b">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-14 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-primary/10">
-                    <Snowflake className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h1 className="text-base font-semibold">Freezer Inventory</h1>
-                    <p className="text-xs text-muted-foreground">
-                      {items.length} {items.length === 1 ? "item" : "items"}
-                    </p>
-                  </div>
-                </div>
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="mb-4">
+            <CategoryFilter
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+            />
+          </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsExpirationAlertsOpen(true)}
-                      data-testid="button-expiration-alerts"
-                    >
-                      <AlertTriangle className="h-5 w-5" />
-                    </Button>
-                    <ExpirationAlertsBadge items={items} />
-                  </div>
-
-                  <div className="relative">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsShoppingListOpen(true)}
-                      data-testid="button-shopping-list"
-                    >
-                      <ShoppingCart className="h-5 w-5" />
-                    </Button>
-                    <ShoppingListBadge items={items} />
-                  </div>
-
-                  <Button onClick={() => setIsAddDialogOpen(true)} size="sm" data-testid="button-add-item">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="mb-4">
-              <CategoryFilter
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-              />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Sort:</span>
+              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                <SelectTrigger className="w-[120px]" data-testid="select-sort">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="expiration">Expiration</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="category">Category</SelectItem>
+                  <SelectItem value="location">Location</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Sort:</span>
-                <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                  <SelectTrigger className="w-[120px]" data-testid="select-sort">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="expiration">Expiration</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="category">Category</SelectItem>
-                    <SelectItem value="location">Location</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+              <TabsList>
+                <TabsTrigger value="grid" data-testid="button-view-grid">
+                  <LayoutGrid className="h-4 w-4" />
+                </TabsTrigger>
+                <TabsTrigger value="list" data-testid="button-view-list">
+                  <List className="h-4 w-4" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
 
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
-                <TabsList>
-                  <TabsTrigger value="grid" data-testid="button-view-grid">
-                    <LayoutGrid className="h-4 w-4" />
-                  </TabsTrigger>
-                  <TabsTrigger value="list" data-testid="button-view-list">
-                    <List className="h-4 w-4" />
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+          {isLoading ? (
+            <LoadingSkeleton />
+          ) : items.length === 0 ? (
+            <EmptyState onAddItem={() => setIsAddDialogOpen(true)} />
+          ) : filteredAndSortedItems.length === 0 ? (
+            <EmptyState onAddItem={() => setIsAddDialogOpen(true)} hasFilters />
+          ) : (
+            <div className={
+              viewMode === "grid" 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                : "flex flex-col gap-3"
+            }>
+              {filteredAndSortedItems.map((item) => (
+                <FreezerItemCard
+                  key={item.id}
+                  item={item}
+                  onEdit={setEditingItem}
+                  onDelete={setDeletingItem}
+                />
+              ))}
             </div>
-
-            {isLoading ? (
-              <LoadingSkeleton />
-            ) : items.length === 0 ? (
-              <EmptyState onAddItem={() => setIsAddDialogOpen(true)} />
-            ) : filteredAndSortedItems.length === 0 ? (
-              <EmptyState onAddItem={() => setIsAddDialogOpen(true)} hasFilters />
-            ) : (
-              <div className={
-                viewMode === "grid" 
-                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                  : "flex flex-col gap-3"
-              }>
-                {filteredAndSortedItems.map((item) => (
-                  <FreezerItemCard
-                    key={item.id}
-                    item={item}
-                    onEdit={setEditingItem}
-                    onDelete={setDeletingItem}
-                  />
-                ))}
-              </div>
-            )}
-          </main>
-        </>
+          )}
+        </main>
       )}
 
       {/* Search Tab */}
       {activeTab === "search" && (
         <div className="max-w-6xl mx-auto">
-          <header className="sticky top-0 z-50 bg-background border-b px-4 py-3">
-            <h1 className="text-lg font-semibold">Search</h1>
-          </header>
           <SearchPanel
             items={items}
             onEdit={setEditingItem}
@@ -288,15 +231,19 @@ export default function Home() {
       {/* Settings Tab */}
       {activeTab === "settings" && (
         <div className="max-w-6xl mx-auto">
-          <header className="sticky top-0 z-50 bg-background border-b px-4 py-3">
-            <h1 className="text-lg font-semibold">Settings</h1>
-          </header>
           <SettingsPanel />
         </div>
       )}
 
       {/* Bottom Navigation */}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab}
+        items={items}
+        onAddItem={() => setIsAddDialogOpen(true)}
+        onOpenShoppingList={() => setIsShoppingListOpen(true)}
+        onOpenExpirationAlerts={() => setIsExpirationAlertsOpen(true)}
+      />
 
       {/* Dialogs */}
       <AddEditItemDialog
