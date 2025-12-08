@@ -8,8 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Form,
   FormControl,
@@ -33,17 +31,14 @@ import {
   type FreezerItem, 
   type FreezerItemFormData 
 } from "@shared/schema";
-import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2, CalendarIcon } from "lucide-react";
+import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
-import { format, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
 
 export default function AddEditItemPage() {
   const [, navigate] = useLocation();
   const [, params] = useRoute("/item/:id");
   const { toast } = useToast();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const itemId = params?.id;
   const isEditing = !!itemId;
@@ -361,34 +356,14 @@ export default function AddEditItemPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Expiry</FormLabel>
-                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                            data-testid="input-expiration-date"
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? format(parseISO(field.value), "MMM d, yyyy") : "Select date"}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value ? parseISO(field.value) : undefined}
-                          onSelect={(date) => {
-                            field.onChange(date ? format(date, "yyyy-MM-dd") : null);
-                            setCalendarOpen(false);
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <Input
+                        type="date"
+                        data-testid="input-expiration-date"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
