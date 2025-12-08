@@ -25,12 +25,11 @@ import { Input } from "@/components/ui/input";
 import type { FreezerItem, Category } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
-type SortOption = "expiry" | "name" | "category" | "quantity" | "recent";
+type SortOption = "expiry" | "name" | "quantity" | "recent";
 
 const sortLabels: Record<SortOption, string> = {
   expiry: "Expiry Date",
   name: "Name",
-  category: "Category",
   quantity: "Quantity",
   recent: "Recently Added",
 };
@@ -73,9 +72,6 @@ export default function Home() {
       case "name":
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      case "category":
-        result.sort((a, b) => a.category.localeCompare(b.category));
-        break;
       case "quantity":
         result.sort((a, b) => b.quantity - a.quantity);
         break;
@@ -87,12 +83,47 @@ export default function Home() {
     return result;
   }, [items, selectedCategory, sortBy, searchQuery]);
 
+  const { user } = useAuth();
+
   const handleEditItem = (item: FreezerItem) => {
     navigate(`/item/${item.id}`);
   };
 
+  const getUserInitials = () => {
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return "U";
+  };
+
   return (
     <div className="min-h-screen bg-background pb-44">
+      <header className="sticky top-0 z-50 bg-background border-b">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Snowflake className="h-6 w-6 text-cyan-500" />
+              <h1 className="text-lg font-semibold">Freezer Inventory</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
+                <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
+              </Avatar>
+              <Button variant="ghost" size="icon" asChild data-testid="button-logout">
+                <a href="/api/logout">
+                  <LogOut className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {activeTab === "inventory" && (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {!isLoading && items.length > 0 && (
