@@ -195,6 +195,42 @@ export default function AddEditItemPage() {
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map((category) => {
+                        const config = categoryConfig[category];
+                        const Icon = config.icon;
+                        const isSelected = field.value === category;
+                        return (
+                          <button
+                            key={category}
+                            type="button"
+                            onClick={() => field.onChange(category)}
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-md border transition-colors ${
+                              isSelected 
+                                ? "border-primary bg-primary/10" 
+                                : "border-border hover-elevate"
+                            }`}
+                            data-testid={`button-category-${category}`}
+                          >
+                            <Icon className="h-4 w-4" style={{ color: config.color }} />
+                            <span className="text-sm">{config.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
@@ -228,42 +264,6 @@ export default function AddEditItemPage() {
             />
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-category">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => {
-                          const config = categoryConfig[category];
-                          const Icon = config.icon;
-                          return (
-                            <SelectItem 
-                              key={category} 
-                              value={category}
-                              data-testid={`select-category-${category}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Icon className="h-4 w-4" style={{ color: config.color }} />
-                                {config.label}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="location"
