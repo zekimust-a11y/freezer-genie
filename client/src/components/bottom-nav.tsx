@@ -11,6 +11,43 @@ interface BottomNavProps {
   listCount?: number;
 }
 
+interface NavItemProps {
+  icon: typeof Package;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  testId: string;
+  badge?: number;
+}
+
+function NavItem({ icon: Icon, label, isActive, onClick, testId, badge }: NavItemProps) {
+  return (
+    <div className="relative">
+      <button
+        onClick={onClick}
+        className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-14 px-3 rounded-xl transition-all ${
+          isActive 
+            ? "bg-primary/15 text-primary" 
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+        }`}
+        data-testid={testId}
+      >
+        <div className={`p-1.5 rounded-lg transition-all ${isActive ? "bg-primary text-primary-foreground" : ""}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
+          {label}
+        </span>
+      </button>
+      {badge !== undefined && badge > 0 && (
+        <span className="absolute top-0 right-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-1">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function BottomNav({ 
   activeTab, 
   onTabChange, 
@@ -19,83 +56,51 @@ export function BottomNav({
   listCount = 0,
 }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
-      <div className="flex items-center justify-around h-16 max-w-2xl mx-auto px-2">
-        {/* Inventory Tab */}
-        <Button
-          variant="ghost"
-          className={`flex flex-col items-center gap-1 h-14 px-4 ${
-            activeTab === "inventory" ? "text-primary" : "text-muted-foreground"
-          }`}
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t">
+      <div className="flex items-center justify-around h-18 max-w-lg mx-auto px-2 py-1">
+        <NavItem
+          icon={Package}
+          label="Inventory"
+          isActive={activeTab === "inventory"}
           onClick={() => onTabChange("inventory")}
-          data-testid="button-nav-inventory"
-        >
-          <Package className={`h-5 w-5 ${activeTab === "inventory" ? "text-primary" : ""}`} />
-          <span className="text-xs">Inventory</span>
-        </Button>
+          testId="button-nav-inventory"
+        />
 
-        {/* Expiration Alerts Tab */}
-        <div className="relative">
-          <Button
-            variant="ghost"
-            className={`flex flex-col items-center gap-1 h-14 px-4 ${
-              activeTab === "alerts" ? "text-primary" : "text-muted-foreground"
-            }`}
-            onClick={() => onTabChange("alerts")}
-            data-testid="button-nav-alerts"
-          >
-            <AlertTriangle className={`h-5 w-5 ${activeTab === "alerts" ? "text-primary" : ""}`} />
-            <span className="text-xs">Alerts</span>
-          </Button>
-          {alertCount > 0 && (
-            <span className="absolute -top-1 right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-              {alertCount > 99 ? "99+" : alertCount}
-            </span>
-          )}
-        </div>
+        <NavItem
+          icon={AlertTriangle}
+          label="Alerts"
+          isActive={activeTab === "alerts"}
+          onClick={() => onTabChange("alerts")}
+          testId="button-nav-alerts"
+          badge={alertCount}
+        />
 
         {/* Add Button - Center prominent */}
         <Button
           onClick={onAddItem}
           size="icon"
-          className="h-12 w-12 rounded-full shadow-lg"
+          className="h-14 w-14 rounded-full shadow-lg -mt-4"
           data-testid="button-add-item"
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="h-7 w-7" />
         </Button>
 
-        {/* Shopping List Tab */}
-        <div className="relative">
-          <Button
-            variant="ghost"
-            className={`flex flex-col items-center gap-1 h-14 px-4 ${
-              activeTab === "list" ? "text-primary" : "text-muted-foreground"
-            }`}
-            onClick={() => onTabChange("list")}
-            data-testid="button-nav-list"
-          >
-            <ShoppingCart className={`h-5 w-5 ${activeTab === "list" ? "text-primary" : ""}`} />
-            <span className="text-xs">List</span>
-          </Button>
-          {listCount > 0 && (
-            <span className="absolute -top-1 right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-              {listCount > 99 ? "99+" : listCount}
-            </span>
-          )}
-        </div>
+        <NavItem
+          icon={ShoppingCart}
+          label="List"
+          isActive={activeTab === "list"}
+          onClick={() => onTabChange("list")}
+          testId="button-nav-list"
+          badge={listCount}
+        />
 
-        {/* Settings Tab */}
-        <Button
-          variant="ghost"
-          className={`flex flex-col items-center gap-1 h-14 px-4 ${
-            activeTab === "settings" ? "text-primary" : "text-muted-foreground"
-          }`}
+        <NavItem
+          icon={Settings}
+          label="Settings"
+          isActive={activeTab === "settings"}
           onClick={() => onTabChange("settings")}
-          data-testid="button-nav-settings"
-        >
-          <Settings className={`h-5 w-5 ${activeTab === "settings" ? "text-primary" : ""}`} />
-          <span className="text-xs">Settings</span>
-        </Button>
+          testId="button-nav-settings"
+        />
       </div>
     </nav>
   );
