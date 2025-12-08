@@ -1,27 +1,22 @@
-import { Package, Search, Settings, Plus, ShoppingCart, AlertTriangle } from "lucide-react";
+import { Package, ShoppingCart, AlertTriangle, Settings, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ShoppingListBadge } from "@/components/shopping-list";
-import { ExpirationAlertsBadge } from "@/components/expiration-alerts";
-import type { FreezerItem } from "@shared/schema";
 
-type Tab = "inventory" | "search" | "settings";
+type Tab = "inventory" | "alerts" | "list" | "settings";
 
 interface BottomNavProps {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
-  items: FreezerItem[];
   onAddItem: () => void;
-  onOpenShoppingList: () => void;
-  onOpenExpirationAlerts: () => void;
+  alertCount?: number;
+  listCount?: number;
 }
 
 export function BottomNav({ 
   activeTab, 
   onTabChange, 
-  items,
   onAddItem,
-  onOpenShoppingList,
-  onOpenExpirationAlerts
+  alertCount = 0,
+  listCount = 0,
 }: BottomNavProps) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
@@ -39,18 +34,24 @@ export function BottomNav({
           <span className="text-xs">Inventory</span>
         </Button>
 
-        {/* Expiration Alerts */}
+        {/* Expiration Alerts Tab */}
         <div className="relative">
           <Button
             variant="ghost"
-            className="flex flex-col items-center gap-1 h-14 px-4 text-muted-foreground"
-            onClick={onOpenExpirationAlerts}
-            data-testid="button-expiration-alerts"
+            className={`flex flex-col items-center gap-1 h-14 px-4 ${
+              activeTab === "alerts" ? "text-primary" : "text-muted-foreground"
+            }`}
+            onClick={() => onTabChange("alerts")}
+            data-testid="button-nav-alerts"
           >
-            <AlertTriangle className="h-5 w-5" />
+            <AlertTriangle className={`h-5 w-5 ${activeTab === "alerts" ? "text-primary" : ""}`} />
             <span className="text-xs">Alerts</span>
           </Button>
-          <ExpirationAlertsBadge items={items} />
+          {alertCount > 0 && (
+            <span className="absolute -top-1 right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {alertCount > 99 ? "99+" : alertCount}
+            </span>
+          )}
         </div>
 
         {/* Add Button - Center prominent */}
@@ -63,18 +64,24 @@ export function BottomNav({
           <Plus className="h-6 w-6" />
         </Button>
 
-        {/* Shopping List */}
+        {/* Shopping List Tab */}
         <div className="relative">
           <Button
             variant="ghost"
-            className="flex flex-col items-center gap-1 h-14 px-4 text-muted-foreground"
-            onClick={onOpenShoppingList}
-            data-testid="button-shopping-list"
+            className={`flex flex-col items-center gap-1 h-14 px-4 ${
+              activeTab === "list" ? "text-primary" : "text-muted-foreground"
+            }`}
+            onClick={() => onTabChange("list")}
+            data-testid="button-nav-list"
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className={`h-5 w-5 ${activeTab === "list" ? "text-primary" : ""}`} />
             <span className="text-xs">List</span>
           </Button>
-          <ShoppingListBadge items={items} />
+          {listCount > 0 && (
+            <span className="absolute -top-1 right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {listCount > 99 ? "99+" : listCount}
+            </span>
+          )}
         </div>
 
         {/* Settings Tab */}

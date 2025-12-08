@@ -8,11 +8,10 @@ import { AddEditItemDialog } from "@/components/add-edit-item-dialog";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { ShoppingList } from "@/components/shopping-list";
-import { ExpirationAlerts } from "@/components/expiration-alerts";
 import { BottomNav } from "@/components/bottom-nav";
-import { SearchPanel } from "@/components/search-panel";
 import { SettingsPanel } from "@/components/settings-panel";
+import { AlertsPage, getAlertCount } from "@/components/alerts-page";
+import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LayoutGrid, List } from "lucide-react";
@@ -20,7 +19,7 @@ import type { FreezerItem, FreezerItemFormData, Category } from "@shared/schema"
 
 type SortOption = "name" | "expiration" | "category" | "location";
 type ViewMode = "grid" | "list";
-type Tab = "inventory" | "search" | "settings";
+type Tab = "inventory" | "alerts" | "list" | "settings";
 
 export default function Home() {
   const { toast } = useToast();
@@ -31,8 +30,6 @@ export default function Home() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FreezerItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<FreezerItem | null>(null);
-  const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
-  const [isExpirationAlertsOpen, setIsExpirationAlertsOpen] = useState(false);
 
   const { data: items = [], isLoading } = useQuery<FreezerItem[]>({
     queryKey: ["/api/items"],
@@ -148,7 +145,6 @@ export default function Home() {
   };
 
   const handleEditFromAlerts = (item: FreezerItem) => {
-    setIsExpirationAlertsOpen(false);
     setEditingItem(item);
   };
 
@@ -217,14 +213,17 @@ export default function Home() {
         </main>
       )}
 
-      {/* Search Tab */}
-      {activeTab === "search" && (
+      {/* Alerts Tab */}
+      {activeTab === "alerts" && (
         <div className="max-w-6xl mx-auto">
-          <SearchPanel
-            items={items}
-            onEdit={setEditingItem}
-            onDelete={setDeletingItem}
-          />
+          <AlertsPage items={items} onEditItem={handleEditFromAlerts} />
+        </div>
+      )}
+
+      {/* Shopping List Tab */}
+      {activeTab === "list" && (
+        <div className="max-w-6xl mx-auto">
+          <ShoppingListPage items={items} />
         </div>
       )}
 
@@ -239,10 +238,9 @@ export default function Home() {
       <BottomNav 
         activeTab={activeTab} 
         onTabChange={setActiveTab}
-        items={items}
         onAddItem={() => setIsAddDialogOpen(true)}
-        onOpenShoppingList={() => setIsShoppingListOpen(true)}
-        onOpenExpirationAlerts={() => setIsExpirationAlertsOpen(true)}
+        alertCount={getAlertCount(items)}
+        listCount={getListCount(items)}
       />
 
       {/* Dialogs */}
@@ -267,19 +265,6 @@ export default function Home() {
         item={deletingItem}
         onConfirm={handleDeleteConfirm}
         isLoading={deleteMutation.isPending}
-      />
-
-      <ShoppingList
-        open={isShoppingListOpen}
-        onOpenChange={setIsShoppingListOpen}
-        items={items}
-      />
-
-      <ExpirationAlerts
-        open={isExpirationAlertsOpen}
-        onOpenChange={setIsExpirationAlertsOpen}
-        items={items}
-        onEditItem={handleEditFromAlerts}
       />
     </div>
   );
