@@ -19,7 +19,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
         }`}
         data-testid="button-filter-all"
       >
-        <div className={`p-1.5 rounded-md ${selectedCategory === null ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+        <div className={`p-1.5 rounded-md ${selectedCategory === null ? "bg-orange-500 text-white" : "bg-orange-100 dark:bg-orange-900/30"}`}>
           <LayoutGrid className="h-5 w-5" />
         </div>
         <span className="text-[9px] font-medium">All</span>
@@ -40,7 +40,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
             }`}
             data-testid={`button-filter-${category}`}
           >
-            <div className={`p-1.5 rounded-md ${isActive ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+            <div className={`p-1.5 rounded-md ${isActive ? "bg-orange-500 text-white" : "bg-orange-100 dark:bg-orange-900/30"}`}>
               <Icon className={`h-5 w-5 ${isActive ? "" : config.color}`} />
             </div>
             <span className={`text-[9px] font-medium ${isActive ? "text-primary" : ""}`}>
