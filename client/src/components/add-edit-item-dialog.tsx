@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -29,11 +30,13 @@ import {
 import { categoryConfig } from "@/components/category-icon";
 import { 
   categories, 
+  locations,
+  locationLabels,
   freezerItemFormSchema, 
   type FreezerItem, 
   type FreezerItemFormData 
 } from "@shared/schema";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 
 interface AddEditItemDialogProps {
   open: boolean;
@@ -61,6 +64,8 @@ export function AddEditItemDialog({
       unit: "item",
       expirationDate: null,
       notes: "",
+      lowStockThreshold: 0,
+      location: "unassigned",
     },
   });
 
@@ -74,6 +79,8 @@ export function AddEditItemDialog({
           unit: item.unit,
           expirationDate: item.expirationDate,
           notes: item.notes || "",
+          lowStockThreshold: item.lowStockThreshold || 0,
+          location: item.location || "unassigned",
         });
       } else {
         form.reset({
@@ -83,6 +90,8 @@ export function AddEditItemDialog({
           unit: "item",
           expirationDate: null,
           notes: "",
+          lowStockThreshold: 0,
+          location: "unassigned",
         });
       }
     }
@@ -94,11 +103,14 @@ export function AddEditItemDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Edit Item" : "Add New Item"}
           </DialogTitle>
+          <DialogDescription>
+            {isEditing ? "Update the details of this freezer item." : "Add a new item to your freezer inventory."}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -160,18 +172,31 @@ export function AddEditItemDialog({
 
               <FormField
                 control={form.control}
-                name="expirationDate"
+                name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expiration Date</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        data-testid="input-expiration-date"
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value || null)}
-                      />
-                    </FormControl>
+                    <FormLabel>Location</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-location">
+                          <SelectValue placeholder="Select location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {locations.map((location) => (
+                          <SelectItem 
+                            key={location} 
+                            value={location}
+                            data-testid={`select-location-${location}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              {locationLabels[location]}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -223,6 +248,49 @@ export function AddEditItemDialog({
                         <SelectItem value="container" data-testid="select-unit-container">Container(s)</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="expirationDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Expiration Date</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="date"
+                        data-testid="input-expiration-date"
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value || null)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lowStockThreshold"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Low Stock Alert</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="0 = disabled"
+                        data-testid="input-low-stock"
+                        {...field}
+                        value={field.value || 0}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

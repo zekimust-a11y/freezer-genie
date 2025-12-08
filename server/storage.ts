@@ -1,5 +1,12 @@
-import { type FreezerItem, type InsertFreezerItem, type Category } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { 
+  freezerItems, 
+  type FreezerItem, 
+  type InsertFreezerItem, 
+  type Category,
+  type Location
+} from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getAllItems(): Promise<FreezerItem[]>;
@@ -9,57 +16,57 @@ export interface IStorage {
   deleteItem(id: string): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private items: Map<string, FreezerItem>;
-
-  constructor() {
-    this.items = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getAllItems(): Promise<FreezerItem[]> {
-    return Array.from(this.items.values());
+    return await db.select().from(freezerItems);
   }
 
   async getItem(id: string): Promise<FreezerItem | undefined> {
-    return this.items.get(id);
+    const [item] = await db.select().from(freezerItems).where(eq(freezerItems.id, id));
+    return item || undefined;
   }
 
   async createItem(insertItem: InsertFreezerItem): Promise<FreezerItem> {
-    const id = randomUUID();
-    const item: FreezerItem = { 
-      id,
-      name: insertItem.name,
-      category: insertItem.category as Category,
-      quantity: insertItem.quantity ?? 1,
-      unit: insertItem.unit ?? "item",
-      expirationDate: insertItem.expirationDate || null,
-      notes: insertItem.notes || null,
-    };
-    this.items.set(id, item);
+    const id = crypto.randomUUID();
+    const [item] = await db
+      .insert(freezerItems)
+      .values({
+        id,
+        name: insertItem.name,
+        category: insertItem.category as Category,
+        quantity: insertItem.quantity ?? 1,
+        unit: insertItem.unit ?? "item",
+        expirationDate: insertItem.expirationDate || null,
+        notes: insertItem.notes || null,
+        lowStockThreshold: insertItem.lowStockThreshold ?? 0,
+        location: (insertItem.location as Location) ?? "unassigned",
+      })
+      .returning();
     return item;
   }
 
   async updateItem(id: string, updateData: InsertFreezerItem): Promise<FreezerItem | undefined> {
-    const existing = this.items.get(id);
-    if (!existing) {
-      return undefined;
-    }
-    const updated: FreezerItem = {
-      id,
-      name: updateData.name,
-      category: updateData.category as Category,
-      quantity: updateData.quantity ?? existing.quantity,
-      unit: updateData.unit ?? existing.unit,
-      expirationDate: updateData.expirationDate || null,
-      notes: updateData.notes || null,
-    };
-    this.items.set(id, updated);
-    return updated;
+    const [item] = await db
+      .update(freezerItems)
+      .set({
+        name: updateData.name,
+        category: updateData.category as Category,
+        quantity: updateData.quantity ?? 1,
+        unit: updateData.unit ?? "item",
+        expirationDate: updateData.expirationDate || null,
+        notes: updateData.notes || null,
+        lowStockThreshold: updateData.lowStockThreshold ?? 0,
+        location: (updateData.location as Location) ?? "unassigned",
+      })
+      .where(eq(freezerItems.id, id))
+      .returning();
+    return item || undefined;
   }
 
   async deleteItem(id: string): Promise<boolean> {
-    return this.items.delete(id);
+    const result = await db.delete(freezerItems).where(eq(freezerItems.id, id)).returning();
+    return result.length > 0;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
