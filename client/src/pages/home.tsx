@@ -3,7 +3,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { CategoryFilter } from "@/components/category-filter";
-import { LocationFilter } from "@/components/location-filter";
 import { FreezerItemCard } from "@/components/freezer-item-card";
 import { AddEditItemDialog } from "@/components/add-edit-item-dialog";
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog";
@@ -20,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutGrid, List, Plus, ShoppingCart, AlertTriangle, Snowflake } from "lucide-react";
 import { ShoppingListBadge } from "@/components/shopping-list";
 import { ExpirationAlertsBadge } from "@/components/expiration-alerts";
-import type { FreezerItem, FreezerItemFormData, Category, Location } from "@shared/schema";
+import type { FreezerItem, FreezerItemFormData, Category } from "@shared/schema";
 
 type SortOption = "name" | "expiration" | "category" | "location";
 type ViewMode = "grid" | "list";
@@ -30,7 +29,6 @@ export default function Home() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiration");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -115,10 +113,6 @@ export default function Home() {
       result = result.filter((item) => item.category === selectedCategory);
     }
 
-    if (selectedLocation) {
-      result = result.filter((item) => item.location === selectedLocation);
-    }
-
     result.sort((a, b) => {
       switch (sortBy) {
         case "name":
@@ -138,7 +132,7 @@ export default function Home() {
     });
 
     return result;
-  }, [items, selectedCategory, selectedLocation, sortBy]);
+  }, [items, selectedCategory, sortBy]);
 
   const handleAddSubmit = (data: FreezerItemFormData) => {
     createMutation.mutate(data);
@@ -220,13 +214,6 @@ export default function Home() {
               <CategoryFilter
                 selectedCategory={selectedCategory}
                 onCategoryChange={setSelectedCategory}
-              />
-            </div>
-
-            <div className="mb-4">
-              <LocationFilter
-                selectedLocation={selectedLocation}
-                onLocationChange={setSelectedLocation}
               />
             </div>
 
