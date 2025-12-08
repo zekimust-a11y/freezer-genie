@@ -7,12 +7,18 @@ import { categories, type Category } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
 export type DateFormat = "MMM d, yyyy" | "dd/MM/yyyy" | "MM/dd/yyyy" | "yyyy-MM-dd";
+export type WeightUnit = "metric" | "imperial";
 
 const dateFormatOptions: { value: DateFormat; label: string; example: string }[] = [
   { value: "MMM d, yyyy", label: "Dec 15, 2024", example: "Dec 15, 2024" },
   { value: "dd/MM/yyyy", label: "15/12/2024", example: "DD/MM/YYYY" },
   { value: "MM/dd/yyyy", label: "12/15/2024", example: "MM/DD/YYYY" },
   { value: "yyyy-MM-dd", label: "2024-12-15", example: "YYYY-MM-DD" },
+];
+
+const weightUnitOptions: { value: WeightUnit; label: string }[] = [
+  { value: "metric", label: "Metric (kg, g)" },
+  { value: "imperial", label: "Imperial (lb, oz)" },
 ];
 
 export function getDefaultCategory(): Category {
@@ -31,9 +37,18 @@ export function getDateFormat(): DateFormat {
   return "MMM d, yyyy";
 }
 
+export function getWeightUnit(): WeightUnit {
+  const stored = localStorage.getItem("weightUnit");
+  if (stored === "metric" || stored === "imperial") {
+    return stored;
+  }
+  return "metric";
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>(getWeightUnit);
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -42,6 +57,10 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("dateFormat", dateFormat);
   }, [dateFormat]);
+
+  useEffect(() => {
+    localStorage.setItem("weightUnit", weightUnit);
+  }, [weightUnit]);
 
   return (
     <div className="p-4 space-y-4">
@@ -73,6 +92,21 @@ export function SettingsPanel() {
               </SelectTrigger>
               <SelectContent>
                 {dateFormatOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Weight Units</span>
+            <Select value={weightUnit} onValueChange={(v) => setWeightUnit(v as WeightUnit)}>
+              <SelectTrigger className="w-[160px]" data-testid="select-weight-unit">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {weightUnitOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
