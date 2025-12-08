@@ -10,6 +10,7 @@ import { categoryConfig } from "@/components/category-icon";
 
 export type DateFormat = "MMM d, yyyy" | "dd/MM/yyyy" | "MM/dd/yyyy" | "yyyy-MM-dd";
 export type WeightUnit = "metric" | "imperial";
+export type DefaultExpiry = "none" | "7" | "14" | "30" | "60" | "90" | "180" | "365";
 
 const dateFormatOptions: { value: DateFormat; label: string; example: string }[] = [
   { value: "MMM d, yyyy", label: "Dec 15, 2024", example: "Dec 15, 2024" },
@@ -21,6 +22,17 @@ const dateFormatOptions: { value: DateFormat; label: string; example: string }[]
 const weightUnitOptions: { value: WeightUnit; label: string }[] = [
   { value: "metric", label: "Metric (kg, g)" },
   { value: "imperial", label: "Imperial (lb, oz)" },
+];
+
+const defaultExpiryOptions: { value: DefaultExpiry; label: string }[] = [
+  { value: "none", label: "No default" },
+  { value: "7", label: "1 week" },
+  { value: "14", label: "2 weeks" },
+  { value: "30", label: "1 month" },
+  { value: "60", label: "2 months" },
+  { value: "90", label: "3 months" },
+  { value: "180", label: "6 months" },
+  { value: "365", label: "1 year" },
 ];
 
 export function getDefaultCategory(): Category {
@@ -59,10 +71,28 @@ export function getCustomLocations(): string[] {
   return [];
 }
 
+export function getDefaultExpiry(): DefaultExpiry {
+  const stored = localStorage.getItem("defaultExpiry");
+  if (stored && defaultExpiryOptions.some(opt => opt.value === stored)) {
+    return stored as DefaultExpiry;
+  }
+  return "none";
+}
+
+export function getDefaultExpiryDate(): string | null {
+  const expiry = getDefaultExpiry();
+  if (expiry === "none") return null;
+  const days = parseInt(expiry);
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split("T")[0];
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(getWeightUnit);
+  const [defaultExpiry, setDefaultExpiry] = useState<DefaultExpiry>(getDefaultExpiry);
   const [customLocations, setCustomLocations] = useState<string[]>(getCustomLocations);
   const [newLocation, setNewLocation] = useState("");
 
@@ -81,6 +111,10 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("customLocations", JSON.stringify(customLocations));
   }, [customLocations]);
+
+  useEffect(() => {
+    localStorage.setItem("defaultExpiry", defaultExpiry);
+  }, [defaultExpiry]);
 
   const handleAddLocation = () => {
     const trimmed = newLocation.trim();
@@ -139,6 +173,21 @@ export function SettingsPanel() {
               </SelectTrigger>
               <SelectContent>
                 {weightUnitOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Default Expiry</span>
+            <Select value={defaultExpiry} onValueChange={(v) => setDefaultExpiry(v as DefaultExpiry)}>
+              <SelectTrigger className="w-[160px]" data-testid="select-default-expiry">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {defaultExpiryOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
