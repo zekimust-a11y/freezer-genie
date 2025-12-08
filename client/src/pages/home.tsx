@@ -137,11 +137,12 @@ export default function Home() {
             <EmptyState onAddItem={() => navigate("/add")} hasFilters />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredAndSortedItems.map((item) => (
+              {filteredAndSortedItems.map((item, index) => (
                 <FreezerItemCard
                   key={item.id}
                   item={item}
                   onEdit={handleEditItem}
+                  index={index}
                 />
               ))}
             </div>
