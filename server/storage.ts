@@ -1,4 +1,4 @@
-import { type FreezerItem, type InsertFreezerItem } from "@shared/schema";
+import { type FreezerItem, type InsertFreezerItem, type Category } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -27,8 +27,11 @@ export class MemStorage implements IStorage {
   async createItem(insertItem: InsertFreezerItem): Promise<FreezerItem> {
     const id = randomUUID();
     const item: FreezerItem = { 
-      ...insertItem, 
       id,
+      name: insertItem.name,
+      category: insertItem.category as Category,
+      quantity: insertItem.quantity ?? 1,
+      unit: insertItem.unit ?? "item",
       expirationDate: insertItem.expirationDate || null,
       notes: insertItem.notes || null,
     };
@@ -42,9 +45,11 @@ export class MemStorage implements IStorage {
       return undefined;
     }
     const updated: FreezerItem = {
-      ...existing,
-      ...updateData,
       id,
+      name: updateData.name,
+      category: updateData.category as Category,
+      quantity: updateData.quantity ?? existing.quantity,
+      unit: updateData.unit ?? existing.unit,
       expirationDate: updateData.expirationDate || null,
       notes: updateData.notes || null,
     };
