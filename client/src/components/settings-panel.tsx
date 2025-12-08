@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Snowflake } from "lucide-react";
+import { Snowflake, Plus, X } from "lucide-react";
 import { categories, type Category } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
@@ -45,10 +47,24 @@ export function getWeightUnit(): WeightUnit {
   return "metric";
 }
 
+export function getCustomLocations(): string[] {
+  try {
+    const stored = localStorage.getItem("customLocations");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [];
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(getWeightUnit);
+  const [customLocations, setCustomLocations] = useState<string[]>(getCustomLocations);
+  const [newLocation, setNewLocation] = useState("");
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -61,6 +77,22 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("weightUnit", weightUnit);
   }, [weightUnit]);
+
+  useEffect(() => {
+    localStorage.setItem("customLocations", JSON.stringify(customLocations));
+  }, [customLocations]);
+
+  const handleAddLocation = () => {
+    const trimmed = newLocation.trim();
+    if (trimmed && !customLocations.includes(trimmed)) {
+      setCustomLocations([...customLocations, trimmed]);
+      setNewLocation("");
+    }
+  };
+
+  const handleRemoveLocation = (location: string) => {
+    setCustomLocations(customLocations.filter(l => l !== location));
+  };
 
   return (
     <div className="p-4 space-y-4">
@@ -114,6 +146,49 @@ export function SettingsPanel() {
               </SelectContent>
             </Select>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Locations</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add location name..."
+              value={newLocation}
+              onChange={(e) => setNewLocation(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
+              data-testid="input-new-location"
+            />
+            <Button size="icon" onClick={handleAddLocation} data-testid="button-add-location">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          {customLocations.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {customLocations.map((loc) => (
+                <div
+                  key={loc}
+                  className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm"
+                >
+                  <span>{loc}</span>
+                  <button
+                    onClick={() => handleRemoveLocation(loc)}
+                    className="text-muted-foreground hover:text-foreground"
+                    data-testid={`button-remove-location-${loc}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              No custom locations added yet.
+            </p>
+          )}
         </CardContent>
       </Card>
 

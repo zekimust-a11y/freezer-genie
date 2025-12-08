@@ -56,7 +56,7 @@ export function FreezerItemCard({ item, onEdit }: FreezerItemCardProps) {
         {item.location && item.location !== "unassigned" && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
             <MapPin className="h-3 w-3" />
-            <span>{locationLabels[item.location]}</span>
+            <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
           </div>
         )}
 

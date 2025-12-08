@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { categoryConfig } from "@/components/category-icon";
-import { getDefaultCategory } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations } from "@/components/settings-panel";
 import { 
   categories, 
   locations,
@@ -212,6 +212,18 @@ export function AddEditItemDialog({
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground" />
                               {locationLabels[location]}
+                            </div>
+                          </SelectItem>
+                        ))}
+                        {getCustomLocations().map((location) => (
+                          <SelectItem 
+                            key={location} 
+                            value={location}
+                            data-testid={`select-location-custom-${location}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              {location}
                             </div>
                           </SelectItem>
                         ))}
