@@ -30,8 +30,7 @@ import {
   categories,
   freezerItemFormSchema, 
   type FreezerItem, 
-  type FreezerItemFormData,
-  type Category 
+  type FreezerItemFormData 
 } from "@shared/schema";
 import { categoryConfig, getCategoryLabel } from "@/components/category-icon";
 import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
