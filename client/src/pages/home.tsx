@@ -20,7 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowUpDown, Search, X, Snowflake } from "lucide-react";
+import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import type { FreezerItem, Category } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
@@ -83,6 +85,33 @@ export default function Home() {
   }, [items, selectedCategory, sortBy, searchQuery]);
 
   const { user } = useAuth();
+  const { processCommand } = useVoiceCommands();
+  const { toast } = useToast();
+
+  const handleVoiceCommand = (command: string) => {
+    const result = processCommand(command);
+    
+    switch (result.action) {
+      case "add":
+        navigate(`/add?name=${encodeURIComponent(result.value || "")}`);
+        toast({ title: "Adding item", description: result.value });
+        break;
+      case "search":
+        setSearchQuery(result.value || "");
+        setActiveTab("inventory");
+        toast({ title: "Searching", description: result.value });
+        break;
+      case "tab":
+        setActiveTab(result.value as Tab);
+        toast({ title: "Switched to", description: result.value });
+        break;
+      case "navigate":
+        setActiveTab("inventory");
+        break;
+      default:
+        toast({ title: "Didn't understand", description: `"${result.value}"`, variant: "destructive" });
+    }
+  };
 
   const handleEditItem = (item: FreezerItem) => {
     navigate(`/item/${item.id}`);
@@ -107,10 +136,13 @@ export default function Home() {
               <Snowflake className="h-6 w-6 text-cyan-500" />
               <h1 className="text-lg font-semibold">Freezer Genie</h1>
             </div>
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
-              <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
-            </Avatar>
+            <div className="flex items-center gap-2">
+              <VoiceControl onCommand={handleVoiceCommand} />
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
+                <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
+              </Avatar>
+            </div>
           </div>
         </div>
       </header>
