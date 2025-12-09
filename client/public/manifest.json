@@ -1,6 +1,6 @@
 {
-  "name": "Freezer Tag",
-  "short_name": "Freezer Tag",
+  "name": "Freezer Genie",
+  "short_name": "Freezer Genie",
   "description": "Track and manage your household freezer contents with ease. Never forget what's in your freezer again.",
   "start_url": "/",
   "display": "standalone",

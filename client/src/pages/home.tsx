@@ -105,7 +105,7 @@ export default function Home() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Snowflake className="h-6 w-6 text-cyan-500" />
-              <h1 className="text-lg font-semibold">Freezer Tag</h1>
+              <h1 className="text-lg font-semibold">Freezer Genie</h1>
             </div>
             <Avatar className="h-8 w-8">
               <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
