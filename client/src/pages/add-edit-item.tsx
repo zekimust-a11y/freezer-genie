@@ -27,10 +27,13 @@ import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaul
 import { 
   locations,
   locationLabels,
+  categories,
   freezerItemFormSchema, 
   type FreezerItem, 
-  type FreezerItemFormData 
+  type FreezerItemFormData,
+  type Category 
 } from "@shared/schema";
+import { categoryConfig, getCategoryLabel } from "@/components/category-icon";
 import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
@@ -226,6 +229,41 @@ export default function AddEditItemPage() {
             />
 
             <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-category">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((cat) => {
+                          const Icon = categoryConfig[cat].icon;
+                          return (
+                            <SelectItem 
+                              key={cat} 
+                              value={cat}
+                              data-testid={`select-category-${cat}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon className={`h-4 w-4 ${categoryConfig[cat].color}`} />
+                                {getCategoryLabel(cat)}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="location"
