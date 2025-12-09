@@ -1,8 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CategoryIcon } from "@/components/category-icon";
-import { AlertTriangle, Clock, Calendar, Pencil } from "lucide-react";
+import { AlertTriangle, Clock, Calendar } from "lucide-react";
 import { locationLabels, type FreezerItem } from "@shared/schema";
 import { format, parseISO, isValid, differenceInDays, isToday, isPast } from "date-fns";
 
@@ -38,7 +37,11 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
     : null;
 
   return (
-    <Card className="hover-elevate">
+    <Card 
+      className="hover-elevate cursor-pointer" 
+      onClick={onEdit}
+      data-testid={`card-alert-${item.id}`}
+    >
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -50,18 +53,13 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-right">
-              <Badge variant={status.status === "expired" ? "destructive" : "secondary"}>
-                {status.label}
-              </Badge>
-              {formattedDate && (
-                <p className="text-xs text-muted-foreground mt-1">{formattedDate}</p>
-              )}
-            </div>
-            <Button variant="ghost" size="icon" onClick={onEdit}>
-              <Pencil className="h-4 w-4" />
-            </Button>
+          <div className="text-right">
+            <Badge variant={status.status === "expired" ? "destructive" : "secondary"}>
+              {status.label}
+            </Badge>
+            {formattedDate && (
+              <p className="text-xs text-muted-foreground mt-1">{formattedDate}</p>
+            )}
           </div>
         </div>
       </CardContent>

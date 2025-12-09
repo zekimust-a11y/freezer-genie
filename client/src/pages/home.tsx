@@ -216,7 +216,7 @@ export default function Home() {
 
       {activeTab === "list" && (
         <div className="max-w-6xl mx-auto">
-          <ShoppingListPage items={items} />
+          <ShoppingListPage items={items} onEditItem={handleEditItem} />
         </div>
       )}
 

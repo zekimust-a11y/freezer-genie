@@ -6,6 +6,7 @@ import { locationLabels, type FreezerItem } from "@shared/schema";
 
 interface ShoppingListPageProps {
   items: FreezerItem[];
+  onEditItem: (item: FreezerItem) => void;
 }
 
 function getLowStockItems(items: FreezerItem[]): FreezerItem[] {
@@ -14,7 +15,7 @@ function getLowStockItems(items: FreezerItem[]): FreezerItem[] {
   );
 }
 
-export function ShoppingListPage({ items }: ShoppingListPageProps) {
+export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
   const lowStockItems = getLowStockItems(items);
 
   return (
@@ -39,7 +40,12 @@ export function ShoppingListPage({ items }: ShoppingListPageProps) {
           </p>
           
           {lowStockItems.map((item) => (
-            <Card key={item.id} className="hover-elevate">
+            <Card 
+              key={item.id} 
+              className="hover-elevate cursor-pointer"
+              onClick={() => onEditItem(item)}
+              data-testid={`card-shopping-${item.id}`}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
