@@ -10,7 +10,7 @@ export default function Landing() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Snowflake className="h-6 w-6 text-cyan-500" />
-              <h1 className="text-lg font-semibold">Freezer Inventory</h1>
+              <h1 className="text-lg font-semibold">Freezer Tag</h1>
             </div>
             <Button asChild data-testid="button-login">
               <a href="/api/login">Log In</a>
