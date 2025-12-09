@@ -37,7 +37,7 @@ function NavItem({ icon: Icon, label, isActive, onClick, testId, badge, itemRef 
         data-testid={testId}
       >
         <div className={`p-1.5 rounded-lg transition-all duration-200 ${isActive ? "bg-primary text-primary-foreground" : ""}`}>
-          <Icon className="h-5 w-5" />
+          <Icon className="h-6 w-6" />
         </div>
         <span className={`text-[10px] font-medium transition-colors duration-200 ${isActive ? "text-primary" : ""}`}>
           {label}
