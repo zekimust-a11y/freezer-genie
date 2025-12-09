@@ -127,14 +127,13 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
 
             {/* Notes */}
             {item.notes && (
-              <p className="text-xs text-muted-foreground line-clamp-2 mb-1">
+              <p className="text-xs text-muted-foreground line-clamp-2">
                 {item.notes}
               </p>
             )}
-
             {/* Location */}
             {hasLocation && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 mb-1">
                 <MapPin className="h-3 w-3" />
                 <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
               </div>
