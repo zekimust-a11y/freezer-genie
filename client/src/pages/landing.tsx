@@ -27,7 +27,7 @@ export default function Landing() {
             </div>
           </div>
           <h2 className="text-3xl font-bold mb-4">
-            Keep Track of Your Freezer
+            Keep Track of Your Freezer Contents
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Never let food go to waste again. Track what's in your freezer, get expiration alerts, and know when you're running low on essentials.
