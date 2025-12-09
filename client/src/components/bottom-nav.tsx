@@ -29,7 +29,7 @@ function NavItem({ icon: Icon, label, isActive, onClick, testId, badge, itemRef 
       <button
         ref={itemRef}
         onClick={onClick}
-        className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-14 px-3 rounded-xl transition-colors duration-200 ${
+        className={`flex flex-col items-center justify-center gap-0.5 min-w-[64px] h-14 px-3 rounded-xl transition-colors duration-200 ${
           isActive 
             ? "text-primary" 
             : "text-muted-foreground hover:text-foreground"
