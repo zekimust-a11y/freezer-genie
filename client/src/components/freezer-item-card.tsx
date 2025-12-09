@@ -132,7 +132,15 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
               </p>
             )}
 
-            {/* Bottom: Low stock, expiration and location */}
+            {/* Location - under description */}
+            {hasLocation && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+                <MapPin className="h-3 w-3" />
+                <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
+              </div>
+            )}
+
+            {/* Bottom: Low stock and expiration */}
             <div className="flex flex-col gap-1.5">
               {isLowStock && (
                 <Badge variant="destructive" className="text-xs gap-1 w-fit">
@@ -140,26 +148,18 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                   Low Stock
                 </Badge>
               )}
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  {item.expirationDate ? (
-                    <>
-                      <ExpirationBadge expirationDate={item.expirationDate} />
-                      {formattedDate && (
-                        <span className="text-xs text-muted-foreground">
-                          Expiry date: {formattedDate}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className="text-xs text-muted-foreground italic">No expiry set</span>
-                  )}
-                </div>
-                {hasLocation && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="h-3 w-3" />
-                    <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
-                  </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {item.expirationDate ? (
+                  <>
+                    <ExpirationBadge expirationDate={item.expirationDate} />
+                    {formattedDate && (
+                      <span className="text-xs text-muted-foreground">
+                        Expiry date: {formattedDate}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-xs text-muted-foreground italic">No expiry set</span>
                 )}
               </div>
             </div>
