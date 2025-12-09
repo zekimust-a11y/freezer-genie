@@ -133,7 +133,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Snowflake className="h-6 w-6 text-cyan-500" />
+              <Snowflake className="h-6 w-6 text-[#1975D2]" />
               <h1 className="text-lg font-semibold">Freezer Genie</h1>
             </div>
             <div className="flex items-center gap-2">

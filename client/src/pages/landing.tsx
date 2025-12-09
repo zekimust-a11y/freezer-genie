@@ -9,7 +9,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Snowflake className="h-6 w-6 text-cyan-500" />
+              <Snowflake className="h-6 w-6 text-[#1975D2]" />
               <h1 className="text-lg font-semibold">Freezer Genie</h1>
             </div>
             <Button asChild data-testid="button-login">
@@ -40,7 +40,7 @@ export default function Landing() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <Card>
             <CardContent className="pt-6 text-center">
-              <Package className="h-10 w-10 mx-auto mb-4 text-cyan-500" />
+              <Package className="h-10 w-10 mx-auto mb-4 text-[#1975D2]" />
               <h3 className="font-semibold mb-2">Track Inventory</h3>
               <p className="text-sm text-muted-foreground">
                 Add items with quantities, categories, and locations for easy organization.

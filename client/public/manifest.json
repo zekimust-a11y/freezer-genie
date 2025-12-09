@@ -4,8 +4,8 @@
   "description": "Track and manage your household freezer contents with ease. Never forget what's in your freezer again.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0c4a6e",
-  "theme_color": "#0c4a6e",
+  "background_color": "#1975D2",
+  "theme_color": "#1975D2",
   "orientation": "portrait-primary",
   "icons": [
     {
