@@ -22,8 +22,8 @@ export default function Landing() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="flex justify-center mb-6">
-            <div className="p-4 rounded-full bg-cyan-100 dark:bg-cyan-900/30">
-              <Snowflake className="h-16 w-16 text-cyan-500" />
+            <div className="p-5 rounded-2xl bg-sky-900 shadow-lg">
+              <Snowflake className="h-16 w-16 text-white" />
             </div>
           </div>
           <h2 className="text-3xl font-bold mb-4">
