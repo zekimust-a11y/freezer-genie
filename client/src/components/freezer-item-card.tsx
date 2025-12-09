@@ -92,18 +92,18 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
           {/* Category color stripe */}
           <div className={`w-1.5 ${config.stripeColor} shrink-0`} />
           
-          <CardContent className="p-3 flex-1">
+          <CardContent className="p-2.5 flex-1">
             {/* Top: Name, quantity, and category icon with ring */}
-            <div className="flex items-start justify-between gap-3 mb-2">
+            <div className="flex items-start justify-between gap-2 mb-1.5">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <h3 
-                    className="font-semibold text-base"
+                    className="font-semibold text-sm"
                     data-testid={`text-item-name-${item.id}`}
                   >
                     {item.name}
                   </h3>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     x {item.quantity}{isWeightUnit && ` ${item.unit}`}
                   </span>
                 </div>
@@ -111,7 +111,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
               
               {/* Category icon with expiration ring */}
               <div className="flex flex-col items-center shrink-0">
-                <div className="relative w-10 h-10">
+                <div className="relative w-9 h-9">
                   {item.expirationDate && (
                     <ExpirationRing expirationDate={item.expirationDate} />
                   )}
@@ -119,42 +119,44 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                     <CategoryIcon category={item.category} />
                   </div>
                 </div>
-                <span className="text-[10px] text-muted-foreground mt-0.5">
+                <span className="text-[9px] text-muted-foreground">
                   {getCategoryLabel(item.category)}
                 </span>
               </div>
             </div>
 
-            {/* Middle: Notes */}
-            {item.notes && (
-              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                {item.notes}
-              </p>
-            )}
-
-            {/* Location - under description */}
-            {hasLocation && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-                <MapPin className="h-3 w-3" />
-                <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
+            {/* Notes and Location */}
+            {(item.notes || hasLocation) && (
+              <div className="mb-1.5 space-y-0.5">
+                {item.notes && (
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {item.notes}
+                  </p>
+                )}
+                {hasLocation && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="h-3 w-3" />
+                    <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Bottom: Low stock and expiration */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               {isLowStock && (
                 <Badge variant="destructive" className="text-xs gap-1 w-fit">
                   <AlertCircle className="h-3 w-3" />
                   Low Stock
                 </Badge>
               )}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 {item.expirationDate ? (
                   <>
                     <ExpirationBadge expirationDate={item.expirationDate} />
                     {formattedDate && (
                       <span className="text-xs text-muted-foreground">
-                        Expiry date: {formattedDate}
+                        {formattedDate}
                       </span>
                     )}
                   </>
