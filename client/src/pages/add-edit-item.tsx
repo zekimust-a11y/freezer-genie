@@ -174,7 +174,7 @@ export default function AddEditItemPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-50 bg-background border-b">
+      <div className="sticky top-0 z-50 bg-background border-b" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center gap-2 px-4 py-3">
           <Button
             variant="ghost"

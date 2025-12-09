@@ -100,7 +100,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background" style={{ paddingBottom: 'calc(11rem + env(safe-area-inset-bottom))' }}>
-      <header className="sticky top-0 z-50 bg-background border-b">
+      <header className="sticky top-0 z-50 bg-background border-b" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">

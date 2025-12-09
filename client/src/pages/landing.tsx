@@ -5,7 +5,7 @@ import { Snowflake, ShoppingCart, Clock, Package } from "lucide-react";
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b">
+      <header className="border-b" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
