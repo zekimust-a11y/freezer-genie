@@ -99,7 +99,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-44">
+    <div className="min-h-screen bg-background" style={{ paddingBottom: 'calc(11rem + env(safe-area-inset-bottom))' }}>
       <header className="sticky top-0 z-50 bg-background border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-3">
@@ -195,7 +195,7 @@ export default function Home() {
       )}
 
       {activeTab === "inventory" && (
-        <div className="fixed bottom-[64px] left-0 right-0 z-50 bg-background border-t px-4 py-2">
+        <div className="fixed left-0 right-0 z-50 bg-background border-t px-4 py-2" style={{ bottom: 'calc(64px + env(safe-area-inset-bottom))' }}>
           <CategoryFilter
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
