@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CategoryIcon } from "@/components/category-icon";
+import { ExpirationBadge } from "@/components/expiration-badge";
 import { AlertTriangle, Clock, Calendar } from "lucide-react";
 import { type FreezerItem, type Location } from "@shared/schema";
 import { getLocationLabel } from "@/components/settings-panel";
@@ -72,11 +73,7 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
             </div>
           </div>
           <div className="text-right flex flex-col items-end gap-1">
-            {daysInfo && (
-              <span className="text-sm font-semibold text-destructive" data-testid={`text-days-left-${item.id}`}>
-                {daysInfo.text}
-              </span>
-            )}
+            <ExpirationBadge expirationDate={item.expirationDate} />
             {formattedDate && (
               <p className="text-xs text-muted-foreground">{formattedDate}</p>
             )}
