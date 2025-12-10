@@ -71,7 +71,7 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <CategoryIcon category={item.category} />
+                    <CategoryIcon category={item.category} size="lg" />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{item.name}</p>
                       {item.location && item.location !== "unassigned" && (

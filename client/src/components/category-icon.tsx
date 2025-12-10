@@ -108,13 +108,13 @@ interface CategoryIconProps {
   category: string;
   showLabel?: boolean;
   className?: string;
-  size?: "sm" | "default";
+  size?: "sm" | "default" | "lg";
 }
 
 export function CategoryIcon({ category, showLabel = false, className = "", size = "default" }: CategoryIconProps) {
   const config = getCategoryConfig(category);
   const Icon = config.icon;
-  const iconSize = size === "sm" ? "h-3 w-3" : "h-4 w-4";
+  const iconSize = size === "sm" ? "h-3 w-3" : size === "lg" ? "h-6 w-6" : "h-4 w-4";
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
