@@ -125,8 +125,8 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
           <div className={`w-1.5 ${config.stripeColor} shrink-0`} />
           
           <CardContent className="p-2.5 flex-1 relative">
-            {/* Category icon with expiration ring - positioned top right */}
-            <div className="absolute top-2.5 right-2.5 flex flex-col items-center">
+            {/* Category icon with expiration ring - positioned right, vertically centered */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-2.5 flex flex-col items-center">
               <div className="relative w-9 h-9">
                 {item.expirationDate && (
                   <ExpirationRing expirationDate={item.expirationDate} />

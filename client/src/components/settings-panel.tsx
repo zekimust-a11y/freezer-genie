@@ -642,14 +642,14 @@ export function SettingsPanel() {
                 value={freezer.name}
                 onChange={(e) => handleFreezerNameChange(freezer.id, e.target.value)}
                 onBlur={() => handleFreezerNameBlur(freezer.id)}
-                className="flex-1 h-8"
+                className="w-1/2 h-8"
                 data-testid={`input-freezer-name-${freezer.id}`}
               />
               <Select 
                 value={freezer.type} 
                 onValueChange={(v) => handleFreezerTypeChange(freezer.id, v as FreezerType)}
               >
-                <SelectTrigger className="w-[130px]" data-testid={`select-freezer-type-${freezer.id}`}>
+                <SelectTrigger className="w-1/2 h-8" data-testid={`select-freezer-type-${freezer.id}`}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -680,11 +680,11 @@ export function SettingsPanel() {
                 value={newFreezerName}
                 onChange={(e) => setNewFreezerName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAddFreezer()}
-                className="flex-1"
+                className="w-1/2"
                 data-testid="input-new-freezer"
               />
               <Select value={newFreezerType} onValueChange={(v) => setNewFreezerType(v as FreezerType)}>
-                <SelectTrigger className="w-[140px]" data-testid="select-new-freezer-type">
+                <SelectTrigger className="w-1/2" data-testid="select-new-freezer-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
