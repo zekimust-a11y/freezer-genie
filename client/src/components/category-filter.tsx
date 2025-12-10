@@ -54,11 +54,11 @@ export function CategoryFilter({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-1 backdrop-blur-sm bg-background/80 rounded-xl p-1 min-w-max"
+            className="flex items-center gap-2 backdrop-blur-sm bg-background/80 rounded-xl p-1.5 min-w-max"
           >
             <motion.button
               onClick={handleBackToCategories}
-              className="flex flex-col items-center gap-0.5 px-2 py-2 rounded-lg transition-colors text-muted-foreground"
+              className="flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors text-muted-foreground"
               data-testid="button-back-categories"
               whileTap={{ scale: 0.95 }}
             >
@@ -77,7 +77,7 @@ export function CategoryFilter({
                 <motion.button
                   key={subcategory}
                   onClick={() => handleSubcategoryClick(subcategory)}
-                  className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors ${
                     isActive 
                       ? "" 
                       : "text-muted-foreground"
@@ -106,7 +106,7 @@ export function CategoryFilter({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-1 backdrop-blur-sm bg-background/80 rounded-xl p-1 min-w-max"
+            className="flex items-center gap-2 backdrop-blur-sm bg-background/80 rounded-xl p-1.5 min-w-max"
           >
             {categories.map((category) => {
               const config = categoryConfig[category];
@@ -117,7 +117,7 @@ export function CategoryFilter({
                 <motion.button
                   key={category}
                   onClick={() => handleCategoryClick(category)}
-                  className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors ${
                     isActive 
                       ? "" 
                       : "text-muted-foreground"
