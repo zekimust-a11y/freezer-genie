@@ -36,7 +36,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
                 <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
               </div>
               <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>
-                {config.label.split(" ")[0]}
+                {config.label}
               </span>
             </motion.button>
           );
