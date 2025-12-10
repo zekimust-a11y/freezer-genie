@@ -6,7 +6,7 @@ import { FreezerItemCard } from "@/components/freezer-item-card";
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { BottomNav } from "@/components/bottom-nav";
-import { SettingsPanel } from "@/components/settings-panel";
+import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreezer } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, Refrigerator } from "lucide-react";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -42,6 +42,13 @@ export default function Home() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiry");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
+  const freezerOptions = getFreezerOptions();
+
+  const handleFreezerChange = (freezerId: string) => {
+    setSelectedFreezerId(freezerId);
+    setSelectedFreezer(freezerId);
+  };
 
   const { data: items = [], isLoading } = useQuery<FreezerItem[]>({
     queryKey: ["/api/items"],
@@ -138,7 +145,19 @@ export default function Home() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Snowflake className="h-6 w-6 text-[#1975D2]" />
-              <h1 className="text-lg font-semibold">Freezer Genie</h1>
+              <Select value={selectedFreezerId} onValueChange={handleFreezerChange}>
+                <SelectTrigger className="border-0 shadow-none p-0 h-auto gap-1 font-semibold text-lg" data-testid="select-freezer">
+                  <Refrigerator className="h-4 w-4 text-muted-foreground" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {freezerOptions.map((option) => (
+                    <SelectItem key={option.id} value={option.id} data-testid={`select-freezer-${option.id}`}>
+                      {option.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex items-center gap-2">
               <VoiceControl onCommand={handleVoiceCommand} />

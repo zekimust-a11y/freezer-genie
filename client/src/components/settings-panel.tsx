@@ -154,6 +154,23 @@ export function getFreezers(): Freezer[] {
   return [{ id: "default", name: "My Freezer", type: "fridge_freezer" }];
 }
 
+export function getSelectedFreezer(): string {
+  const stored = localStorage.getItem("selectedFreezer");
+  return stored || "all";
+}
+
+export function setSelectedFreezer(freezerId: string): void {
+  localStorage.setItem("selectedFreezer", freezerId);
+}
+
+export function getFreezerOptions(): { id: string; name: string }[] {
+  const freezers = getFreezers();
+  return [
+    { id: "all", name: "All Freezers" },
+    ...freezers.map(f => ({ id: f.id, name: f.name }))
+  ];
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
