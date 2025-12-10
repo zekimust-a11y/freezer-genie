@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, getFreezers, getDefaultFreezerForNewItems, type ItemTag } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, getFreezers, getDefaultFreezerForNewItems, getDateFormat, type ItemTag } from "@/components/settings-panel";
 import { Badge } from "@/components/ui/badge";
 import { 
   categories,
@@ -781,7 +781,7 @@ export default function AddEditItemPage() {
 
             {isEditing && item?.createdAt && (
               <div className="text-xs text-muted-foreground text-center pt-4 border-t">
-                Added on {format(new Date(item.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+                Added on {format(new Date(item.createdAt), `${getDateFormat()} 'at' h:mm a`)}
               </div>
             )}
           </form>
