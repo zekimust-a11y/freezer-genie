@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Package, ShoppingCart, AlertTriangle, Settings, Plus, ChefHat } from "lucide-react";
+import { Package, ShoppingCart, AlertTriangle, Plus, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -64,19 +64,18 @@ export function BottomNav({
   const alertsRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLButtonElement>(null);
   const recipesRef = useRef<HTMLButtonElement>(null);
-  const settingsRef = useRef<HTMLButtonElement>(null);
   
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
-  const tabRefs: Record<Tab, React.RefObject<HTMLButtonElement>> = {
+  const tabRefs: Record<Exclude<Tab, "settings">, React.RefObject<HTMLButtonElement>> = {
     inventory: inventoryRef,
     alerts: alertsRef,
     list: listRef,
     recipes: recipesRef,
-    settings: settingsRef,
   };
 
   useEffect(() => {
+    if (activeTab === "settings") return; // Settings not in bottom nav
     const activeRef = tabRefs[activeTab];
     const container = containerRef.current;
     if (activeRef.current && container) {
@@ -153,15 +152,6 @@ export function BottomNav({
           onClick={() => onTabChange("recipes")}
           testId="button-nav-recipes"
           itemRef={recipesRef}
-        />
-
-        <NavItem
-          icon={Settings}
-          label="Settings"
-          isActive={activeTab === "settings"}
-          onClick={() => onTabChange("settings")}
-          testId="button-nav-settings"
-          itemRef={settingsRef}
         />
       </div>
     </nav>
