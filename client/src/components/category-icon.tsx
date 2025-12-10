@@ -46,6 +46,29 @@ export function getCategoryConfig(category: string): CategoryConfig {
   return customCategoryConfig;
 }
 
+export function getItemConfig(category: string, subCategory?: string | null): CategoryConfig {
+  // If there's a subcategory, try to get its config
+  if (subCategory) {
+    if (category === 'meat_fish' && subCategory in meatSubcategoryConfig) {
+      return meatSubcategoryConfig[subCategory as MeatSubcategory];
+    }
+    if (category === 'produce' && subCategory in produceSubcategoryConfig) {
+      return produceSubcategoryConfig[subCategory as ProduceSubcategory];
+    }
+    if (category === 'prepared_meals' && subCategory in preparedMealsSubcategoryConfig) {
+      return preparedMealsSubcategoryConfig[subCategory as PreparedMealsSubcategory];
+    }
+    if (category === 'frozen_goods' && subCategory in frozenGoodsSubcategoryConfig) {
+      return frozenGoodsSubcategoryConfig[subCategory as FrozenGoodsSubcategory];
+    }
+    if (category === 'desserts' && subCategory in dessertsSubcategoryConfig) {
+      return dessertsSubcategoryConfig[subCategory as DessertsSubcategory];
+    }
+  }
+  // Fall back to category config
+  return getCategoryConfig(category);
+}
+
 const meatSubcategoryConfig: Record<MeatSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
   chicken: { icon: Drumstick, label: "Poultry", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
   beef: { icon: Beef, label: "Beef", color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-600" },
