@@ -4,7 +4,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
 import { AlertTriangle, Clock, Calendar } from "lucide-react";
 import { type FreezerItem, type Location } from "@shared/schema";
-import { getLocationLabel, getDateFormat } from "@/components/settings-panel";
+import { getLocationLabel, getDateFormat, getFreezerLabel } from "@/components/settings-panel";
 import { format, parseISO, isValid, differenceInDays, isToday, isPast } from "date-fns";
 
 interface AlertsPageProps {
@@ -70,7 +70,7 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
                 {item.name} <span className="font-normal text-muted-foreground">({item.quantity} {item.unit})</span>
               </p>
               <p className="text-xs text-muted-foreground">
-                {getLocationLabel(item.location as Location)}
+                {getFreezerLabel(item.freezerId)}
               </p>
             </div>
           </div>
