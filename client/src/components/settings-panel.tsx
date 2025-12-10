@@ -568,13 +568,6 @@ export function SettingsPanel() {
             const isHidden = hiddenCategories.includes(cat);
             return (
               <div key={cat} className={`flex items-center gap-3 ${isHidden ? "opacity-50" : ""}`}>
-                <button
-                  onClick={() => handleToggleCategoryVisibility(cat)}
-                  className="p-1 text-muted-foreground hover:text-foreground"
-                  data-testid={`button-toggle-category-${cat}`}
-                >
-                  {isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
                 <Input
                   value={categoryLabels[cat] || ""}
                   onChange={(e) => handleCategoryLabelChange(cat, e.target.value)}
@@ -582,6 +575,13 @@ export function SettingsPanel() {
                   className="flex-1"
                   data-testid={`input-category-label-${cat}`}
                 />
+                <button
+                  onClick={() => handleToggleCategoryVisibility(cat)}
+                  className="p-1 text-muted-foreground hover:text-foreground"
+                  data-testid={`button-toggle-category-${cat}`}
+                >
+                  {isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             );
           })}
@@ -631,13 +631,6 @@ export function SettingsPanel() {
             const isHidden = hiddenLocations.includes(loc);
             return (
               <div key={loc} className={`flex items-center gap-3 ${isHidden ? "opacity-50" : ""}`}>
-                <button
-                  onClick={() => handleToggleLocationVisibility(loc)}
-                  className="p-1 text-muted-foreground hover:text-foreground"
-                  data-testid={`button-toggle-location-${loc}`}
-                >
-                  {isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
                 <Input
                   value={locationLabelsState[loc] || ""}
                   onChange={(e) => handleLocationLabelChange(loc, e.target.value)}
@@ -645,6 +638,13 @@ export function SettingsPanel() {
                   className="flex-1"
                   data-testid={`input-location-label-${loc}`}
                 />
+                <button
+                  onClick={() => handleToggleLocationVisibility(loc)}
+                  className="p-1 text-muted-foreground hover:text-foreground"
+                  data-testid={`button-toggle-location-${loc}`}
+                >
+                  {isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             );
           })}
