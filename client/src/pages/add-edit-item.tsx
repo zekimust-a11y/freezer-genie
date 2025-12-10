@@ -518,58 +518,90 @@ export default function AddEditItemPage() {
                 />
               )}
 
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-location">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem 
-                          value="unassigned"
-                          data-testid="select-location-unassigned"
-                        >
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
-                            {getLocationLabel("unassigned" as Location)}
-                          </div>
-                        </SelectItem>
-                        {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
-                          <SelectItem 
-                            key={location} 
-                            value={location}
-                            data-testid={`select-location-${location}`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {getLocationLabel(location)}
-                            </div>
-                          </SelectItem>
-                        ))}
-                        {getCustomLocations().map((location) => (
-                          <SelectItem 
-                            key={location} 
-                            value={location}
-                            data-testid={`select-location-custom-${location}`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {location}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+              <div className={hasMultipleFreezers ? "grid grid-cols-2 gap-3" : ""}>
+                {hasMultipleFreezers && (
+                  <FormField
+                    control={form.control}
+                    name="freezerId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Freezer</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || freezers[0]?.id || "default"}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-freezer">
+                              <SelectValue placeholder="Select freezer" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {freezers.map((freezer) => (
+                              <SelectItem 
+                                key={freezer.id} 
+                                value={freezer.id}
+                                data-testid={`select-freezer-${freezer.id}`}
+                              >
+                                {freezer.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-location">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem 
+                            value="unassigned"
+                            data-testid="select-location-unassigned"
+                          >
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              {getLocationLabel("unassigned" as Location)}
+                            </div>
+                          </SelectItem>
+                          {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
+                            <SelectItem 
+                              key={location} 
+                              value={location}
+                              data-testid={`select-location-${location}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                {getLocationLabel(location)}
+                              </div>
+                            </SelectItem>
+                          ))}
+                          {getCustomLocations().map((location) => (
+                            <SelectItem 
+                              key={location} 
+                              value={location}
+                              data-testid={`select-location-custom-${location}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                {location}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -709,37 +741,6 @@ export default function AddEditItemPage() {
                 )}
               />
             </div>
-
-            {hasMultipleFreezers && (
-              <FormField
-                control={form.control}
-                name="freezerId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Freezer</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || freezers[0]?.id || "default"}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-freezer">
-                          <SelectValue placeholder="Select freezer" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {freezers.map((freezer) => (
-                          <SelectItem 
-                            key={freezer.id} 
-                            value={freezer.id}
-                            data-testid={`select-freezer-${freezer.id}`}
-                          >
-                            {freezer.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
 
             <div className="space-y-2">
               <label className="text-base font-medium">Tags</label>
