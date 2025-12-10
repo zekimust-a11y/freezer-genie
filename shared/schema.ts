@@ -32,10 +32,10 @@ export const categories = [
   "meat_fish",
   "produce",
   "prepared_meals",
-  "frozen_goods",
   "dairy",
   "desserts",
   "bread",
+  "frozen_goods",
   "other",
 ] as const;
 
