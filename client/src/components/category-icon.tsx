@@ -1,6 +1,6 @@
 import { 
   Beef, 
-  Apple, 
+  Carrot, 
   UtensilsCrossed, 
   Snowflake,
   Package,
@@ -19,7 +19,7 @@ type CategoryConfig = { icon: typeof Beef; label: string; color: string; bgColor
 
 const categoryConfig: Record<Category, CategoryConfig> = {
   meat_fish: { icon: Beef, label: "Meat & Fish", color: "text-red-500 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-500" },
-  produce: { icon: Apple, label: "Fruit & Veg", color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", stripeColor: "bg-green-500" },
+  produce: { icon: Carrot, label: "Fruit & Veg", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
   prepared_meals: { icon: UtensilsCrossed, label: "Ready Meals", color: "text-amber-600 dark:text-amber-400", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-500" },
   frozen_goods: { icon: Snowflake, label: "Frozen Goods", color: "text-cyan-500 dark:text-cyan-400", bgColor: "bg-cyan-100 dark:bg-cyan-900/30", stripeColor: "bg-cyan-500" },
   dairy: { icon: Milk, label: "Dairy", color: "text-sky-500 dark:text-sky-400", bgColor: "bg-sky-100 dark:bg-sky-900/30", stripeColor: "bg-sky-500" },
