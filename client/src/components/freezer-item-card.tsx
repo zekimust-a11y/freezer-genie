@@ -124,35 +124,33 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
           {/* Category color stripe */}
           <div className={`w-1.5 ${config.stripeColor} shrink-0`} />
           
-          <CardContent className="p-2.5 flex-1">
-            {/* Top: Name, quantity, and category icon with ring */}
-            <div className="flex items-start justify-between gap-2 mb-1.5">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <h3 
-                    className="font-semibold text-sm"
-                    data-testid={`text-item-name-${item.id}`}
-                  >
-                    {item.name}
-                  </h3>
-                  <span className="text-xs text-muted-foreground">
-                    x {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
-                  </span>
+          <CardContent className="p-2.5 flex-1 relative">
+            {/* Category icon with expiration ring - positioned top right */}
+            <div className="absolute top-2.5 right-2.5 flex flex-col items-center">
+              <div className="relative w-9 h-9">
+                {item.expirationDate && (
+                  <ExpirationRing expirationDate={item.expirationDate} />
+                )}
+                <div className={`absolute inset-0 flex items-center justify-center rounded-full ${config.bgColor}`}>
+                  <CategoryIcon category={item.category} />
                 </div>
               </div>
-              
-              {/* Category icon with expiration ring */}
-              <div className="flex flex-col items-center shrink-0">
-                <div className="relative w-9 h-9">
-                  {item.expirationDate && (
-                    <ExpirationRing expirationDate={item.expirationDate} />
-                  )}
-                  <div className={`absolute inset-0 flex items-center justify-center rounded-full ${config.bgColor}`}>
-                    <CategoryIcon category={item.category} />
-                  </div>
-                </div>
-                <span className="text-[9px] text-muted-foreground">
-                  {getCategoryLabel(item.category)}
+              <span className="text-[9px] text-muted-foreground">
+                {getCategoryLabel(item.category)}
+              </span>
+            </div>
+            
+            {/* Top: Name and quantity */}
+            <div className="pr-14 mb-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h3 
+                  className="font-semibold text-sm"
+                  data-testid={`text-item-name-${item.id}`}
+                >
+                  {item.name}
+                </h3>
+                <span className="text-xs text-muted-foreground">
+                  x {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
                 </span>
               </div>
             </div>
