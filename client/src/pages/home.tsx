@@ -194,6 +194,7 @@ export default function Home() {
                 <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
                 <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
+              <VoiceControl onCommand={handleVoiceCommand} />
               <Button
                 variant="ghost"
                 size="icon"
@@ -202,7 +203,6 @@ export default function Home() {
               >
                 <Settings className="h-5 w-5" />
               </Button>
-              <VoiceControl onCommand={handleVoiceCommand} />
             </div>
           </div>
         </div>
