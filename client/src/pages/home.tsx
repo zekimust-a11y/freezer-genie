@@ -308,9 +308,9 @@ export default function Home() {
               <table className="w-full">
                 <thead className="bg-muted/50">
                   <tr className="text-left text-sm">
-                    <th className="px-3 py-2 font-medium">Name</th>
-                    <th className="px-3 py-2 font-medium">Qty</th>
-                    <th className="px-3 py-2 font-medium">Use By</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Name</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Qty</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Use By</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
