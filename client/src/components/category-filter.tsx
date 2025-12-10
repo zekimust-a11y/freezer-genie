@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { categoryConfig, meatSubcategoryConfig } from "@/components/category-icon";
+import { getCategoryConfig, meatSubcategoryConfig, getCategoryLabel } from "@/components/category-icon";
 import { meatSubcategories, type Category, type MeatSubcategory } from "@shared/schema";
-import { getVisibleCategories } from "@/components/settings-panel";
+import { getVisibleCategories, getCustomCategories, getHiddenCategories } from "@/components/settings-panel";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 
 interface CategoryFilterProps {
-  selectedCategory: Category | null;
+  selectedCategory: string | null;
   selectedSubcategory: MeatSubcategory | null;
-  onCategoryChange: (category: Category | null) => void;
+  onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: MeatSubcategory | null) => void;
 }
 
@@ -20,8 +20,11 @@ export function CategoryFilter({
 }: CategoryFilterProps) {
   const [showMeatSubmenu, setShowMeatSubmenu] = useState(false);
   const visibleCategories = getVisibleCategories();
+  const customCategories = getCustomCategories();
+  const hiddenCategories = getHiddenCategories();
+  const visibleCustomCategories = customCategories.filter(c => !hiddenCategories.includes(c.id as Category));
 
-  const handleCategoryClick = (category: Category) => {
+  const handleCategoryClick = (category: string) => {
     if (category === "meat_fish") {
       if (selectedCategory === "meat_fish" && !showMeatSubmenu) {
         onCategoryChange(null);
@@ -111,7 +114,7 @@ export function CategoryFilter({
             className="flex items-center gap-2 backdrop-blur-sm bg-background/80 rounded-xl p-1.5 min-w-max"
           >
             {visibleCategories.map((category) => {
-              const config = categoryConfig[category];
+              const config = getCategoryConfig(category);
               const Icon = config.icon;
               const isActive = selectedCategory === category;
 
@@ -135,7 +138,37 @@ export function CategoryFilter({
                     <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                   </div>
                   <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>
-                    {config.label}
+                    {getCategoryLabel(category)}
+                  </span>
+                </motion.button>
+              );
+            })}
+            {visibleCustomCategories.map((customCat) => {
+              const config = getCategoryConfig(customCat.id);
+              const Icon = config.icon;
+              const isActive = selectedCategory === customCat.id;
+
+              return (
+                <motion.button
+                  key={customCat.id}
+                  onClick={() => handleCategoryClick(customCat.id)}
+                  className={`flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors ${
+                    isActive 
+                      ? "" 
+                      : "text-muted-foreground"
+                  }`}
+                  data-testid={`button-filter-${customCat.id}`}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className={`p-2 rounded-md transition-all ${
+                    isActive 
+                      ? `${config.stripeColor} text-white shadow-md` 
+                      : config.bgColor
+                  }`}>
+                    <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
+                  </div>
+                  <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>
+                    {customCat.name}
                   </span>
                 </motion.button>
               );

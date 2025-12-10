@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, AlertCircle } from "lucide-react";
-import { CategoryIcon, getCategoryLabel, categoryConfig } from "@/components/category-icon";
+import { CategoryIcon, getCategoryLabel, getCategoryConfig } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
 import { getDateFormat } from "@/components/settings-panel";
-import { locationLabels, type FreezerItem } from "@shared/schema";
+import { type FreezerItem, type Location } from "@shared/schema";
+import { getLocationLabel } from "@/components/settings-panel";
 import { format, parseISO, isValid, differenceInDays } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -71,7 +72,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
   const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
   const isWeightUnit = weightUnits.includes(item.unit);
   const hasLocation = item.location && item.location !== "unassigned";
-  const config = categoryConfig[item.category];
+  const config = getCategoryConfig(item.category);
 
   return (
     <motion.div
@@ -135,7 +136,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
             {hasLocation && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 mb-1">
                 <MapPin className="h-3 w-3" />
-                <span>{locationLabels[item.location as keyof typeof locationLabels] || item.location}</span>
+                <span>{getLocationLabel(item.location as Location)}</span>
               </div>
             )}
 

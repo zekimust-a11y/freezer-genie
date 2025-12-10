@@ -2,7 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CategoryIcon } from "@/components/category-icon";
 import { ShoppingCart, Check } from "lucide-react";
-import { locationLabels, type FreezerItem } from "@shared/schema";
+import { type FreezerItem, type Location } from "@shared/schema";
+import { getLocationLabel } from "@/components/settings-panel";
 
 interface ShoppingListPageProps {
   items: FreezerItem[];
@@ -53,7 +54,7 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{item.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {locationLabels[item.location]}
+                        {getLocationLabel(item.location as Location)}
                       </p>
                     </div>
                   </div>

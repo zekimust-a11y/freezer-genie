@@ -28,15 +28,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { categoryConfig } from "@/components/category-icon";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock } from "@/components/settings-panel";
+import { getCategoryConfig, getCategoryLabel } from "@/components/category-icon";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getCustomCategories, getVisibleLocations, getLocationLabel } from "@/components/settings-panel";
 import { 
   categories, 
-  locations,
   locationLabels,
   freezerItemFormSchema, 
   type FreezerItem, 
-  type FreezerItemFormData 
+  type FreezerItemFormData,
+  type Location
 } from "@shared/schema";
 import { Loader2, MapPin, ScanBarcode, Minus, Plus } from "lucide-react";
 
@@ -168,7 +168,7 @@ export function AddEditItemDialog({
                       </FormControl>
                       <SelectContent>
                         {categories.map((category) => {
-                          const config = categoryConfig[category];
+                          const config = getCategoryConfig(category);
                           const Icon = config.icon;
                           return (
                             <SelectItem 
@@ -178,7 +178,23 @@ export function AddEditItemDialog({
                             >
                               <div className="flex items-center gap-2">
                                 <Icon className={`h-4 w-4 ${config.color}`} />
-                                {config.label}
+                                {getCategoryLabel(category)}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                        {getCustomCategories().map((customCat) => {
+                          const config = getCategoryConfig(customCat.id);
+                          const Icon = config.icon;
+                          return (
+                            <SelectItem 
+                              key={customCat.id} 
+                              value={customCat.id}
+                              data-testid={`select-option-${customCat.id}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon className={`h-4 w-4 ${config.color}`} />
+                                {customCat.name}
                               </div>
                             </SelectItem>
                           );
@@ -203,7 +219,16 @@ export function AddEditItemDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {locations.map((location) => (
+                        <SelectItem 
+                          value="unassigned"
+                          data-testid="select-location-unassigned"
+                        >
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            {getLocationLabel("unassigned" as Location)}
+                          </div>
+                        </SelectItem>
+                        {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
                           <SelectItem 
                             key={location} 
                             value={location}
@@ -211,7 +236,7 @@ export function AddEditItemDialog({
                           >
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {locationLabels[location]}
+                              {getLocationLabel(location)}
                             </div>
                           </SelectItem>
                         ))}

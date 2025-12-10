@@ -69,14 +69,14 @@ export type Location = (typeof locations)[number];
 export const freezerItems = pgTable("freezer_items", {
   id: varchar("id").primaryKey(),
   name: text("name").notNull(),
-  category: text("category").notNull().$type<Category>(),
+  category: text("category").notNull(),
   subCategory: text("sub_category").$type<MeatSubcategory>(),
   quantity: integer("quantity").notNull().default(1),
   unit: text("unit").notNull().default("item"),
   expirationDate: date("expiration_date"),
   notes: text("notes"),
   lowStockThreshold: integer("low_stock_threshold").default(0),
-  location: text("location").notNull().default("unassigned").$type<Location>(),
+  location: text("location").notNull().default("unassigned"),
 });
 
 export const insertFreezerItemSchema = createInsertSchema(freezerItems).omit({
@@ -88,6 +88,7 @@ export type FreezerItem = typeof freezerItems.$inferSelect;
 
 export const freezerItemFormSchema = insertFreezerItemSchema.extend({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  category: z.string().min(1, "Category is required"),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   expirationDate: z.string().nullable().optional(),
   lowStockThreshold: z.coerce.number().min(0).optional(),

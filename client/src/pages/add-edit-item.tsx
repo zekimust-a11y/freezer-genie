@@ -23,16 +23,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel } from "@/components/settings-panel";
 import { 
-  locations,
-  locationLabels,
   categories,
   freezerItemFormSchema, 
   type FreezerItem, 
-  type FreezerItemFormData 
+  type FreezerItemFormData,
+  type Location
 } from "@shared/schema";
-import { categoryConfig, getCategoryLabel } from "@/components/category-icon";
+import { getCategoryConfig, getCategoryLabel } from "@/components/category-icon";
+import { getCustomCategories } from "@/components/settings-panel";
 import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
@@ -242,7 +242,8 @@ export default function AddEditItemPage() {
                       </FormControl>
                       <SelectContent>
                         {categories.map((cat) => {
-                          const Icon = categoryConfig[cat].icon;
+                          const config = getCategoryConfig(cat);
+                          const Icon = config.icon;
                           return (
                             <SelectItem 
                               key={cat} 
@@ -250,8 +251,24 @@ export default function AddEditItemPage() {
                               data-testid={`select-category-${cat}`}
                             >
                               <div className="flex items-center gap-2">
-                                <Icon className={`h-4 w-4 ${categoryConfig[cat].color}`} />
+                                <Icon className={`h-4 w-4 ${config.color}`} />
                                 {getCategoryLabel(cat)}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                        {getCustomCategories().map((customCat) => {
+                          const config = getCategoryConfig(customCat.id);
+                          const Icon = config.icon;
+                          return (
+                            <SelectItem 
+                              key={customCat.id} 
+                              value={customCat.id}
+                              data-testid={`select-category-${customCat.id}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon className={`h-4 w-4 ${config.color}`} />
+                                {customCat.name}
                               </div>
                             </SelectItem>
                           );
@@ -276,7 +293,16 @@ export default function AddEditItemPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {locations.map((location) => (
+                        <SelectItem 
+                          value="unassigned"
+                          data-testid="select-location-unassigned"
+                        >
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            {getLocationLabel("unassigned" as Location)}
+                          </div>
+                        </SelectItem>
+                        {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
                           <SelectItem 
                             key={location} 
                             value={location}
@@ -284,7 +310,7 @@ export default function AddEditItemPage() {
                           >
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {locationLabels[location]}
+                              {getLocationLabel(location)}
                             </div>
                           </SelectItem>
                         ))}

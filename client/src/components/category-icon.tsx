@@ -10,11 +10,14 @@ import {
   Fish,
   Shell,
   Ham,
-  Milk
+  Milk,
+  Tag
 } from "lucide-react";
 import type { Category, MeatSubcategory } from "@shared/schema";
 
-const categoryConfig: Record<Category, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
+type CategoryConfig = { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string };
+
+const categoryConfig: Record<Category, CategoryConfig> = {
   meat_fish: { icon: Beef, label: "Meat & Fish", color: "text-red-500 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-500" },
   produce: { icon: Apple, label: "Fruit & Veg", color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", stripeColor: "bg-green-500" },
   prepared_meals: { icon: UtensilsCrossed, label: "Ready Meals", color: "text-amber-600 dark:text-amber-400", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-500" },
@@ -24,6 +27,21 @@ const categoryConfig: Record<Category, { icon: typeof Beef; label: string; color
   bread: { icon: Croissant, label: "Bread", color: "text-amber-700 dark:text-amber-300", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-600" },
   other: { icon: Package, label: "Other", color: "text-gray-500 dark:text-gray-400", bgColor: "bg-gray-100 dark:bg-gray-800/30", stripeColor: "bg-gray-500" },
 };
+
+const customCategoryConfig: CategoryConfig = { 
+  icon: Tag, 
+  label: "Custom", 
+  color: "text-violet-500 dark:text-violet-400", 
+  bgColor: "bg-violet-100 dark:bg-violet-900/30", 
+  stripeColor: "bg-violet-500" 
+};
+
+export function getCategoryConfig(category: string): CategoryConfig {
+  if (category in categoryConfig) {
+    return categoryConfig[category as Category];
+  }
+  return customCategoryConfig;
+}
 
 const meatSubcategoryConfig: Record<MeatSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
   chicken: { icon: Drumstick, label: "Poultry", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
@@ -36,14 +54,14 @@ const meatSubcategoryConfig: Record<MeatSubcategory, { icon: typeof Beef; label:
 };
 
 interface CategoryIconProps {
-  category: Category;
+  category: string;
   showLabel?: boolean;
   className?: string;
   size?: "sm" | "default";
 }
 
 export function CategoryIcon({ category, showLabel = false, className = "", size = "default" }: CategoryIconProps) {
-  const config = categoryConfig[category];
+  const config = getCategoryConfig(category);
   const Icon = config.icon;
   const iconSize = size === "sm" ? "h-3 w-3" : "h-4 w-4";
 
@@ -55,17 +73,24 @@ export function CategoryIcon({ category, showLabel = false, className = "", size
   );
 }
 
-export function getCategoryLabel(category: Category): string {
+export function getCategoryLabel(category: string): string {
   try {
     const stored = localStorage.getItem("categoryLabels");
     if (stored) {
       const labels = JSON.parse(stored);
       if (labels[category]) return labels[category];
     }
+    const customStored = localStorage.getItem("customCategories");
+    if (customStored) {
+      const customCats = JSON.parse(customStored);
+      const found = customCats.find((c: { id: string; name: string }) => c.id === category);
+      if (found) return found.name;
+    }
   } catch {
     // ignore
   }
-  return categoryConfig[category].label;
+  const config = getCategoryConfig(category);
+  return config.label;
 }
 
-export { categoryConfig, meatSubcategoryConfig };
+export { categoryConfig, meatSubcategoryConfig, customCategoryConfig };

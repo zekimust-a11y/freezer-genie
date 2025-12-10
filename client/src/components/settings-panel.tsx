@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Snowflake, Plus, X, LogOut, Refrigerator, Eye, EyeOff, Tag } from "lucide-react";
-import { categories, type Category } from "@shared/schema";
+import { categories, locations, locationLabels as defaultLocationLabels, type Category, type Location } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
 export type DateFormat = "MMM d, yyyy" | "dd/MM/yyyy" | "MM/dd/yyyy" | "yyyy-MM-dd";
@@ -216,6 +216,40 @@ export function getVisibleCategories(): Category[] {
   return categories.filter(cat => !hidden.includes(cat));
 }
 
+export function getLocationLabels(): Record<Location, string> {
+  try {
+    const stored = localStorage.getItem("locationLabels");
+    if (stored) {
+      return { ...defaultLocationLabels, ...JSON.parse(stored) };
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return { ...defaultLocationLabels };
+}
+
+export function getLocationLabel(location: Location): string {
+  const labels = getLocationLabels();
+  return labels[location] || defaultLocationLabels[location] || location;
+}
+
+export function getHiddenLocations(): Location[] {
+  try {
+    const stored = localStorage.getItem("hiddenLocations");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [];
+}
+
+export function getVisibleLocations(): Location[] {
+  const hidden = getHiddenLocations();
+  return locations.filter(loc => !hidden.includes(loc));
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
@@ -231,6 +265,8 @@ export function SettingsPanel() {
   const [hiddenCategories, setHiddenCategories] = useState<Category[]>(getHiddenCategories);
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>(getCustomCategories);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [locationLabelsState, setLocationLabelsState] = useState<Record<Location, string>>(getLocationLabels);
+  const [hiddenLocations, setHiddenLocations] = useState<Location[]>(getHiddenLocations);
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -271,6 +307,29 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("customCategories", JSON.stringify(customCategories));
   }, [customCategories]);
+
+  useEffect(() => {
+    localStorage.setItem("locationLabels", JSON.stringify(locationLabelsState));
+  }, [locationLabelsState]);
+
+  useEffect(() => {
+    localStorage.setItem("hiddenLocations", JSON.stringify(hiddenLocations));
+  }, [hiddenLocations]);
+
+  const handleLocationLabelChange = (location: Location, newLabel: string) => {
+    setLocationLabelsState(prev => ({
+      ...prev,
+      [location]: newLabel
+    }));
+  };
+
+  const handleToggleLocationVisibility = (location: Location) => {
+    setHiddenLocations(prev => 
+      prev.includes(location) 
+        ? prev.filter(l => l !== location)
+        : [...prev, location]
+    );
+  };
 
   const handleAddCategory = () => {
     const trimmed = newCategoryName.trim();
@@ -583,9 +642,54 @@ export function SettingsPanel() {
           <CardTitle className="text-lg">Locations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex gap-2">
+          {locations.filter(loc => loc !== "unassigned").map((loc) => {
+            const isHidden = hiddenLocations.includes(loc);
+            return (
+              <div key={loc} className={`flex items-center gap-3 ${isHidden ? "opacity-50" : ""}`}>
+                <button
+                  onClick={() => handleToggleLocationVisibility(loc)}
+                  className="p-1 text-muted-foreground hover:text-foreground"
+                  data-testid={`button-toggle-location-${loc}`}
+                >
+                  {isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+                <Input
+                  value={locationLabelsState[loc] || ""}
+                  onChange={(e) => handleLocationLabelChange(loc, e.target.value)}
+                  placeholder={defaultLocationLabels[loc]}
+                  className="flex-1"
+                  data-testid={`input-location-label-${loc}`}
+                />
+              </div>
+            );
+          })}
+          
+          {customLocations.length > 0 && (
+            <div className="pt-2 border-t">
+              <p className="text-xs text-muted-foreground mb-2">Custom Locations</p>
+              <div className="flex flex-wrap gap-2">
+                {customLocations.map((loc) => (
+                  <div
+                    key={loc}
+                    className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm"
+                  >
+                    <span>{loc}</span>
+                    <button
+                      onClick={() => handleRemoveLocation(loc)}
+                      className="text-muted-foreground hover:text-foreground"
+                      data-testid={`button-remove-location-${loc}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="flex gap-2 pt-2">
             <Input
-              placeholder="Add location name..."
+              placeholder="Add custom location..."
               value={newLocation}
               onChange={(e) => setNewLocation(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
@@ -595,29 +699,6 @@ export function SettingsPanel() {
               <Plus className="h-4 w-4" />
             </Button>
           </div>
-          {customLocations.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {customLocations.map((loc) => (
-                <div
-                  key={loc}
-                  className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm"
-                >
-                  <span>{loc}</span>
-                  <button
-                    onClick={() => handleRemoveLocation(loc)}
-                    className="text-muted-foreground hover:text-foreground"
-                    data-testid={`button-remove-location-${loc}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              No custom locations added yet.
-            </p>
-          )}
         </CardContent>
       </Card>
 
