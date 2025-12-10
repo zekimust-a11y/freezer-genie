@@ -693,7 +693,7 @@ export default function AddEditItemPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Tags</label>
+              <label className="text-base font-medium">Tags</label>
               <div className="flex flex-wrap gap-2">
                 {getAvailableTags().map((tag) => (
                   <Badge
