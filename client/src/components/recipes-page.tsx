@@ -486,13 +486,16 @@ export function RecipesPage({ items }: RecipesPageProps) {
                 >
                   <div className="min-w-0 flex-1">
                     <span className="font-medium text-sm">{recipe.name}</span>
-                    <p className="text-xs mt-0.5">
-                      {recipe.allIngredients.map((ing, idx) => (
-                        <span key={ing}>
-                          <span className={isIngredientInFreezer(ing) ? "text-primary font-medium" : "text-muted-foreground"}>
-                            {ing}
-                          </span>
-                          {idx < recipe.allIngredients.length - 1 && <span className="text-muted-foreground">, </span>}
+                    <p className="text-xs mt-0.5 flex flex-wrap gap-1">
+                      {recipe.allIngredients.map((ing) => (
+                        <span 
+                          key={ing}
+                          className={isIngredientInFreezer(ing) 
+                            ? "bg-primary/20 text-primary font-medium px-1.5 py-0.5 rounded" 
+                            : "text-muted-foreground"
+                          }
+                        >
+                          {ing}
                         </span>
                       ))}
                     </p>
