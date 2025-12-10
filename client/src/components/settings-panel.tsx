@@ -460,89 +460,6 @@ export function SettingsPanel() {
     <div className="p-4 space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Preferences</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Default Category</span>
-            <Select value={defaultCategory} onValueChange={(v) => setDefaultCategory(v as Category)}>
-              <SelectTrigger className="w-[160px]" data-testid="select-default-category">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {categoryLabels[cat]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Date Format</span>
-            <Select value={dateFormat} onValueChange={(v) => setDateFormat(v as DateFormat)}>
-              <SelectTrigger className="w-[160px]" data-testid="select-date-format">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {dateFormatOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Weight Units</span>
-            <Select value={weightUnit} onValueChange={(v) => setWeightUnit(v as WeightUnit)}>
-              <SelectTrigger className="w-[160px]" data-testid="select-weight-unit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {weightUnitOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Default Use By</span>
-            <Select value={defaultExpiry} onValueChange={(v) => setDefaultExpiry(v as DefaultExpiry)}>
-              <SelectTrigger className="w-[160px]" data-testid="select-default-expiry">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {defaultExpiryOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Low Stock Alert</span>
-            <Select value={defaultLowStock.toString()} onValueChange={(v) => setDefaultLowStock(parseInt(v))}>
-              <SelectTrigger className="w-[160px]" data-testid="select-default-low-stock">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {defaultLowStockOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle className="text-lg">My Freezers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -788,6 +705,89 @@ export function SettingsPanel() {
             <Button size="icon" onClick={handleAddTag} data-testid="button-add-tag">
               <Plus className="h-4 w-4" />
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Preferences</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Default Category</span>
+            <Select value={defaultCategory} onValueChange={(v) => setDefaultCategory(v as Category)}>
+              <SelectTrigger className="w-[160px]" data-testid="select-default-category">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {categoryLabels[cat]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Date Format</span>
+            <Select value={dateFormat} onValueChange={(v) => setDateFormat(v as DateFormat)}>
+              <SelectTrigger className="w-[160px]" data-testid="select-date-format">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {dateFormatOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Weight Units</span>
+            <Select value={weightUnit} onValueChange={(v) => setWeightUnit(v as WeightUnit)}>
+              <SelectTrigger className="w-[160px]" data-testid="select-weight-unit">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {weightUnitOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Default Use By</span>
+            <Select value={defaultExpiry} onValueChange={(v) => setDefaultExpiry(v as DefaultExpiry)}>
+              <SelectTrigger className="w-[160px]" data-testid="select-default-expiry">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {defaultExpiryOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm">Low Stock Alert</span>
+            <Select value={defaultLowStock.toString()} onValueChange={(v) => setDefaultLowStock(parseInt(v))}>
+              <SelectTrigger className="w-[160px]" data-testid="select-default-low-stock">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {defaultLowStockOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
