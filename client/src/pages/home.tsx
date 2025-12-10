@@ -386,70 +386,15 @@ export default function Home() {
           ) : filteredAndSortedItems.length === 0 ? (
             <EmptyState onAddItem={() => navigate("/add")} hasFilters />
           ) : viewMode === "cards" ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredAndSortedItems.map((item, index) => (
-                  <FreezerItemCard
-                    key={item.id}
-                    item={item}
-                    onEdit={handleEditItem}
-                    index={index}
-                  />
-                ))}
-              </div>
-              
-              <Card className="mt-6">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Share2 className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Share this list with someone else</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {typeof navigator !== 'undefined' && navigator.share && (
-                      <Button 
-                        variant="outline" 
-                        onClick={handleShareInventory}
-                        data-testid="button-share-inventory-native"
-                      >
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Share
-                      </Button>
-                    )}
-                    <Button 
-                      variant="outline" 
-                      onClick={handleWhatsAppInventory}
-                      data-testid="button-share-inventory-whatsapp"
-                    >
-                      <SiWhatsapp className="h-4 w-4 mr-2" />
-                      WhatsApp
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleEmailInventory}
-                      data-testid="button-share-inventory-email"
-                    >
-                      <Mail className="h-4 w-4 mr-2" />
-                      Email
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleSMSInventory}
-                      data-testid="button-share-inventory-sms"
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      SMS
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleCopyInventory}
-                      data-testid="button-share-inventory-copy"
-                    >
-                      {copied ? <CheckCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                      {copied ? "Copied" : "Copy"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredAndSortedItems.map((item, index) => (
+                <FreezerItemCard
+                  key={item.id}
+                  item={item}
+                  onEdit={handleEditItem}
+                  index={index}
+                />
+              ))}
             </div>
           ) : (
             <div className="space-y-4">
