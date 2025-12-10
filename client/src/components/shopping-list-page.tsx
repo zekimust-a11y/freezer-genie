@@ -74,9 +74,11 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
                     <CategoryIcon category={item.category} />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {getLocationLabel(item.location as Location)}
-                      </p>
+                      {item.location && item.location !== "unassigned" && (
+                        <p className="text-xs text-muted-foreground">
+                          {getLocationLabel(item.location as Location)}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="text-right space-y-0.5">
