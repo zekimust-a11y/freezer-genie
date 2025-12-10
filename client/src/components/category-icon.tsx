@@ -8,18 +8,19 @@ import {
   Package,
   IceCream,
   Croissant,
-  Bird,
   Fish,
   Shrimp,
   Ham,
   Milk,
   Tag,
-  Drumstick
+  type LucideIcon
 } from "lucide-react";
 import { Home, ShoppingBag, Pizza } from "lucide-react";
+import { GiChickenLeg, GiMeat } from "react-icons/gi";
+import type { IconType } from "react-icons";
 import type { Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, DessertsSubcategory } from "@shared/schema";
 
-type CategoryConfig = { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string };
+type CategoryConfig = { icon: LucideIcon | IconType; label: string; color: string; bgColor: string; stripeColor: string };
 
 const categoryConfig: Record<Category, CategoryConfig> = {
   meat_fish: { icon: Beef, label: "Meat & Fish", color: "text-red-500 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-500" },
@@ -70,34 +71,34 @@ export function getItemConfig(category: string, subCategory?: string | null): Ca
   return getCategoryConfig(category);
 }
 
-const meatSubcategoryConfig: Record<MeatSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
-  chicken: { icon: Bird, label: "Poultry", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
+const meatSubcategoryConfig: Record<MeatSubcategory, CategoryConfig> = {
+  chicken: { icon: GiChickenLeg, label: "Poultry", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
   beef: { icon: Beef, label: "Beef", color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-600" },
   pork: { icon: Ham, label: "Pork", color: "text-pink-600 dark:text-pink-400", bgColor: "bg-pink-100 dark:bg-pink-900/30", stripeColor: "bg-pink-600" },
-  lamb: { icon: Drumstick, label: "Lamb", color: "text-rose-600 dark:text-rose-400", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-600" },
+  lamb: { icon: GiMeat, label: "Lamb", color: "text-rose-600 dark:text-rose-400", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-600" },
   fish: { icon: Fish, label: "Fish", color: "text-blue-500 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", stripeColor: "bg-blue-500" },
   seafood: { icon: Shrimp, label: "Seafood", color: "text-teal-500 dark:text-teal-400", bgColor: "bg-teal-100 dark:bg-teal-900/30", stripeColor: "bg-teal-500" },
   other_meat: { icon: Package, label: "Other", color: "text-gray-500 dark:text-gray-400", bgColor: "bg-gray-100 dark:bg-gray-800/30", stripeColor: "bg-gray-500" },
 };
 
-const produceSubcategoryConfig: Record<ProduceSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
+const produceSubcategoryConfig: Record<ProduceSubcategory, CategoryConfig> = {
   fruit: { icon: Apple, label: "Fruit", color: "text-red-500 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-500" },
   vegetable: { icon: Salad, label: "Veg", color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-900/30", stripeColor: "bg-green-600" },
 };
 
-const preparedMealsSubcategoryConfig: Record<PreparedMealsSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
+const preparedMealsSubcategoryConfig: Record<PreparedMealsSubcategory, CategoryConfig> = {
   home_made: { icon: Home, label: "Home Made", color: "text-amber-600 dark:text-amber-400", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-600" },
   store_bought: { icon: ShoppingBag, label: "Store Bought", color: "text-purple-500 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", stripeColor: "bg-purple-500" },
 };
 
-const frozenGoodsSubcategoryConfig: Record<FrozenGoodsSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
+const frozenGoodsSubcategoryConfig: Record<FrozenGoodsSubcategory, CategoryConfig> = {
   pizza: { icon: Pizza, label: "Pizzas", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
   pasta: { icon: UtensilsCrossed, label: "Pasta", color: "text-yellow-600 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", stripeColor: "bg-yellow-600" },
   pastry: { icon: Croissant, label: "Pastry", color: "text-amber-600 dark:text-amber-400", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-600" },
   other_frozen: { icon: Snowflake, label: "Other", color: "text-cyan-500 dark:text-cyan-400", bgColor: "bg-cyan-100 dark:bg-cyan-900/30", stripeColor: "bg-cyan-500" },
 };
 
-const dessertsSubcategoryConfig: Record<DessertsSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
+const dessertsSubcategoryConfig: Record<DessertsSubcategory, CategoryConfig> = {
   home_made: { icon: Home, label: "Home Made", color: "text-pink-600 dark:text-pink-400", bgColor: "bg-pink-100 dark:bg-pink-900/30", stripeColor: "bg-pink-600" },
   store_bought: { icon: ShoppingBag, label: "Store Bought", color: "text-purple-500 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", stripeColor: "bg-purple-500" },
   cakes: { icon: IceCream, label: "Cakes", color: "text-rose-500 dark:text-rose-400", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-500" },
