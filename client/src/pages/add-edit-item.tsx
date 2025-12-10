@@ -582,23 +582,33 @@ export default function AddEditItemPage() {
                           variant="outline"
                           size="icon"
                           className="shrink-0"
-                          onClick={() => field.onChange(Math.max(0.01, (field.value || 1) - 1))}
+                          onClick={() => {
+                            const current = parseFloat(field.value) || 1;
+                            field.onChange(Math.max(0.01, current - 1));
+                          }}
                           data-testid="button-quantity-minus"
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
                         <Input
-                          type="number"
+                          type="text"
                           inputMode="decimal"
-                          step="0.01"
-                          min="0.01"
                           className="text-center text-lg font-medium"
                           data-testid="input-quantity"
-                          {...field}
-                          value={field.value || 1}
+                          value={field.value ?? ""}
                           onChange={(e) => {
-                            const val = parseFloat(e.target.value) || 0.01;
-                            field.onChange(Math.max(0.01, val));
+                            const val = e.target.value;
+                            if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                              field.onChange(val === "" ? "" : val);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            const parsed = parseFloat(e.target.value);
+                            if (isNaN(parsed) || parsed < 0.01) {
+                              field.onChange(1);
+                            } else {
+                              field.onChange(parsed);
+                            }
                           }}
                         />
                         <Button
@@ -606,7 +616,10 @@ export default function AddEditItemPage() {
                           variant="outline"
                           size="icon"
                           className="shrink-0"
-                          onClick={() => field.onChange((field.value || 1) + 1)}
+                          onClick={() => {
+                            const current = parseFloat(field.value) || 0;
+                            field.onChange(current + 1);
+                          }}
                           data-testid="button-quantity-plus"
                         >
                           <Plus className="h-4 w-4" />
