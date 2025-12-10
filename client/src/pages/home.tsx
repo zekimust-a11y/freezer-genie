@@ -6,7 +6,7 @@ import { FreezerItemCard, formatQuantity, getUnitLabel } from "@/components/free
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { BottomNav } from "@/components/bottom-nav";
-import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreezer, getLocationLabel } from "@/components/settings-panel";
+import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreezer, getLocationLabel, getFreezers, getFreezerLabel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,6 +46,7 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
   const freezerOptions = getFreezerOptions();
+  const hasMultipleFreezers = getFreezers().length > 1;
 
   const handleFreezerChange = (freezerId: string) => {
     setSelectedFreezerId(freezerId);
@@ -276,6 +277,9 @@ export default function Home() {
                     <th className="px-3 py-2 font-medium">Category</th>
                     <th className="px-3 py-2 font-medium">Qty</th>
                     <th className="px-3 py-2 font-medium hidden sm:table-cell">Use By</th>
+                    {hasMultipleFreezers && (
+                      <th className="px-3 py-2 font-medium hidden md:table-cell">Freezer</th>
+                    )}
                     <th className="px-3 py-2 font-medium hidden md:table-cell">Location</th>
                   </tr>
                 </thead>
@@ -300,6 +304,11 @@ export default function Home() {
                           : "-"
                         }
                       </td>
+                      {hasMultipleFreezers && (
+                        <td className="px-3 py-2 text-sm text-muted-foreground hidden md:table-cell">
+                          {getFreezerLabel(item.freezerId) || "-"}
+                        </td>
+                      )}
                       <td className="px-3 py-2 text-sm text-muted-foreground hidden md:table-cell">
                         {item.location && item.location !== "unassigned" 
                           ? getLocationLabel(item.location as Location) 
