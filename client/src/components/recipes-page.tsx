@@ -71,28 +71,28 @@ function generateMultiIngredientUrl(ingredients: string[]): string {
 }
 
 const popularRecipeIdeas = [
-  { name: "Chicken stir fry", requiredTokens: ["chicken"], allIngredients: ["chicken", "vegetables", "soy sauce", "garlic"], url: "https://www.bbcgoodfood.com/search?q=chicken+stir+fry" },
-  { name: "Chicken curry", requiredTokens: ["chicken"], allIngredients: ["chicken", "onion", "curry paste", "coconut milk"], url: "https://www.bbcgoodfood.com/search?q=chicken+curry" },
-  { name: "Roast chicken", requiredTokens: ["chicken"], allIngredients: ["chicken", "potatoes", "carrots", "herbs"], url: "https://www.bbcgoodfood.com/search?q=roast+chicken" },
-  { name: "Fish pie", requiredTokens: ["fish"], allIngredients: ["fish", "prawns", "potatoes", "cream"], url: "https://www.bbcgoodfood.com/search?q=fish+pie" },
-  { name: "Fish and chips", requiredTokens: ["fish"], allIngredients: ["fish", "potatoes", "flour", "oil"], url: "https://www.bbcgoodfood.com/search?q=fish+and+chips" },
-  { name: "Baked cod", requiredTokens: ["fish"], allIngredients: ["cod", "lemon", "herbs", "butter"], url: "https://www.bbcgoodfood.com/search?q=baked+cod" },
-  { name: "Beef casserole", requiredTokens: ["beef"], allIngredients: ["beef", "carrots", "onion", "stock"], url: "https://www.bbcgoodfood.com/search?q=beef+casserole" },
-  { name: "Beef stew", requiredTokens: ["beef"], allIngredients: ["beef", "potatoes", "carrots", "peas"], url: "https://www.bbcgoodfood.com/search?q=beef+stew" },
-  { name: "Steak and chips", requiredTokens: ["beef"], allIngredients: ["steak", "potatoes", "butter", "herbs"], url: "https://www.bbcgoodfood.com/search?q=steak+and+chips" },
-  { name: "Bolognese", requiredTokens: ["beef"], allIngredients: ["minced beef", "tomatoes", "onion", "pasta"], url: "https://www.bbcgoodfood.com/search?q=spaghetti+bolognese" },
-  { name: "Shepherd's pie", requiredTokens: ["lamb"], allIngredients: ["lamb", "potatoes", "carrots", "peas"], url: "https://www.bbcgoodfood.com/search?q=shepherds+pie" },
-  { name: "Lamb stew", requiredTokens: ["lamb"], allIngredients: ["lamb", "potatoes", "carrots", "stock"], url: "https://www.bbcgoodfood.com/search?q=lamb+stew" },
-  { name: "Pork chops", requiredTokens: ["pork"], allIngredients: ["pork chops", "apples", "sage", "butter"], url: "https://www.bbcgoodfood.com/search?q=pork+chops" },
-  { name: "Sausage casserole", requiredTokens: ["pork"], allIngredients: ["sausages", "beans", "tomatoes", "onion"], url: "https://www.bbcgoodfood.com/search?q=sausage+casserole" },
-  { name: "Prawn stir fry", requiredTokens: ["seafood"], allIngredients: ["prawns", "vegetables", "soy sauce", "ginger"], url: "https://www.bbcgoodfood.com/search?q=prawn+stir+fry" },
-  { name: "Garlic prawns", requiredTokens: ["seafood"], allIngredients: ["prawns", "garlic", "butter", "parsley"], url: "https://www.bbcgoodfood.com/search?q=garlic+prawns" },
-  { name: "Vegetable soup", requiredTokens: ["vegetables"], allIngredients: ["vegetables", "stock", "onion", "herbs"], url: "https://www.bbcgoodfood.com/search?q=vegetable+soup" },
-  { name: "Vegetable stir fry", requiredTokens: ["vegetables"], allIngredients: ["vegetables", "soy sauce", "garlic", "ginger"], url: "https://www.bbcgoodfood.com/search?q=vegetable+stir+fry" },
-  { name: "Berry smoothie", requiredTokens: ["berries"], allIngredients: ["berries", "yogurt", "honey", "milk"], url: "https://www.bbcgoodfood.com/search?q=berry+smoothie" },
-  { name: "Berry crumble", requiredTokens: ["berries"], allIngredients: ["berries", "flour", "butter", "sugar"], url: "https://www.bbcgoodfood.com/search?q=berry+crumble" },
-  { name: "Duck a l'orange", requiredTokens: ["poultry"], allIngredients: ["duck", "orange", "stock", "butter"], url: "https://www.bbcgoodfood.com/search?q=duck+a+l+orange" },
-  { name: "Roast duck", requiredTokens: ["poultry"], allIngredients: ["duck", "potatoes", "herbs", "orange"], url: "https://www.bbcgoodfood.com/search?q=roast+duck" },
+  { name: "Chicken stir fry", requiredTokens: ["chicken"], allIngredients: ["chicken", "vegetables", "soy sauce", "garlic"], url: "https://www.bbcgoodfood.com/search?q=chicken+stir+fry", image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=100&h=100&fit=crop" },
+  { name: "Chicken curry", requiredTokens: ["chicken"], allIngredients: ["chicken", "onion", "curry paste", "coconut milk"], url: "https://www.bbcgoodfood.com/search?q=chicken+curry", image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=100&h=100&fit=crop" },
+  { name: "Roast chicken", requiredTokens: ["chicken"], allIngredients: ["chicken", "potatoes", "carrots", "herbs"], url: "https://www.bbcgoodfood.com/search?q=roast+chicken", image: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=100&h=100&fit=crop" },
+  { name: "Fish pie", requiredTokens: ["fish"], allIngredients: ["fish", "prawns", "potatoes", "cream"], url: "https://www.bbcgoodfood.com/search?q=fish+pie", image: "https://images.unsplash.com/photo-1574484284002-952d92456975?w=100&h=100&fit=crop" },
+  { name: "Fish and chips", requiredTokens: ["fish"], allIngredients: ["fish", "potatoes", "flour", "oil"], url: "https://www.bbcgoodfood.com/search?q=fish+and+chips", image: "https://images.unsplash.com/photo-1579208030886-b1f5b6b000b8?w=100&h=100&fit=crop" },
+  { name: "Baked cod", requiredTokens: ["fish"], allIngredients: ["cod", "lemon", "herbs", "butter"], url: "https://www.bbcgoodfood.com/search?q=baked+cod", image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=100&h=100&fit=crop" },
+  { name: "Beef casserole", requiredTokens: ["beef"], allIngredients: ["beef", "carrots", "onion", "stock"], url: "https://www.bbcgoodfood.com/search?q=beef+casserole", image: "https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=100&h=100&fit=crop" },
+  { name: "Beef stew", requiredTokens: ["beef"], allIngredients: ["beef", "potatoes", "carrots", "peas"], url: "https://www.bbcgoodfood.com/search?q=beef+stew", image: "https://images.unsplash.com/photo-1547592180-85f173990554?w=100&h=100&fit=crop" },
+  { name: "Steak and chips", requiredTokens: ["beef"], allIngredients: ["steak", "potatoes", "butter", "herbs"], url: "https://www.bbcgoodfood.com/search?q=steak+and+chips", image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=100&h=100&fit=crop" },
+  { name: "Bolognese", requiredTokens: ["beef"], allIngredients: ["minced beef", "tomatoes", "onion", "pasta"], url: "https://www.bbcgoodfood.com/search?q=spaghetti+bolognese", image: "https://images.unsplash.com/photo-1622973536968-3ead9e780960?w=100&h=100&fit=crop" },
+  { name: "Shepherd's pie", requiredTokens: ["lamb"], allIngredients: ["lamb", "potatoes", "carrots", "peas"], url: "https://www.bbcgoodfood.com/search?q=shepherds+pie", image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=100&h=100&fit=crop" },
+  { name: "Lamb stew", requiredTokens: ["lamb"], allIngredients: ["lamb", "potatoes", "carrots", "stock"], url: "https://www.bbcgoodfood.com/search?q=lamb+stew", image: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=100&h=100&fit=crop" },
+  { name: "Pork chops", requiredTokens: ["pork"], allIngredients: ["pork chops", "apples", "sage", "butter"], url: "https://www.bbcgoodfood.com/search?q=pork+chops", image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=100&h=100&fit=crop" },
+  { name: "Sausage casserole", requiredTokens: ["pork"], allIngredients: ["sausages", "beans", "tomatoes", "onion"], url: "https://www.bbcgoodfood.com/search?q=sausage+casserole", image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=100&h=100&fit=crop" },
+  { name: "Prawn stir fry", requiredTokens: ["seafood"], allIngredients: ["prawns", "vegetables", "soy sauce", "ginger"], url: "https://www.bbcgoodfood.com/search?q=prawn+stir+fry", image: "https://images.unsplash.com/photo-1625943553852-781c6dd46faa?w=100&h=100&fit=crop" },
+  { name: "Garlic prawns", requiredTokens: ["seafood"], allIngredients: ["prawns", "garlic", "butter", "parsley"], url: "https://www.bbcgoodfood.com/search?q=garlic+prawns", image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=100&h=100&fit=crop" },
+  { name: "Vegetable soup", requiredTokens: ["vegetables"], allIngredients: ["vegetables", "stock", "onion", "herbs"], url: "https://www.bbcgoodfood.com/search?q=vegetable+soup", image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=100&h=100&fit=crop" },
+  { name: "Vegetable stir fry", requiredTokens: ["vegetables"], allIngredients: ["vegetables", "soy sauce", "garlic", "ginger"], url: "https://www.bbcgoodfood.com/search?q=vegetable+stir+fry", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=100&h=100&fit=crop" },
+  { name: "Berry smoothie", requiredTokens: ["berries"], allIngredients: ["berries", "yogurt", "honey", "milk"], url: "https://www.bbcgoodfood.com/search?q=berry+smoothie", image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=100&h=100&fit=crop" },
+  { name: "Berry crumble", requiredTokens: ["berries"], allIngredients: ["berries", "flour", "butter", "sugar"], url: "https://www.bbcgoodfood.com/search?q=berry+crumble", image: "https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=100&h=100&fit=crop" },
+  { name: "Duck a l'orange", requiredTokens: ["poultry"], allIngredients: ["duck", "orange", "stock", "butter"], url: "https://www.bbcgoodfood.com/search?q=duck+a+l+orange", image: "https://images.unsplash.com/photo-1580554530778-ca36943938b2?w=100&h=100&fit=crop" },
+  { name: "Roast duck", requiredTokens: ["poultry"], allIngredients: ["duck", "potatoes", "herbs", "orange"], url: "https://www.bbcgoodfood.com/search?q=roast+duck", image: "https://images.unsplash.com/photo-1518492104633-130d0cc84637?w=100&h=100&fit=crop" },
 ];
 
 export function RecipesPage({ items }: RecipesPageProps) {
@@ -490,10 +490,15 @@ export function RecipesPage({ items }: RecipesPageProps) {
               {matchingRecipes.map((recipe) => (
                 <button
                   key={recipe.name}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted hover-elevate text-left w-full"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-muted hover-elevate text-left w-full"
                   onClick={() => window.open(recipe.url, "_blank")}
                   data-testid={`button-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
                 >
+                  <img 
+                    src={recipe.image} 
+                    alt={recipe.name}
+                    className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                  />
                   <div className="min-w-0 flex-1">
                     <span className="font-medium text-sm">{recipe.name}</span>
                     <p className="text-xs mt-0.5 flex flex-wrap gap-1">
@@ -510,7 +515,7 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       ))}
                     </p>
                   </div>
-                  <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </button>
               ))}
             </div>
