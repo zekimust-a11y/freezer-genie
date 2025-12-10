@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, Search, ChefHat, Sparkles, Heart } from "lucide-react";
+import { ExternalLink, Search, ChefHat, Sparkles, Heart, Share2, Mail, MessageCircle, Copy, CheckCheck } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, DessertsSubcategory } from "@shared/schema";
 import { categories, meatSubcategories, produceSubcategories, preparedMealsSubcategories, frozenGoodsSubcategories, dessertsSubcategories } from "@shared/schema";
 import { getCategoryConfig, getCategoryLabel, meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig, frozenGoodsSubcategoryConfig, dessertsSubcategoryConfig } from "@/components/category-icon";
@@ -120,6 +122,8 @@ export function RecipesPage({ items }: RecipesPageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>(() => loadFavorites());
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     saveFavorites(favorites);
@@ -135,6 +139,73 @@ export function RecipesPage({ items }: RecipesPageProps) {
   };
 
   const isFavorite = (recipeName: string) => favorites.includes(recipeName);
+
+  const generateRecipesText = () => {
+    const favRecipes = popularRecipeIdeas.filter(r => favorites.includes(r.name));
+    if (favRecipes.length === 0) return "";
+    
+    const header = "My Saved Recipes:\n\n";
+    const recipeLines = favRecipes.map(recipe => 
+      `- ${recipe.name}\n  Ingredients: ${recipe.allIngredients.join(", ")}\n  Recipe: ${recipe.url}`
+    ).join("\n\n");
+    
+    return header + recipeLines;
+  };
+
+  const handleShareRecipes = async () => {
+    const text = generateRecipesText();
+    if (!text) return;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "My Saved Recipes",
+          text: text,
+        });
+      } catch {
+        // User cancelled
+      }
+    }
+  };
+
+  const handleCopyRecipes = async () => {
+    const text = generateRecipesText();
+    if (!text) return;
+    
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({ title: "Copied to clipboard" });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ title: "Failed to copy", variant: "destructive" });
+    }
+  };
+
+  const handleEmailRecipes = () => {
+    const text = generateRecipesText();
+    if (!text) return;
+    
+    const subject = encodeURIComponent("My Saved Recipes");
+    const body = encodeURIComponent(text);
+    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+  };
+
+  const handleWhatsAppRecipes = () => {
+    const text = generateRecipesText();
+    if (!text) return;
+    
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, "_blank");
+  };
+
+  const handleSMSRecipes = () => {
+    const text = generateRecipesText();
+    if (!text) return;
+    
+    const encoded = encodeURIComponent(text);
+    window.open(`sms:?body=${encoded}`, "_blank");
+  };
   
   const visibleCategories = getVisibleCategories();
   const customCategories = getCustomCategories();
@@ -302,6 +373,57 @@ export function RecipesPage({ items }: RecipesPageProps) {
                   <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </div>
               ))}
+            </div>
+            
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center gap-2 mb-3">
+                <Share2 className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Share saved recipes</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {typeof navigator !== 'undefined' && navigator.share && (
+                  <Button 
+                    variant="outline" 
+                    onClick={handleShareRecipes}
+                    data-testid="button-share-recipes-native"
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  onClick={handleWhatsAppRecipes}
+                  data-testid="button-share-recipes-whatsapp"
+                >
+                  <SiWhatsapp className="h-4 w-4 mr-2" />
+                  WhatsApp
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleEmailRecipes}
+                  data-testid="button-share-recipes-email"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleSMSRecipes}
+                  data-testid="button-share-recipes-sms"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  SMS
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCopyRecipes}
+                  data-testid="button-share-recipes-copy"
+                >
+                  {copied ? <CheckCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
