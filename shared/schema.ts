@@ -31,9 +31,9 @@ export type User = typeof users.$inferSelect;
 export const categories = [
   "meat_fish",
   "produce",
-  "dairy",
   "prepared_meals",
   "frozen_goods",
+  "dairy",
   "desserts",
   "bread",
   "other",
