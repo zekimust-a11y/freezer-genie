@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings } from "lucide-react";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -190,11 +190,19 @@ export default function Home() {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <VoiceControl onCommand={handleVoiceCommand} />
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
                 <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setActiveTab("settings")}
+                data-testid="button-header-settings"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+              <VoiceControl onCommand={handleVoiceCommand} />
             </div>
           </div>
         </div>
