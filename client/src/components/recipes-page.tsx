@@ -225,7 +225,7 @@ export function RecipesPage({ items }: RecipesPageProps) {
                 data-testid="button-search-all-ingredients"
               >
                 <Search className="h-4 w-4 mr-2" />
-                Search recipes with {topIngredients.slice(0, 3).map(i => i.searchName).join(", ")}
+                Recipes with {topIngredients.slice(0, 3).map(i => i.searchName).join(", ")}
                 <ExternalLink className="h-3 w-3 ml-2" />
               </Button>
             </div>
