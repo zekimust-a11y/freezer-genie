@@ -328,7 +328,7 @@ export function SettingsPanel() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Freezers</CardTitle>
+          <CardTitle className="text-lg">My Freezers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex gap-2">
