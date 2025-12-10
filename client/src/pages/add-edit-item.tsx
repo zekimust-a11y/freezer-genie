@@ -26,11 +26,14 @@ import {
 import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel } from "@/components/settings-panel";
 import { 
   categories,
+  meatSubcategories,
+  produceSubcategories,
   freezerItemFormSchema, 
   type FreezerItem, 
   type FreezerItemFormData,
   type Location
 } from "@shared/schema";
+import { meatSubcategoryConfig, produceSubcategoryConfig } from "@/components/category-icon";
 import { getCategoryConfig, getCategoryLabel } from "@/components/category-icon";
 import { getCustomCategories } from "@/components/settings-panel";
 import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
@@ -60,6 +63,7 @@ export default function AddEditItemPage() {
     defaultValues: {
       name: "",
       category: getDefaultCategory(),
+      subCategory: null,
       quantity: 1,
       unit: "item",
       expirationDate: getDefaultExpiryDate(),
@@ -69,11 +73,14 @@ export default function AddEditItemPage() {
     },
   });
 
+  const watchedCategory = form.watch("category");
+
   useEffect(() => {
     if (isEditing && item) {
       form.reset({
         name: item.name,
         category: item.category,
+        subCategory: item.subCategory || null,
         quantity: item.quantity,
         unit: item.unit,
         expirationDate: item.expirationDate || null,
@@ -83,6 +90,12 @@ export default function AddEditItemPage() {
       });
     }
   }, [isEditing, item, form]);
+
+  useEffect(() => {
+    if (watchedCategory !== "meat_fish" && watchedCategory !== "produce") {
+      form.setValue("subCategory", null);
+    }
+  }, [watchedCategory, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: FreezerItemFormData) => {
@@ -280,58 +293,136 @@ export default function AddEditItemPage() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-location">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem 
-                          value="unassigned"
-                          data-testid="select-location-unassigned"
-                        >
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
-                            {getLocationLabel("unassigned" as Location)}
-                          </div>
-                        </SelectItem>
-                        {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
+              {watchedCategory === "meat_fish" && (
+                <FormField
+                  control={form.control}
+                  name="subCategory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-subcategory">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {meatSubcategories.map((sub) => {
+                            const config = meatSubcategoryConfig[sub];
+                            const Icon = config.icon;
+                            return (
+                              <SelectItem 
+                                key={sub} 
+                                value={sub}
+                                data-testid={`select-subcategory-${sub}`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Icon className={`h-4 w-4 ${config.color}`} />
+                                  {config.label}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {watchedCategory === "produce" && (
+                <FormField
+                  control={form.control}
+                  name="subCategory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-subcategory">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {produceSubcategories.map((sub) => {
+                            const config = produceSubcategoryConfig[sub];
+                            const Icon = config.icon;
+                            return (
+                              <SelectItem 
+                                key={sub} 
+                                value={sub}
+                                data-testid={`select-subcategory-${sub}`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Icon className={`h-4 w-4 ${config.color}`} />
+                                  {config.label}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {watchedCategory !== "meat_fish" && watchedCategory !== "produce" && (
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-location">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
                           <SelectItem 
-                            key={location} 
-                            value={location}
-                            data-testid={`select-location-${location}`}
+                            value="unassigned"
+                            data-testid="select-location-unassigned"
                           >
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {getLocationLabel(location)}
+                              {getLocationLabel("unassigned" as Location)}
                             </div>
                           </SelectItem>
-                        ))}
-                        {getCustomLocations().map((location) => (
-                          <SelectItem 
-                            key={location} 
-                            value={location}
-                            data-testid={`select-location-custom-${location}`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {location}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
+                            <SelectItem 
+                              key={location} 
+                              value={location}
+                              data-testid={`select-location-${location}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                {getLocationLabel(location)}
+                              </div>
+                            </SelectItem>
+                          ))}
+                          {getCustomLocations().map((location) => (
+                            <SelectItem 
+                              key={location} 
+                              value={location}
+                              data-testid={`select-location-custom-${location}`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                {location}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">

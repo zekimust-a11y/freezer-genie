@@ -96,6 +96,7 @@ export type FreezerItem = typeof freezerItems.$inferSelect;
 export const freezerItemFormSchema = insertFreezerItemSchema.extend({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   category: z.string().min(1, "Category is required"),
+  subCategory: z.string().nullable().optional(),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   expirationDate: z.string().nullable().optional(),
   lowStockThreshold: z.coerce.number().min(0).optional(),
