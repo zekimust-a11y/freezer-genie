@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, AlertCircle } from "lucide-react";
-import { CategoryIcon, getCategoryLabel, getItemConfig } from "@/components/category-icon";
+import { CategoryIcon, getCategoryLabel, getCategoryConfig } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
 import { getDateFormat, getTagLabel } from "@/components/settings-panel";
 import { type FreezerItem, type Location } from "@shared/schema";
@@ -100,7 +100,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
 
   const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
   const hasLocation = item.location && item.location !== "unassigned";
-  const config = getItemConfig(item.category, item.subCategory);
+  const config = getCategoryConfig(item.category);
 
   return (
     <motion.div
