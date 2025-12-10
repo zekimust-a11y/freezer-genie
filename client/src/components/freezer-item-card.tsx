@@ -3,11 +3,33 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, AlertCircle } from "lucide-react";
 import { CategoryIcon, getCategoryLabel, getCategoryConfig } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
-import { getDateFormat } from "@/components/settings-panel";
+import { getDateFormat, getTagLabel } from "@/components/settings-panel";
 import { type FreezerItem, type Location } from "@shared/schema";
 import { getLocationLabel } from "@/components/settings-panel";
 import { format, parseISO, isValid, differenceInDays } from "date-fns";
 import { motion } from "framer-motion";
+
+const unitLabels: Record<string, { singular: string; plural: string }> = {
+  item: { singular: "item", plural: "items" },
+  piece: { singular: "piece", plural: "pieces" },
+  portion: { singular: "portion", plural: "portions" },
+  lb: { singular: "lb", plural: "lbs" },
+  kg: { singular: "kg", plural: "kg" },
+  oz: { singular: "oz", plural: "oz" },
+  g: { singular: "g", plural: "g" },
+  bag: { singular: "bag", plural: "bags" },
+  box: { singular: "box", plural: "boxes" },
+  pack: { singular: "pack", plural: "packs" },
+  container: { singular: "container", plural: "containers" },
+};
+
+function getUnitLabel(unit: string, quantity: number): string {
+  const labels = unitLabels[unit];
+  if (labels) {
+    return quantity === 1 ? labels.singular : labels.plural;
+  }
+  return unit;
+}
 
 interface FreezerItemCardProps {
   item: FreezerItem;
@@ -103,7 +125,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                     {item.name}
                   </h3>
                   <span className="text-xs text-muted-foreground">
-                    x {item.quantity} {item.unit}
+                    x {item.quantity} {getUnitLabel(item.unit, item.quantity)}
                   </span>
                 </div>
               </div>
@@ -135,6 +157,22 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 mb-1">
                 <MapPin className="h-3 w-3" />
                 <span>{getLocationLabel(item.location as Location)}</span>
+              </div>
+            )}
+
+            {/* Tags */}
+            {item.tags && item.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1 mb-1">
+                {item.tags.map((tagId) => (
+                  <Badge 
+                    key={tagId} 
+                    variant="secondary" 
+                    className="text-[10px] px-1.5 py-0"
+                    data-testid={`badge-tag-${tagId}`}
+                  >
+                    {getTagLabel(tagId)}
+                  </Badge>
+                ))}
               </div>
             )}
 
