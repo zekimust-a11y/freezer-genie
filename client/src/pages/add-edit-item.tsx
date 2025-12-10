@@ -162,6 +162,7 @@ export default function AddEditItemPage() {
       toast({
         title: "Item updated",
         description: "Your changes have been saved.",
+        duration: 2000,
       });
       navigate("/");
     },
