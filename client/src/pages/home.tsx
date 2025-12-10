@@ -88,6 +88,11 @@ export default function Home() {
   const filteredAndSortedItems = useMemo(() => {
     let result = [...items];
 
+    // Filter by selected freezer
+    if (selectedFreezerId && selectedFreezerId !== "all") {
+      result = result.filter((item) => item.freezerId === selectedFreezerId);
+    }
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       result = result.filter((item) => {
@@ -132,7 +137,7 @@ export default function Home() {
     }
 
     return result;
-  }, [items, selectedCategory, selectedSubcategory, sortBy, searchQuery]);
+  }, [items, selectedCategory, selectedSubcategory, sortBy, searchQuery, selectedFreezerId]);
 
   const { user } = useAuth();
   const { processCommand } = useVoiceCommands();
