@@ -3,31 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, AlertCircle, Snowflake } from "lucide-react";
 import { CategoryIcon, getCategoryLabel, getCategoryConfig } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
-import { getDateFormat, getTagLabel, getFreezers, getFreezerLabel } from "@/components/settings-panel";
+import { getDateFormat, getTagLabel, getFreezers, getFreezerLabel, getLocationLabel, getUnitLabelConfig } from "@/components/settings-panel";
 import { type FreezerItem, type Location } from "@shared/schema";
-import { getLocationLabel } from "@/components/settings-panel";
 import { format, parseISO, isValid, differenceInDays } from "date-fns";
 import { motion } from "framer-motion";
 
-const unitLabels: Record<string, { singular: string; plural: string }> = {
-  item: { singular: "item", plural: "items" },
-  piece: { singular: "piece", plural: "pieces" },
-  portion: { singular: "portion", plural: "portions" },
-  lb: { singular: "lb", plural: "lbs" },
-  kg: { singular: "kg", plural: "kg" },
-  oz: { singular: "oz", plural: "oz" },
-  g: { singular: "g", plural: "g" },
-  bag: { singular: "bag", plural: "bags" },
-  box: { singular: "box", plural: "boxes" },
-  pack: { singular: "pack", plural: "packs" },
-  container: { singular: "container", plural: "containers" },
-  bottle: { singular: "bottle", plural: "bottles" },
-  tub: { singular: "tub", plural: "tubs" },
-  jar: { singular: "jar", plural: "jars" },
-};
-
 export function getUnitLabel(unit: string, quantity: number): string {
-  const labels = unitLabels[unit];
+  const labels = getUnitLabelConfig(unit);
   if (labels) {
     return quantity === 1 ? labels.singular : labels.plural;
   }

@@ -334,6 +334,56 @@ export function getTagLabel(tagId: string): string {
   return found ? found.name : tagId;
 }
 
+// Units configuration
+export interface UnitConfig {
+  id: string;
+  singular: string;
+  plural: string;
+  isDefault: boolean;
+  isHidden: boolean;
+}
+
+const defaultUnits: Omit<UnitConfig, 'isHidden'>[] = [
+  { id: "item", singular: "item", plural: "items", isDefault: true },
+  { id: "piece", singular: "piece", plural: "pieces", isDefault: true },
+  { id: "portion", singular: "portion", plural: "portions", isDefault: true },
+  { id: "lb", singular: "lb", plural: "lbs", isDefault: true },
+  { id: "kg", singular: "kg", plural: "kg", isDefault: true },
+  { id: "oz", singular: "oz", plural: "oz", isDefault: true },
+  { id: "g", singular: "g", plural: "g", isDefault: true },
+  { id: "bag", singular: "bag", plural: "bags", isDefault: true },
+  { id: "box", singular: "box", plural: "boxes", isDefault: true },
+  { id: "pack", singular: "pack", plural: "packs", isDefault: true },
+  { id: "bottle", singular: "bottle", plural: "bottles", isDefault: true },
+  { id: "tub", singular: "tub", plural: "tubs", isDefault: true },
+  { id: "jar", singular: "jar", plural: "jars", isDefault: true },
+];
+
+export function getUnits(): UnitConfig[] {
+  try {
+    const stored = localStorage.getItem("units");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return defaultUnits.map(u => ({ ...u, isHidden: false }));
+}
+
+export function getVisibleUnits(): UnitConfig[] {
+  return getUnits().filter(u => !u.isHidden);
+}
+
+export function getUnitLabelConfig(unitId: string): { singular: string; plural: string } | null {
+  const units = getUnits();
+  const unit = units.find(u => u.id === unitId);
+  if (unit) {
+    return { singular: unit.singular, plural: unit.plural };
+  }
+  return null;
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
@@ -356,6 +406,9 @@ export function SettingsPanel() {
   const [hiddenLocations, setHiddenLocations] = useState<Location[]>(getHiddenLocations);
   const [availableTags, setAvailableTags] = useState<ItemTag[]>(getAvailableTags);
   const [newTagName, setNewTagName] = useState("");
+  const [units, setUnits] = useState<UnitConfig[]>(getUnits);
+  const [newUnitSingular, setNewUnitSingular] = useState("");
+  const [newUnitPlural, setNewUnitPlural] = useState("");
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -463,6 +516,10 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("availableTags", JSON.stringify(availableTags));
   }, [availableTags]);
+
+  useEffect(() => {
+    localStorage.setItem("units", JSON.stringify(units));
+  }, [units]);
 
   const handleAddTag = () => {
     const trimmed = newTagName.trim();
@@ -895,6 +952,130 @@ export function SettingsPanel() {
               data-testid="input-new-tag"
             />
             <Button size="icon" onClick={handleAddTag} data-testid="button-add-tag">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Unit Types</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Customize unit labels, add custom units, or hide units you don't use
+          </p>
+          
+          <div className="space-y-2">
+            {units.map((unit) => (
+              <div
+                key={unit.id}
+                className={`flex items-center gap-2 bg-muted p-2 rounded-md ${unit.isHidden ? 'opacity-50' : ''}`}
+              >
+                <Input
+                  value={unit.singular}
+                  onChange={(e) => {
+                    setUnits(prev => prev.map(u => 
+                      u.id === unit.id ? { ...u, singular: e.target.value } : u
+                    ));
+                  }}
+                  className="flex-1 h-8"
+                  placeholder="Singular"
+                  data-testid={`input-unit-singular-${unit.id}`}
+                />
+                <Input
+                  value={unit.plural}
+                  onChange={(e) => {
+                    setUnits(prev => prev.map(u => 
+                      u.id === unit.id ? { ...u, plural: e.target.value } : u
+                    ));
+                  }}
+                  className="flex-1 h-8"
+                  placeholder="Plural"
+                  data-testid={`input-unit-plural-${unit.id}`}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    setUnits(prev => prev.map(u => 
+                      u.id === unit.id ? { ...u, isHidden: !u.isHidden } : u
+                    ));
+                  }}
+                  data-testid={`button-toggle-unit-${unit.id}`}
+                >
+                  {unit.isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+                {!unit.isDefault && (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setUnits(prev => prev.filter(u => u.id !== unit.id));
+                    }}
+                    data-testid={`button-remove-unit-${unit.id}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex gap-2 pt-2">
+            <Input
+              placeholder="Singular (e.g., slice)"
+              value={newUnitSingular}
+              onChange={(e) => setNewUnitSingular(e.target.value)}
+              className="flex-1"
+              data-testid="input-new-unit-singular"
+            />
+            <Input
+              placeholder="Plural (e.g., slices)"
+              value={newUnitPlural}
+              onChange={(e) => setNewUnitPlural(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const singular = newUnitSingular.trim();
+                  const plural = newUnitPlural.trim();
+                  if (singular && plural && !units.some(u => u.id === singular.toLowerCase().replace(/\s+/g, '_'))) {
+                    const newUnit: UnitConfig = {
+                      id: singular.toLowerCase().replace(/\s+/g, '_'),
+                      singular,
+                      plural,
+                      isDefault: false,
+                      isHidden: false,
+                    };
+                    setUnits(prev => [...prev, newUnit]);
+                    setNewUnitSingular("");
+                    setNewUnitPlural("");
+                  }
+                }
+              }}
+              className="flex-1"
+              data-testid="input-new-unit-plural"
+            />
+            <Button 
+              size="icon" 
+              onClick={() => {
+                const singular = newUnitSingular.trim();
+                const plural = newUnitPlural.trim();
+                if (singular && plural && !units.some(u => u.id === singular.toLowerCase().replace(/\s+/g, '_'))) {
+                  const newUnit: UnitConfig = {
+                    id: singular.toLowerCase().replace(/\s+/g, '_'),
+                    singular,
+                    plural,
+                    isDefault: false,
+                    isHidden: false,
+                  };
+                  setUnits(prev => [...prev, newUnit]);
+                  setNewUnitSingular("");
+                  setNewUnitPlural("");
+                }
+              }}
+              data-testid="button-add-unit"
+            >
               <Plus className="h-4 w-4" />
             </Button>
           </div>

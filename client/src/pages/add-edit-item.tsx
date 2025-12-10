@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, getFreezers, getDefaultFreezerForNewItems, getDateFormat, type ItemTag } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, getFreezers, getDefaultFreezerForNewItems, getDateFormat, getVisibleUnits, type ItemTag } from "@/components/settings-panel";
 import { Badge } from "@/components/ui/badge";
 import { 
   categories,
@@ -680,19 +680,17 @@ export default function AddEditItemPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="item" data-testid="select-unit-item">Item(s)</SelectItem>
-                        <SelectItem value="piece" data-testid="select-unit-piece">Piece(s)</SelectItem>
-                        <SelectItem value="portion" data-testid="select-unit-portion">Portion(s)</SelectItem>
-                        <SelectItem value="lb" data-testid="select-unit-lb">lb</SelectItem>
-                        <SelectItem value="kg" data-testid="select-unit-kg">kg</SelectItem>
-                        <SelectItem value="oz" data-testid="select-unit-oz">oz</SelectItem>
-                        <SelectItem value="g" data-testid="select-unit-g">g</SelectItem>
-                        <SelectItem value="bag" data-testid="select-unit-bag">Bag(s)</SelectItem>
-                        <SelectItem value="box" data-testid="select-unit-box">Box(es)</SelectItem>
-                        <SelectItem value="pack" data-testid="select-unit-pack">Pack(s)</SelectItem>
-                        <SelectItem value="bottle" data-testid="select-unit-bottle">Bottle(s)</SelectItem>
-                        <SelectItem value="tub" data-testid="select-unit-tub">Tub(s)</SelectItem>
-                        <SelectItem value="jar" data-testid="select-unit-jar">Jar(s)</SelectItem>
+                        {getVisibleUnits().map((unit) => (
+                          <SelectItem 
+                            key={unit.id} 
+                            value={unit.id} 
+                            data-testid={`select-unit-${unit.id}`}
+                          >
+                            {unit.singular === unit.plural 
+                              ? unit.singular 
+                              : `${unit.singular.charAt(0).toUpperCase() + unit.singular.slice(1)}(s)`}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

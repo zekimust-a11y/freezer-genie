@@ -3,23 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { CategoryIcon } from "@/components/category-icon";
 import { ShoppingCart, Check } from "lucide-react";
 import { type FreezerItem, type Location } from "@shared/schema";
-import { getLocationLabel } from "@/components/settings-panel";
-
-const unitLabels: Record<string, { singular: string; plural: string }> = {
-  item: { singular: "item", plural: "items" },
-  piece: { singular: "piece", plural: "pieces" },
-  portion: { singular: "portion", plural: "portions" },
-  lb: { singular: "lb", plural: "lbs" },
-  kg: { singular: "kg", plural: "kg" },
-  oz: { singular: "oz", plural: "oz" },
-  g: { singular: "g", plural: "g" },
-  bag: { singular: "bag", plural: "bags" },
-  box: { singular: "box", plural: "boxes" },
-  pack: { singular: "pack", plural: "packs" },
-  bottle: { singular: "bottle", plural: "bottles" },
-  tub: { singular: "tub", plural: "tubs" },
-  jar: { singular: "jar", plural: "jars" },
-};
+import { getLocationLabel, getUnitLabelConfig } from "@/components/settings-panel";
 
 const weightUnits = ["lb", "kg", "oz", "g"];
 
@@ -31,7 +15,7 @@ function formatQuantity(quantity: number, unit: string): string {
 }
 
 function getUnitLabel(unit: string, quantity: number): string {
-  const labels = unitLabels[unit];
+  const labels = getUnitLabelConfig(unit);
   if (labels) {
     const displayQty = weightUnits.includes(unit) ? quantity : Math.round(quantity);
     return displayQty === 1 ? labels.singular : labels.plural;
