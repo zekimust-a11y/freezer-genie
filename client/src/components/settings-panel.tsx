@@ -84,11 +84,42 @@ export function getWeightUnit(): WeightUnit {
   return "metric";
 }
 
+export interface CustomLocationEntry {
+  id: string;
+  name: string;
+}
+
 export function getCustomLocations(): string[] {
   try {
     const stored = localStorage.getItem("customLocations");
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Support old string[] format and new object[] format
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        if (typeof parsed[0] === 'string') {
+          return parsed;
+        }
+        return parsed.map((loc: CustomLocationEntry) => loc.name);
+      }
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [];
+}
+
+export function getCustomLocationEntries(): CustomLocationEntry[] {
+  try {
+    const stored = localStorage.getItem("customLocations");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        if (typeof parsed[0] === 'string') {
+          // Convert old format to new format with fake IDs
+          return parsed.map((name: string) => ({ id: name, name }));
+        }
+        return parsed;
+      }
     }
   } catch {
     // ignore parse errors
@@ -309,7 +340,8 @@ export function SettingsPanel() {
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(getWeightUnit);
   const [defaultExpiry, setDefaultExpiry] = useState<DefaultExpiry>(getDefaultExpiry);
   const [defaultLowStock, setDefaultLowStock] = useState<number>(getDefaultLowStock);
-  const [customLocations, setCustomLocations] = useState<string[]>(getCustomLocations);
+  const [customLocations, setCustomLocations] = useState<CustomLocationEntry[]>(getCustomLocationEntries);
+  const [customLocationsLoaded, setCustomLocationsLoaded] = useState(false);
   const [newLocation, setNewLocation] = useState("");
   const [categoryLabels, setCategoryLabels] = useState<Record<Category, string>>(getCategoryLabels);
   const [freezers, setFreezers] = useState<Freezer[]>(getFreezers);
@@ -338,8 +370,33 @@ export function SettingsPanel() {
   }, [weightUnit]);
 
   useEffect(() => {
-    localStorage.setItem("customLocations", JSON.stringify(customLocations));
-  }, [customLocations]);
+    if (customLocationsLoaded) {
+      localStorage.setItem("customLocations", JSON.stringify(customLocations));
+    }
+  }, [customLocations, customLocationsLoaded]);
+
+  // Fetch custom locations from API on mount
+  useEffect(() => {
+    async function fetchCustomLocations() {
+      try {
+        const response = await fetch("/api/custom-locations");
+        if (response.ok) {
+          const data = await response.json();
+          const mappedLocations: CustomLocationEntry[] = data.map((loc: { id: string; name: string }) => ({
+            id: loc.id,
+            name: loc.name,
+          }));
+          setCustomLocations(mappedLocations);
+          localStorage.setItem("customLocations", JSON.stringify(mappedLocations));
+        }
+      } catch (error) {
+        console.error("Failed to fetch custom locations:", error);
+      } finally {
+        setCustomLocationsLoaded(true);
+      }
+    }
+    fetchCustomLocations();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("defaultExpiry", defaultExpiry);
@@ -466,16 +523,34 @@ export function SettingsPanel() {
     );
   };
 
-  const handleAddLocation = () => {
+  const handleAddLocation = async () => {
     const trimmed = newLocation.trim();
-    if (trimmed && !customLocations.includes(trimmed)) {
-      setCustomLocations([...customLocations, trimmed]);
-      setNewLocation("");
+    if (trimmed && !customLocations.some(loc => loc.name === trimmed)) {
+      try {
+        const response = await apiRequest("POST", "/api/custom-locations", { name: trimmed });
+        const newLoc = await response.json();
+        const mappedLocation: CustomLocationEntry = {
+          id: newLoc.id,
+          name: newLoc.name,
+        };
+        setCustomLocations([...customLocations, mappedLocation]);
+        setNewLocation("");
+      } catch (error) {
+        console.error("Failed to add custom location:", error);
+      }
     }
   };
 
-  const handleRemoveLocation = (location: string) => {
-    setCustomLocations(customLocations.filter(l => l !== location));
+  const handleRemoveLocation = async (locationName: string) => {
+    const locationEntry = customLocations.find(loc => loc.name === locationName);
+    if (locationEntry) {
+      try {
+        await apiRequest("DELETE", `/api/custom-locations/${locationEntry.id}`);
+        setCustomLocations(customLocations.filter(loc => loc.name !== locationName));
+      } catch (error) {
+        console.error("Failed to remove custom location:", error);
+      }
+    }
   };
 
   const handleCategoryLabelChange = (category: Category, newLabel: string) => {
@@ -746,14 +821,14 @@ export function SettingsPanel() {
               <div className="flex flex-wrap gap-2">
                 {customLocations.map((loc) => (
                   <div
-                    key={loc}
+                    key={loc.id}
                     className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm"
                   >
-                    <span>{loc}</span>
+                    <span>{loc.name}</span>
                     <button
-                      onClick={() => handleRemoveLocation(loc)}
+                      onClick={() => handleRemoveLocation(loc.name)}
                       className="text-muted-foreground hover:text-foreground"
-                      data-testid={`button-remove-location-${loc}`}
+                      data-testid={`button-remove-location-${loc.name}`}
                     >
                       <X className="h-3 w-3" />
                     </button>

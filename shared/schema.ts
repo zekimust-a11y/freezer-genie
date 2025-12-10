@@ -196,3 +196,17 @@ export const insertFreezerSchema = createInsertSchema(freezers).omit({
 
 export type InsertFreezer = z.infer<typeof insertFreezerSchema>;
 export type Freezer = typeof freezers.$inferSelect;
+
+export const customLocations = pgTable("custom_locations", {
+  id: varchar("id").primaryKey(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCustomLocationSchema = createInsertSchema(customLocations).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCustomLocation = z.infer<typeof insertCustomLocationSchema>;
+export type CustomLocation = typeof customLocations.$inferSelect;

@@ -1,11 +1,14 @@
 import { 
   freezerItems, 
   freezers,
+  customLocations,
   users,
   type FreezerItem, 
   type InsertFreezerItem, 
   type Freezer,
   type InsertFreezer,
+  type CustomLocation,
+  type InsertCustomLocation,
   type Category,
   type Location,
   type User,
@@ -29,6 +32,10 @@ export interface IStorage {
   createFreezer(freezer: InsertFreezer): Promise<Freezer>;
   updateFreezer(id: string, freezer: InsertFreezer): Promise<Freezer | undefined>;
   deleteFreezer(id: string): Promise<boolean>;
+  // Custom location operations
+  getAllCustomLocations(): Promise<CustomLocation[]>;
+  createCustomLocation(location: InsertCustomLocation): Promise<CustomLocation>;
+  deleteCustomLocation(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -149,6 +156,28 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFreezer(id: string): Promise<boolean> {
     const result = await db.delete(freezers).where(eq(freezers.id, id)).returning();
+    return result.length > 0;
+  }
+
+  // Custom location operations
+  async getAllCustomLocations(): Promise<CustomLocation[]> {
+    return await db.select().from(customLocations);
+  }
+
+  async createCustomLocation(insertLocation: InsertCustomLocation): Promise<CustomLocation> {
+    const id = crypto.randomUUID();
+    const [location] = await db
+      .insert(customLocations)
+      .values({
+        id,
+        name: insertLocation.name,
+      })
+      .returning();
+    return location;
+  }
+
+  async deleteCustomLocation(id: string): Promise<boolean> {
+    const result = await db.delete(customLocations).where(eq(customLocations.id, id)).returning();
     return result.length > 0;
   }
 }

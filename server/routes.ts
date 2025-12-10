@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertFreezerItemSchema, insertFreezerSchema } from "@shared/schema";
+import { insertFreezerItemSchema, insertFreezerSchema, insertCustomLocationSchema } from "@shared/schema";
 import { fromError } from "zod-validation-error";
 
 export async function registerRoutes(
@@ -141,6 +141,45 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting freezer:", error);
       res.status(500).json({ error: "Failed to delete freezer" });
+    }
+  });
+
+  // Custom locations routes
+  app.get("/api/custom-locations", async (_req, res) => {
+    try {
+      const locations = await storage.getAllCustomLocations();
+      res.json(locations);
+    } catch (error) {
+      console.error("Error fetching custom locations:", error);
+      res.status(500).json({ error: "Failed to fetch custom locations" });
+    }
+  });
+
+  app.post("/api/custom-locations", async (req, res) => {
+    try {
+      const result = insertCustomLocationSchema.safeParse(req.body);
+      if (!result.success) {
+        const validationError = fromError(result.error);
+        return res.status(400).json({ error: validationError.message });
+      }
+      const location = await storage.createCustomLocation(result.data);
+      res.status(201).json(location);
+    } catch (error) {
+      console.error("Error creating custom location:", error);
+      res.status(500).json({ error: "Failed to create custom location" });
+    }
+  });
+
+  app.delete("/api/custom-locations/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteCustomLocation(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Custom location not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting custom location:", error);
+      res.status(500).json({ error: "Failed to delete custom location" });
     }
   });
 
