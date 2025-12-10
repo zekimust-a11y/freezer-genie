@@ -31,11 +31,28 @@ function getExpirationStatus(expirationDate: string | null) {
   return { status: "ok", label: `${daysUntil} days left`, color: "text-green-500" };
 }
 
+function getDaysLeftText(expirationDate: string | null): { text: string; daysLeft: number } | null {
+  if (!expirationDate || !isValid(parseISO(expirationDate))) return null;
+  
+  const date = parseISO(expirationDate);
+  const daysLeft = differenceInDays(date, new Date());
+  
+  if (isPast(date) && !isToday(date)) {
+    const daysOverdue = Math.abs(daysLeft);
+    return { text: `${daysOverdue} day${daysOverdue !== 1 ? 's' : ''} overdue`, daysLeft };
+  }
+  if (isToday(date)) {
+    return { text: "0 days left", daysLeft: 0 };
+  }
+  return { text: `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`, daysLeft };
+}
+
 function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => void }) {
   const status = getExpirationStatus(item.expirationDate);
   const formattedDate = item.expirationDate && isValid(parseISO(item.expirationDate))
     ? format(parseISO(item.expirationDate), "MMM d, yyyy")
     : null;
+  const daysInfo = getDaysLeftText(item.expirationDate);
 
   return (
     <Card 
@@ -54,12 +71,14 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <Badge variant={status.status === "expired" ? "destructive" : "secondary"}>
-              {status.label}
-            </Badge>
+          <div className="text-right flex flex-col items-end gap-1">
+            {daysInfo && (
+              <span className="text-sm font-semibold text-destructive" data-testid={`text-days-left-${item.id}`}>
+                {daysInfo.text}
+              </span>
+            )}
             {formattedDate && (
-              <p className="text-xs text-muted-foreground mt-1">{formattedDate}</p>
+              <p className="text-xs text-muted-foreground">{formattedDate}</p>
             )}
           </div>
         </div>
