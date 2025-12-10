@@ -318,12 +318,12 @@ export default function AddEditItemPage() {
                           form.setValue("category", cat);
                           form.setValue("subCategory", null);
                         }}
-                        className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                        className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                         data-testid={`button-category-${cat}`}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                          <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                        <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                          <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                         </div>
                         <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{getCategoryLabel(cat)}</span>
                       </motion.button>
@@ -341,12 +341,12 @@ export default function AddEditItemPage() {
                           form.setValue("category", customCat.id);
                           form.setValue("subCategory", null);
                         }}
-                        className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                        className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                         data-testid={`button-category-${customCat.id}`}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                          <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                        <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                          <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                         </div>
                         <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{customCat.name}</span>
                       </motion.button>
@@ -371,12 +371,12 @@ export default function AddEditItemPage() {
                           key={sub}
                           type="button"
                           onClick={() => form.setValue("subCategory", isActive ? null : sub)}
-                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                           data-testid={`button-subcategory-${sub}`}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                           </div>
                           <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
                         </motion.button>
@@ -401,12 +401,12 @@ export default function AddEditItemPage() {
                           key={sub}
                           type="button"
                           onClick={() => form.setValue("subCategory", isActive ? null : sub)}
-                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                           data-testid={`button-subcategory-${sub}`}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                           </div>
                           <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
                         </motion.button>
@@ -431,12 +431,12 @@ export default function AddEditItemPage() {
                           key={sub}
                           type="button"
                           onClick={() => form.setValue("subCategory", isActive ? null : sub)}
-                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                           data-testid={`button-subcategory-${sub}`}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                           </div>
                           <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
                         </motion.button>
@@ -461,12 +461,12 @@ export default function AddEditItemPage() {
                           key={sub}
                           type="button"
                           onClick={() => form.setValue("subCategory", isActive ? null : sub)}
-                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                           data-testid={`button-subcategory-${sub}`}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                           </div>
                           <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
                         </motion.button>
@@ -491,12 +491,12 @@ export default function AddEditItemPage() {
                           key={sub}
                           type="button"
                           onClick={() => form.setValue("subCategory", isActive ? null : sub)}
-                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          className={`flex flex-col items-center justify-center gap-1 w-16 py-2 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
                           data-testid={`button-subcategory-${sub}`}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          <div className={`p-2 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
                           </div>
                           <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
                         </motion.button>
