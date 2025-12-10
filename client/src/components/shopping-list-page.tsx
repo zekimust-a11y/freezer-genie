@@ -5,6 +5,27 @@ import { ShoppingCart, Check } from "lucide-react";
 import { type FreezerItem, type Location } from "@shared/schema";
 import { getLocationLabel } from "@/components/settings-panel";
 
+const unitLabels: Record<string, { singular: string; plural: string }> = {
+  item: { singular: "item", plural: "items" },
+  piece: { singular: "piece", plural: "pieces" },
+  portion: { singular: "portion", plural: "portions" },
+  lb: { singular: "lb", plural: "lbs" },
+  kg: { singular: "kg", plural: "kg" },
+  oz: { singular: "oz", plural: "oz" },
+  g: { singular: "g", plural: "g" },
+  bag: { singular: "bag", plural: "bags" },
+  box: { singular: "box", plural: "boxes" },
+  pack: { singular: "pack", plural: "packs" },
+};
+
+function getUnitLabel(unit: string, quantity: number): string {
+  const labels = unitLabels[unit];
+  if (labels) {
+    return quantity === 1 ? labels.singular : labels.plural;
+  }
+  return unit;
+}
+
 interface ShoppingListPageProps {
   items: FreezerItem[];
   onEditItem: (item: FreezerItem) => void;
@@ -60,10 +81,10 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
                   </div>
                   <div className="text-right space-y-0.5">
                     <p className="text-xs text-muted-foreground">
-                      In stock: <span className="font-medium text-foreground">{item.quantity} {item.unit}</span>
+                      In stock: <span className="font-medium text-foreground">{item.quantity} {getUnitLabel(item.unit, Number(item.quantity))}</span>
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Minimum: <span className="font-medium text-foreground">{item.lowStockThreshold} {item.unit}</span>
+                      Minimum: <span className="font-medium text-foreground">{item.lowStockThreshold} {getUnitLabel(item.unit, item.lowStockThreshold ?? 0)}</span>
                     </p>
                     <Badge variant="destructive" className="mt-1">
                       Need {Math.max(1, (item.lowStockThreshold ?? 0) - Number(item.quantity) + 1)} more
