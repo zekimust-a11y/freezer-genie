@@ -376,11 +376,11 @@ export function RecipesPage({ items }: RecipesPageProps) {
             </div>
             
             <div className="mt-4 pt-4 border-t">
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center justify-center gap-2 mb-3">
                 <Share2 className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Share saved recipes</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
                 {typeof navigator !== 'undefined' && navigator.share && (
                   <Button 
                     variant="outline" 
