@@ -4,7 +4,7 @@ import { CategoryIcon } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
 import { AlertTriangle, Clock, Calendar } from "lucide-react";
 import { type FreezerItem, type Location } from "@shared/schema";
-import { getLocationLabel } from "@/components/settings-panel";
+import { getLocationLabel, getDateFormat } from "@/components/settings-panel";
 import { format, parseISO, isValid, differenceInDays, isToday, isPast } from "date-fns";
 
 interface AlertsPageProps {
@@ -51,7 +51,7 @@ function getDaysLeftText(expirationDate: string | null): { text: string; daysLef
 function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => void }) {
   const status = getExpirationStatus(item.expirationDate);
   const formattedDate = item.expirationDate && isValid(parseISO(item.expirationDate))
-    ? format(parseISO(item.expirationDate), "MMM d, yyyy")
+    ? format(parseISO(item.expirationDate), getDateFormat())
     : null;
   const daysInfo = getDaysLeftText(item.expirationDate);
 
