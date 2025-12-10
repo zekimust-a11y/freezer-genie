@@ -2,11 +2,11 @@ import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { CategoryFilter } from "@/components/category-filter";
-import { FreezerItemCard } from "@/components/freezer-item-card";
+import { FreezerItemCard, formatQuantity, getUnitLabel } from "@/components/freezer-item-card";
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { BottomNav } from "@/components/bottom-nav";
-import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreezer } from "@/components/settings-panel";
+import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreezer, getLocationLabel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,11 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake, Refrigerator } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table } from "lucide-react";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory } from "@shared/schema";
+import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, Location } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
 type SortOption = "expiry" | "name" | "quantity" | "recent";
@@ -43,6 +43,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<SortOption>("expiry");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
   const freezerOptions = getFreezerOptions();
 
@@ -188,6 +189,26 @@ export default function Home() {
                   ))}
                 </SelectContent>
               </Select>
+              <div className="flex items-center border rounded-md">
+                <Button
+                  variant={viewMode === "cards" ? "secondary" : "ghost"}
+                  size="icon"
+                  onClick={() => setViewMode("cards")}
+                  className="rounded-r-none"
+                  data-testid="button-view-cards"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "table" ? "secondary" : "ghost"}
+                  size="icon"
+                  onClick={() => setViewMode("table")}
+                  className="rounded-l-none"
+                  data-testid="button-view-table"
+                >
+                  <Table className="h-4 w-4" />
+                </Button>
+              </div>
               {isSearchExpanded ? (
                 <div className="relative flex-1 max-w-[200px]">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -235,7 +256,7 @@ export default function Home() {
             <EmptyState onAddItem={() => navigate("/add")} />
           ) : filteredAndSortedItems.length === 0 ? (
             <EmptyState onAddItem={() => navigate("/add")} hasFilters />
-          ) : (
+          ) : viewMode === "cards" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAndSortedItems.map((item, index) => (
                 <FreezerItemCard
@@ -245,6 +266,50 @@ export default function Home() {
                   index={index}
                 />
               ))}
+            </div>
+          ) : (
+            <div className="border rounded-md overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr className="text-left text-sm">
+                    <th className="px-3 py-2 font-medium">Name</th>
+                    <th className="px-3 py-2 font-medium">Category</th>
+                    <th className="px-3 py-2 font-medium">Qty</th>
+                    <th className="px-3 py-2 font-medium hidden sm:table-cell">Use By</th>
+                    <th className="px-3 py-2 font-medium hidden md:table-cell">Location</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredAndSortedItems.map((item) => (
+                    <tr 
+                      key={item.id} 
+                      className="hover-elevate cursor-pointer"
+                      onClick={() => handleEditItem(item)}
+                      data-testid={`row-item-${item.id}`}
+                    >
+                      <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
+                      <td className="px-3 py-2 text-sm text-muted-foreground capitalize">
+                        {item.subCategory || item.category.replace("_", " ")}
+                      </td>
+                      <td className="px-3 py-2 text-sm">
+                        {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
+                      </td>
+                      <td className="px-3 py-2 text-sm hidden sm:table-cell">
+                        {item.expirationDate 
+                          ? new Date(item.expirationDate).toLocaleDateString()
+                          : "-"
+                        }
+                      </td>
+                      <td className="px-3 py-2 text-sm text-muted-foreground hidden md:table-cell">
+                        {item.location && item.location !== "unassigned" 
+                          ? getLocationLabel(item.location as Location) 
+                          : "-"
+                        }
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </main>

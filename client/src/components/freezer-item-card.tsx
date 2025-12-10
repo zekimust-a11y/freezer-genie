@@ -23,7 +23,7 @@ const unitLabels: Record<string, { singular: string; plural: string }> = {
   container: { singular: "container", plural: "containers" },
 };
 
-function getUnitLabel(unit: string, quantity: number): string {
+export function getUnitLabel(unit: string, quantity: number): string {
   const labels = unitLabels[unit];
   if (labels) {
     return quantity === 1 ? labels.singular : labels.plural;
@@ -31,7 +31,7 @@ function getUnitLabel(unit: string, quantity: number): string {
   return unit;
 }
 
-function formatQuantity(quantity: number | string): string {
+export function formatQuantity(quantity: number | string): string {
   const num = typeof quantity === 'string' ? parseFloat(quantity) : quantity;
   if (Number.isInteger(num)) {
     return num.toString();
