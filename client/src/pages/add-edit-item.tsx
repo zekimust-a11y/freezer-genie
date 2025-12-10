@@ -75,6 +75,26 @@ export default function AddEditItemPage() {
   const [showNotesSuggestions, setShowNotesSuggestions] = useState(false);
   const [notesInputValue, setNotesInputValue] = useState("");
 
+  // Name autocomplete state
+  const [showNameSuggestions, setShowNameSuggestions] = useState(false);
+  const [nameInputValue, setNameInputValue] = useState("");
+
+  // Extract unique names from all items
+  const uniqueNames = useMemo(() => {
+    const names = allItems
+      .map(item => item.name)
+      .filter((name): name is string => !!name && name.trim() !== "");
+    return [...new Set(names)].sort();
+  }, [allItems]);
+
+  // Filter names based on input
+  const filteredNames = useMemo(() => {
+    if (!nameInputValue.trim()) return [];
+    return uniqueNames
+      .filter(name => name.toLowerCase().includes(nameInputValue.toLowerCase()))
+      .slice(0, 5);
+  }, [uniqueNames, nameInputValue]);
+
   // Extract unique notes from all items
   const uniqueNotes = useMemo(() => {
     const notes = allItems
@@ -129,6 +149,7 @@ export default function AddEditItemPage() {
       });
       setSelectedTags(item.tags || []);
       setNotesInputValue(item.notes || "");
+      setNameInputValue(item.name || "");
     }
   }, [isEditing, item, form]);
 
@@ -275,11 +296,39 @@ export default function AddEditItemPage() {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <div className="flex gap-2">
-                      <Input
-                        placeholder="e.g., Chicken breast"
-                        data-testid="input-name"
-                        {...field}
-                      />
+                      <div className="relative flex-1">
+                        <Input
+                          placeholder="e.g., Chicken breast"
+                          data-testid="input-name"
+                          value={nameInputValue}
+                          onChange={(e) => {
+                            setNameInputValue(e.target.value);
+                            field.onChange(e.target.value);
+                          }}
+                          onFocus={() => setShowNameSuggestions(true)}
+                          onBlur={() => setTimeout(() => setShowNameSuggestions(false), 150)}
+                        />
+                        {showNameSuggestions && filteredNames.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md">
+                            {filteredNames.map((name) => (
+                              <button
+                                key={name}
+                                type="button"
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground first:rounded-t-md last:rounded-b-md"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  setNameInputValue(name);
+                                  field.onChange(name);
+                                  setShowNameSuggestions(false);
+                                }}
+                                data-testid={`name-suggestion-${name.replace(/\s+/g, "-").toLowerCase()}`}
+                              >
+                                {name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <Button
                         type="button"
                         variant="outline"
