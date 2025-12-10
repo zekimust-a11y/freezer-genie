@@ -18,10 +18,20 @@ const unitLabels: Record<string, { singular: string; plural: string }> = {
   pack: { singular: "pack", plural: "packs" },
 };
 
+const weightUnits = ["lb", "kg", "oz", "g"];
+
+function formatQuantity(quantity: number, unit: string): string {
+  if (weightUnits.includes(unit)) {
+    return quantity % 1 === 0 ? quantity.toString() : quantity.toFixed(2);
+  }
+  return Math.round(quantity).toString();
+}
+
 function getUnitLabel(unit: string, quantity: number): string {
   const labels = unitLabels[unit];
   if (labels) {
-    return quantity === 1 ? labels.singular : labels.plural;
+    const displayQty = weightUnits.includes(unit) ? quantity : Math.round(quantity);
+    return displayQty === 1 ? labels.singular : labels.plural;
   }
   return unit;
 }
@@ -78,13 +88,13 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
                   </div>
                   <div className="text-right space-y-0.5">
                     <p className="text-xs text-muted-foreground">
-                      In stock: <span className="font-medium text-foreground">{item.quantity} {getUnitLabel(item.unit, Number(item.quantity))}</span>
+                      In stock: <span className="font-medium text-foreground">{formatQuantity(Number(item.quantity), item.unit)} {getUnitLabel(item.unit, Number(item.quantity))}</span>
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Minimum: <span className="font-medium text-foreground">{item.lowStockThreshold} {getUnitLabel(item.unit, item.lowStockThreshold ?? 0)}</span>
+                      Minimum: <span className="font-medium text-foreground">{formatQuantity(item.lowStockThreshold ?? 0, item.unit)} {getUnitLabel(item.unit, item.lowStockThreshold ?? 0)}</span>
                     </p>
                     <Badge variant="destructive" className="mt-1">
-                      Need {Math.max(1, (item.lowStockThreshold ?? 0) - Number(item.quantity))} more
+                      Need {formatQuantity(Math.max(0.01, (item.lowStockThreshold ?? 0) - Number(item.quantity)), item.unit)} more
                     </Badge>
                   </div>
                 </div>

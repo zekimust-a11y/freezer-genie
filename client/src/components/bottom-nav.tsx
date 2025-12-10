@@ -116,13 +116,12 @@ export function BottomNav({
         />
 
         <NavItem
-          icon={AlertTriangle}
-          label="Alerts"
-          isActive={activeTab === "alerts"}
-          onClick={() => onTabChange("alerts")}
-          testId="button-nav-alerts"
-          badge={alertCount}
-          itemRef={alertsRef}
+          icon={ChefHat}
+          label="Recipes"
+          isActive={activeTab === "recipes"}
+          onClick={() => onTabChange("recipes")}
+          testId="button-nav-recipes"
+          itemRef={recipesRef}
         />
 
         {/* Add Button - Center prominent */}
@@ -146,12 +145,13 @@ export function BottomNav({
         />
 
         <NavItem
-          icon={ChefHat}
-          label="Recipes"
-          isActive={activeTab === "recipes"}
-          onClick={() => onTabChange("recipes")}
-          testId="button-nav-recipes"
-          itemRef={recipesRef}
+          icon={AlertTriangle}
+          label="Alerts"
+          isActive={activeTab === "alerts"}
+          onClick={() => onTabChange("alerts")}
+          testId="button-nav-alerts"
+          badge={alertCount}
+          itemRef={alertsRef}
         />
       </div>
     </nav>
