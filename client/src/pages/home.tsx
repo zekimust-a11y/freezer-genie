@@ -309,13 +309,8 @@ export default function Home() {
                 <thead className="bg-muted/50">
                   <tr className="text-left text-sm">
                     <th className="px-3 py-2 font-medium">Name</th>
-                    <th className="px-3 py-2 font-medium">Category</th>
                     <th className="px-3 py-2 font-medium">Qty</th>
-                    <th className="px-3 py-2 font-medium hidden sm:table-cell">Use By</th>
-                    {hasMultipleFreezers && (
-                      <th className="px-3 py-2 font-medium hidden md:table-cell">Freezer</th>
-                    )}
-                    <th className="px-3 py-2 font-medium hidden md:table-cell">Location</th>
+                    <th className="px-3 py-2 font-medium">Use By</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -327,26 +322,12 @@ export default function Home() {
                       data-testid={`row-item-${item.id}`}
                     >
                       <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
-                      <td className="px-3 py-2 text-sm text-muted-foreground capitalize">
-                        {item.subCategory || item.category.replace("_", " ")}
-                      </td>
                       <td className="px-3 py-2 text-sm">
                         {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
                       </td>
-                      <td className="px-3 py-2 text-sm hidden sm:table-cell">
+                      <td className="px-3 py-2 text-sm">
                         {item.expirationDate 
                           ? new Date(item.expirationDate).toLocaleDateString()
-                          : "-"
-                        }
-                      </td>
-                      {hasMultipleFreezers && (
-                        <td className="px-3 py-2 text-sm text-muted-foreground hidden md:table-cell">
-                          {getFreezerLabel(item.freezerId) || "-"}
-                        </td>
-                      )}
-                      <td className="px-3 py-2 text-sm text-muted-foreground hidden md:table-cell">
-                        {item.location && item.location !== "unassigned" 
-                          ? getLocationLabel(item.location as Location) 
                           : "-"
                         }
                       </td>
