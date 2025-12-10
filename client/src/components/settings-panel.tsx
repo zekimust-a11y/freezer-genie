@@ -258,6 +258,10 @@ export function SettingsPanel() {
     setFreezers(freezers.map(f => f.id === id ? { ...f, type } : f));
   };
 
+  const handleFreezerNameChange = (id: string, name: string) => {
+    setFreezers(freezers.map(f => f.id === id ? { ...f, name } : f));
+  };
+
   return (
     <div className="p-4 space-y-4">
       <Card>
@@ -378,8 +382,13 @@ export function SettingsPanel() {
               key={freezer.id}
               className="flex items-center gap-2 bg-muted p-2 rounded-md"
             >
-              <Refrigerator className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm flex-1">{freezer.name}</span>
+              <Refrigerator className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <Input
+                value={freezer.name}
+                onChange={(e) => handleFreezerNameChange(freezer.id, e.target.value)}
+                className="flex-1 h-8"
+                data-testid={`input-freezer-name-${freezer.id}`}
+              />
               <Select 
                 value={freezer.type} 
                 onValueChange={(v) => handleFreezerTypeChange(freezer.id, v as FreezerType)}
