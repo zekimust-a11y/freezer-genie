@@ -156,10 +156,20 @@ export function RecipesPage({ items }: RecipesPageProps) {
   // Check if an ingredient from recipe matches freezer inventory
   const isIngredientInFreezer = (ingredient: string): boolean => {
     const lowerIngredient = ingredient.toLowerCase();
+    // Check if ingredient matches any token extracted from freezer items
+    if (availableTokens.has(lowerIngredient)) {
+      return true;
+    }
+    // Check for exact item name matches (first word or full name)
     return items.some(item => {
       const itemName = item.name.toLowerCase();
-      return itemName.includes(lowerIngredient) || lowerIngredient.includes(itemName.split(" ")[0]);
-    }) || availableTokens.has(lowerIngredient);
+      const firstWord = itemName.split(/\s+/)[0];
+      // Match if ingredient equals the first word or is a key part of the item name
+      // Exclude compound items like "ice cream" from matching just "cream"
+      return firstWord === lowerIngredient || 
+        (itemName === lowerIngredient) ||
+        (itemName.startsWith(lowerIngredient + " "));
+    });
   };
 
   const filteredIngredients = useMemo(() => {
