@@ -21,7 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings, Share2, Mail, MessageCircle, Copy, CheckCheck } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
+import { Card, CardContent } from "@/components/ui/card";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -49,6 +51,7 @@ export default function Home() {
   const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
   const [freezerOptions, setFreezerOptions] = useState(getFreezerOptions());
   const [hasMultipleFreezers, setHasMultipleFreezers] = useState(getFreezers().length > 1);
+  const [copied, setCopied] = useState(false);
 
   // Fetch freezers from API and sync to localStorage
   useEffect(() => {
@@ -170,6 +173,82 @@ export default function Home() {
 
   const handleEditItem = (item: FreezerItem) => {
     navigate(`/item/${item.id}`);
+  };
+
+  const generateInventoryText = () => {
+    if (filteredAndSortedItems.length === 0) return "";
+    
+    const freezerName = selectedFreezerId === "all" 
+      ? "All Freezers" 
+      : freezerOptions.find(f => f.id === selectedFreezerId)?.name || "Freezer";
+    
+    const header = `Freezer Inventory - ${freezerName}:\n\n`;
+    const itemLines = filteredAndSortedItems.map(item => {
+      const qty = formatQuantity(item.quantity);
+      const unit = getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity);
+      const expiry = item.expirationDate ? ` (Use by: ${new Date(item.expirationDate).toLocaleDateString()})` : "";
+      return `- ${item.name}: ${qty} ${unit}${expiry}`;
+    }).join("\n");
+    
+    return header + itemLines;
+  };
+
+  const handleShareInventory = async () => {
+    const text = generateInventoryText();
+    if (!text) return;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Freezer Inventory",
+          text: text,
+        });
+      } catch {
+        // User cancelled
+      }
+    }
+  };
+
+  const handleCopyInventory = async () => {
+    const text = generateInventoryText();
+    if (!text) return;
+    
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({ title: "Copied to clipboard" });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ title: "Failed to copy", variant: "destructive" });
+    }
+  };
+
+  const handleEmailInventory = () => {
+    const text = generateInventoryText();
+    if (!text) return;
+    
+    const freezerName = selectedFreezerId === "all" 
+      ? "All Freezers" 
+      : freezerOptions.find(f => f.id === selectedFreezerId)?.name || "Freezer";
+    const subject = encodeURIComponent(`Freezer Inventory - ${freezerName}`);
+    const body = encodeURIComponent(text);
+    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+  };
+
+  const handleWhatsAppInventory = () => {
+    const text = generateInventoryText();
+    if (!text) return;
+    
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, "_blank");
+  };
+
+  const handleSMSInventory = () => {
+    const text = generateInventoryText();
+    if (!text) return;
+    
+    const encoded = encodeURIComponent(text);
+    window.open(`sms:?body=${encoded}`, "_blank");
   };
 
   const getUserInitials = () => {
@@ -307,48 +386,158 @@ export default function Home() {
           ) : filteredAndSortedItems.length === 0 ? (
             <EmptyState onAddItem={() => navigate("/add")} hasFilters />
           ) : viewMode === "cards" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredAndSortedItems.map((item, index) => (
-                <FreezerItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleEditItem}
-                  index={index}
-                />
-              ))}
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredAndSortedItems.map((item, index) => (
+                  <FreezerItemCard
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEditItem}
+                    index={index}
+                  />
+                ))}
+              </div>
+              
+              <Card className="mt-6">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Share2 className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Share this list with someone else</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {typeof navigator !== 'undefined' && navigator.share && (
+                      <Button 
+                        variant="outline" 
+                        onClick={handleShareInventory}
+                        data-testid="button-share-inventory-native"
+                      >
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Share
+                      </Button>
+                    )}
+                    <Button 
+                      variant="outline" 
+                      onClick={handleWhatsAppInventory}
+                      data-testid="button-share-inventory-whatsapp"
+                    >
+                      <SiWhatsapp className="h-4 w-4 mr-2" />
+                      WhatsApp
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleEmailInventory}
+                      data-testid="button-share-inventory-email"
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleSMSInventory}
+                      data-testid="button-share-inventory-sms"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      SMS
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleCopyInventory}
+                      data-testid="button-share-inventory-copy"
+                    >
+                      {copied ? <CheckCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                      {copied ? "Copied" : "Copy"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           ) : (
-            <div className="border rounded-md overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr className="text-left text-sm">
-                    <th scope="col" className="px-3 py-2 font-medium">Name</th>
-                    <th scope="col" className="px-3 py-2 font-medium">Qty</th>
-                    <th scope="col" className="px-3 py-2 font-medium">Use By</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {filteredAndSortedItems.map((item) => (
-                    <tr 
-                      key={item.id} 
-                      className="hover-elevate cursor-pointer"
-                      onClick={() => handleEditItem(item)}
-                      data-testid={`row-item-${item.id}`}
-                    >
-                      <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
-                      <td className="px-3 py-2 text-sm">
-                        {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
-                      </td>
-                      <td className="px-3 py-2 text-sm">
-                        {item.expirationDate 
-                          ? new Date(item.expirationDate).toLocaleDateString()
-                          : "-"
-                        }
-                      </td>
+            <div className="space-y-4">
+              <div className="border rounded-md overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr className="text-left text-sm">
+                      <th scope="col" className="px-3 py-2 font-medium">Name</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Qty</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Use By</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y">
+                    {filteredAndSortedItems.map((item) => (
+                      <tr 
+                        key={item.id} 
+                        className="hover-elevate cursor-pointer"
+                        onClick={() => handleEditItem(item)}
+                        data-testid={`row-item-${item.id}`}
+                      >
+                        <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
+                        <td className="px-3 py-2 text-sm">
+                          {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
+                        </td>
+                        <td className="px-3 py-2 text-sm">
+                          {item.expirationDate 
+                            ? new Date(item.expirationDate).toLocaleDateString()
+                            : "-"
+                          }
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              <Card className="mt-6">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Share2 className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Share this list with someone else</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {typeof navigator !== 'undefined' && navigator.share && (
+                      <Button 
+                        variant="outline" 
+                        onClick={handleShareInventory}
+                        data-testid="button-share-inventory-native-table"
+                      >
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Share
+                      </Button>
+                    )}
+                    <Button 
+                      variant="outline" 
+                      onClick={handleWhatsAppInventory}
+                      data-testid="button-share-inventory-whatsapp-table"
+                    >
+                      <SiWhatsapp className="h-4 w-4 mr-2" />
+                      WhatsApp
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleEmailInventory}
+                      data-testid="button-share-inventory-email-table"
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleSMSInventory}
+                      data-testid="button-share-inventory-sms-table"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      SMS
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleCopyInventory}
+                      data-testid="button-share-inventory-copy-table"
+                    >
+                      {copied ? <CheckCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                      {copied ? "Copied" : "Copy"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </main>
