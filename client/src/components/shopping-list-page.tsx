@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/category-icon";
-import { ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart, Check, Share2, Mail, MessageCircle, Copy, CheckCheck } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { type FreezerItem, type Location } from "@shared/schema";
 import { getLocationLabel, getUnitLabelConfig } from "@/components/settings-panel";
+import { useToast } from "@/hooks/use-toast";
 
 const weightUnits = ["lb", "kg", "oz", "g"];
 
@@ -36,9 +40,78 @@ function getLowStockItems(items: FreezerItem[]): FreezerItem[] {
 
 export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
   const lowStockItems = getLowStockItems(items);
+  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+
+  const generateListText = () => {
+    if (lowStockItems.length === 0) return "";
+    
+    const header = "Shopping List - Items to Restock:\n\n";
+    const itemLines = lowStockItems.map(item => {
+      const needed = Math.max(0.01, (item.lowStockThreshold ?? 0) - Number(item.quantity));
+      return `- ${item.name}: need ${formatQuantity(needed, item.unit)} ${getUnitLabel(item.unit, needed)}`;
+    }).join("\n");
+    
+    return header + itemLines;
+  };
+
+  const handleShare = async () => {
+    const text = generateListText();
+    if (!text) return;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Shopping List",
+          text: text,
+        });
+      } catch (err) {
+        // User cancelled or error
+      }
+    }
+  };
+
+  const handleCopy = async () => {
+    const text = generateListText();
+    if (!text) return;
+    
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({ title: "Copied to clipboard" });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ title: "Failed to copy", variant: "destructive" });
+    }
+  };
+
+  const handleEmail = () => {
+    const text = generateListText();
+    if (!text) return;
+    
+    const subject = encodeURIComponent("Shopping List - Items to Restock");
+    const body = encodeURIComponent(text);
+    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+  };
+
+  const handleWhatsApp = () => {
+    const text = generateListText();
+    if (!text) return;
+    
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, "_blank");
+  };
+
+  const handleSMS = () => {
+    const text = generateListText();
+    if (!text) return;
+    
+    const encoded = encodeURIComponent(text);
+    window.open(`sms:?body=${encoded}`, "_blank");
+  };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 pb-32">
       <div className="flex items-center gap-2">
         <ShoppingCart className="h-5 w-5 text-primary" />
         <h1 className="text-lg font-semibold">Shopping List</h1>
@@ -88,6 +161,59 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
               </CardContent>
             </Card>
           ))}
+
+          <Card className="mt-6">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Share2 className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Share this list</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {typeof navigator !== 'undefined' && navigator.share && (
+                  <Button 
+                    variant="outline" 
+                    onClick={handleShare}
+                    data-testid="button-share-native"
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  onClick={handleWhatsApp}
+                  data-testid="button-share-whatsapp"
+                >
+                  <SiWhatsapp className="h-4 w-4 mr-2" />
+                  WhatsApp
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleEmail}
+                  data-testid="button-share-email"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleSMS}
+                  data-testid="button-share-sms"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  SMS
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCopy}
+                  data-testid="button-share-copy"
+                >
+                  {copied ? <CheckCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
