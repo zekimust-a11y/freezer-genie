@@ -815,7 +815,7 @@ export function SettingsPanel() {
             </div>
             <div>
               <h3 className="font-medium">Freezer Genie</h3>
-              <p className="text-xs text-muted-foreground">Version 1.0.0</p>
+              <p className="text-xs text-muted-foreground">Version 0.0.1</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">

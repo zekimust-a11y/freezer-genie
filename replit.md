@@ -10,6 +10,8 @@ The application provides a clean, productivity-focused interface for managing fr
 
 Preferred communication style: Simple, everyday language.
 
+**Version Management**: Current version is 0.0.1 (in client/src/components/settings-panel.tsx). Increment by 0.0.1 on each publish (e.g., 0.0.1 → 0.0.2 → 0.0.3).
+
 ## System Architecture
 
 ### Frontend Architecture
