@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Snowflake, Plus, X, LogOut, Refrigerator, Eye, EyeOff } from "lucide-react";
+import { Snowflake, Plus, X, LogOut, Refrigerator, Eye, EyeOff, Tag } from "lucide-react";
 import { categories, type Category } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
@@ -93,6 +93,34 @@ export function getCustomLocations(): string[] {
     // ignore parse errors
   }
   return [];
+}
+
+export interface CustomCategory {
+  id: string;
+  name: string;
+}
+
+export function getCustomCategories(): CustomCategory[] {
+  try {
+    const stored = localStorage.getItem("customCategories");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [];
+}
+
+export function getAllCategories(): string[] {
+  const customCats = getCustomCategories();
+  return [...categories, ...customCats.map(c => c.id)];
+}
+
+export function getCustomCategoryLabel(categoryId: string): string | null {
+  const customCats = getCustomCategories();
+  const found = customCats.find(c => c.id === categoryId);
+  return found ? found.name : null;
 }
 
 export function getDefaultExpiry(): DefaultExpiry {
@@ -201,6 +229,8 @@ export function SettingsPanel() {
   const [newFreezerName, setNewFreezerName] = useState("");
   const [newFreezerType, setNewFreezerType] = useState<FreezerType>("fridge_freezer");
   const [hiddenCategories, setHiddenCategories] = useState<Category[]>(getHiddenCategories);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>(getCustomCategories);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -237,6 +267,28 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("hiddenCategories", JSON.stringify(hiddenCategories));
   }, [hiddenCategories]);
+
+  useEffect(() => {
+    localStorage.setItem("customCategories", JSON.stringify(customCategories));
+  }, [customCategories]);
+
+  const handleAddCategory = () => {
+    const trimmed = newCategoryName.trim();
+    if (trimmed) {
+      const id = `custom_${Date.now()}`;
+      const newCategory: CustomCategory = { id, name: trimmed };
+      setCustomCategories([...customCategories, newCategory]);
+      setNewCategoryName("");
+    }
+  };
+
+  const handleRemoveCategory = (id: string) => {
+    setCustomCategories(customCategories.filter(c => c.id !== id));
+  };
+
+  const handleCustomCategoryNameChange = (id: string, name: string) => {
+    setCustomCategories(customCategories.map(c => c.id === id ? { ...c, name } : c));
+  };
 
   const handleToggleCategoryVisibility = (category: Category) => {
     setHiddenCategories(prev => 
@@ -474,6 +526,55 @@ export function SettingsPanel() {
               </div>
             );
           })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Custom Categories</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add category name..."
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+              data-testid="input-new-category"
+            />
+            <Button size="icon" onClick={handleAddCategory} data-testid="button-add-category">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          {customCategories.length > 0 ? (
+            <div className="space-y-2">
+              {customCategories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="flex items-center gap-2 bg-muted p-2 rounded-md"
+                >
+                  <Tag className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <Input
+                    value={cat.name}
+                    onChange={(e) => handleCustomCategoryNameChange(cat.id, e.target.value)}
+                    className="flex-1 h-8"
+                    data-testid={`input-custom-category-${cat.id}`}
+                  />
+                  <button
+                    onClick={() => handleRemoveCategory(cat.id)}
+                    className="text-muted-foreground hover:text-foreground p-1"
+                    data-testid={`button-remove-category-${cat.id}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              No custom categories added yet.
+            </p>
+          )}
         </CardContent>
       </Card>
 
