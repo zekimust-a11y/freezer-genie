@@ -717,7 +717,7 @@ export default function AddEditItemPage() {
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Optional notes..."
+                      placeholder="Additional notes..."
                       className="min-h-[60px]"
                       data-testid="input-notes"
                       {...field}
