@@ -690,6 +690,9 @@ export default function AddEditItemPage() {
                         <SelectItem value="bag" data-testid="select-unit-bag">Bag(s)</SelectItem>
                         <SelectItem value="box" data-testid="select-unit-box">Box(es)</SelectItem>
                         <SelectItem value="pack" data-testid="select-unit-pack">Pack(s)</SelectItem>
+                        <SelectItem value="bottle" data-testid="select-unit-bottle">Bottle(s)</SelectItem>
+                        <SelectItem value="tub" data-testid="select-unit-tub">Tub(s)</SelectItem>
+                        <SelectItem value="jar" data-testid="select-unit-jar">Jar(s)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

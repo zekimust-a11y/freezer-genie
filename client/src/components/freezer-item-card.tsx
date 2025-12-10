@@ -21,6 +21,9 @@ const unitLabels: Record<string, { singular: string; plural: string }> = {
   box: { singular: "box", plural: "boxes" },
   pack: { singular: "pack", plural: "packs" },
   container: { singular: "container", plural: "containers" },
+  bottle: { singular: "bottle", plural: "bottles" },
+  tub: { singular: "tub", plural: "tubs" },
+  jar: { singular: "jar", plural: "jars" },
 };
 
 export function getUnitLabel(unit: string, quantity: number): string {

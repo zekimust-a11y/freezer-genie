@@ -16,6 +16,9 @@ const unitLabels: Record<string, { singular: string; plural: string }> = {
   bag: { singular: "bag", plural: "bags" },
   box: { singular: "box", plural: "boxes" },
   pack: { singular: "pack", plural: "packs" },
+  bottle: { singular: "bottle", plural: "bottles" },
+  tub: { singular: "tub", plural: "tubs" },
+  jar: { singular: "jar", plural: "jars" },
 };
 
 const weightUnits = ["lb", "kg", "oz", "g"];
