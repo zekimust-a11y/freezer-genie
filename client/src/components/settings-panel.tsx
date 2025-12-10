@@ -191,6 +191,22 @@ export function setSelectedFreezer(freezerId: string): void {
   localStorage.setItem("selectedFreezer", freezerId);
 }
 
+export function getDefaultFreezerForNewItems(): string {
+  const stored = localStorage.getItem("defaultFreezerForNewItems");
+  if (stored) {
+    const freezers = getFreezers();
+    if (freezers.some(f => f.id === stored)) {
+      return stored;
+    }
+  }
+  const freezers = getFreezers();
+  return freezers[0]?.id || "default";
+}
+
+export function setDefaultFreezerForNewItems(freezerId: string): void {
+  localStorage.setItem("defaultFreezerForNewItems", freezerId);
+}
+
 export function getFreezerOptions(): { id: string; name: string }[] {
   const freezers = getFreezers();
   return [
@@ -289,6 +305,7 @@ export function SettingsPanel() {
   const [newLocation, setNewLocation] = useState("");
   const [categoryLabels, setCategoryLabels] = useState<Record<Category, string>>(getCategoryLabels);
   const [freezers, setFreezers] = useState<Freezer[]>(getFreezers);
+  const [defaultFreezerId, setDefaultFreezerId] = useState<string>(getDefaultFreezerForNewItems);
   const [newFreezerName, setNewFreezerName] = useState("");
   const [newFreezerType, setNewFreezerType] = useState<FreezerType>("fridge_freezer");
   const [hiddenCategories, setHiddenCategories] = useState<Category[]>(getHiddenCategories);
@@ -330,6 +347,10 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("freezers", JSON.stringify(freezers));
   }, [freezers]);
+
+  useEffect(() => {
+    setDefaultFreezerForNewItems(defaultFreezerId);
+  }, [defaultFreezerId]);
 
   useEffect(() => {
     localStorage.setItem("hiddenCategories", JSON.stringify(hiddenCategories));
@@ -530,6 +551,28 @@ export function SettingsPanel() {
               </Button>
             </div>
           </div>
+
+          {freezers.length > 1 && (
+            <div className="pt-3 border-t">
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Default freezer for new items</h4>
+              <Select value={defaultFreezerId} onValueChange={setDefaultFreezerId}>
+                <SelectTrigger data-testid="select-default-freezer">
+                  <SelectValue placeholder="Select default freezer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {freezers.map((freezer) => (
+                    <SelectItem 
+                      key={freezer.id} 
+                      value={freezer.id}
+                      data-testid={`select-default-freezer-${freezer.id}`}
+                    >
+                      {freezer.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </CardContent>
       </Card>
 
