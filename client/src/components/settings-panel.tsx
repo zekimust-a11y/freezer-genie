@@ -166,7 +166,7 @@ export function setSelectedFreezer(freezerId: string): void {
 export function getFreezerOptions(): { id: string; name: string }[] {
   const freezers = getFreezers();
   return [
-    { id: "all", name: "All Freezers" },
+    { id: "all", name: "Show items from" },
     ...freezers.map(f => ({ id: f.id, name: f.name }))
   ];
 }
