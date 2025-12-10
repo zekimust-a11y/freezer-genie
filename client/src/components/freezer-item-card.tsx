@@ -192,20 +192,16 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                   Low Stock
                 </Badge>
               )}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {item.expirationDate ? (
-                  <>
-                    <ExpirationBadge expirationDate={item.expirationDate} />
-                    {formattedDate && (
-                      <span className="text-xs text-muted-foreground">
-                        Use by: {formattedDate}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-xs text-muted-foreground italic">No use by date set</span>
-                )}
-              </div>
+              {item.expirationDate && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <ExpirationBadge expirationDate={item.expirationDate} />
+                  {formattedDate && (
+                    <span className="text-xs text-muted-foreground">
+                      Use by: {formattedDate}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </CardContent>
         </div>
