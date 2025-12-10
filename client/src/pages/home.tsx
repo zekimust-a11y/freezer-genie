@@ -42,6 +42,7 @@ export default function Home() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | ProduceSubcategory | PreparedMealsSubcategory | FrozenGoodsSubcategory | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiry");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
   const freezerOptions = getFreezerOptions();
 
@@ -187,27 +188,45 @@ export default function Home() {
                   ))}
                 </SelectContent>
               </Select>
-              <div className="relative flex-1 max-w-[200px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-8"
-                  data-testid="input-search"
-                />
-                {searchQuery && (
+              {isSearchExpanded ? (
+                <div className="relative flex-1 max-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 pr-8"
+                    data-testid="input-search"
+                    autoFocus
+                    onBlur={() => {
+                      if (!searchQuery) {
+                        setIsSearchExpanded(false);
+                      }
+                    }}
+                  />
                   <button
                     type="button"
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => {
+                      setSearchQuery("");
+                      setIsSearchExpanded(false);
+                    }}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
                     data-testid="button-clear-search"
                   >
                     <X className="h-4 w-4" />
                   </button>
-                )}
-              </div>
+                </div>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchExpanded(true)}
+                  data-testid="button-search"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           )}
           {isLoading ? (
