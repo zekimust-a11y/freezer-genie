@@ -236,7 +236,7 @@ export function RecipesPage({ items }: RecipesPageProps) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Find me a recipe by ingredient</CardTitle>
+          <CardTitle className="text-base">Find me a recipe by ingredient in my Freezer</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {/* Category Filter - Main Categories */}
