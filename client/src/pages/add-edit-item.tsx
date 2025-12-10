@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -67,6 +67,30 @@ export default function AddEditItemPage() {
   const freezers = getFreezers();
   const hasMultipleFreezers = freezers.length > 1;
 
+  // Fetch all items for notes autocomplete
+  const { data: allItems = [] } = useQuery<FreezerItem[]>({
+    queryKey: ["/api/items"],
+  });
+
+  const [showNotesSuggestions, setShowNotesSuggestions] = useState(false);
+  const [notesInputValue, setNotesInputValue] = useState("");
+
+  // Extract unique notes from all items
+  const uniqueNotes = useMemo(() => {
+    const notes = allItems
+      .map(item => item.notes)
+      .filter((note): note is string => !!note && note.trim() !== "");
+    return [...new Set(notes)].sort();
+  }, [allItems]);
+
+  // Filter notes based on input
+  const filteredNotes = useMemo(() => {
+    if (!notesInputValue.trim()) return uniqueNotes.slice(0, 5);
+    return uniqueNotes
+      .filter(note => note.toLowerCase().includes(notesInputValue.toLowerCase()))
+      .slice(0, 5);
+  }, [uniqueNotes, notesInputValue]);
+
   const form = useForm<FreezerItemFormData>({
     resolver: zodResolver(freezerItemFormSchema),
     defaultValues: {
@@ -104,6 +128,7 @@ export default function AddEditItemPage() {
         tags: item.tags || [],
       });
       setSelectedTags(item.tags || []);
+      setNotesInputValue(item.notes || "");
     }
   }, [isEditing, item, form]);
 
@@ -730,13 +755,39 @@ export default function AddEditItemPage() {
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Additional notes..."
-                      className="min-h-[60px]"
-                      data-testid="input-notes"
-                      {...field}
-                      value={field.value || ""}
-                    />
+                    <div className="relative">
+                      <Input
+                        placeholder="Additional notes..."
+                        data-testid="input-notes"
+                        value={notesInputValue}
+                        onChange={(e) => {
+                          setNotesInputValue(e.target.value);
+                          field.onChange(e.target.value);
+                        }}
+                        onFocus={() => setShowNotesSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowNotesSuggestions(false), 150)}
+                      />
+                      {showNotesSuggestions && filteredNotes.length > 0 && (
+                        <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md">
+                          {filteredNotes.map((note) => (
+                            <button
+                              key={note}
+                              type="button"
+                              className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground first:rounded-t-md last:rounded-b-md"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                setNotesInputValue(note);
+                                field.onChange(note);
+                                setShowNotesSuggestions(false);
+                              }}
+                              data-testid={`notes-suggestion-${note.replace(/\s+/g, "-").toLowerCase()}`}
+                            >
+                              {note}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
