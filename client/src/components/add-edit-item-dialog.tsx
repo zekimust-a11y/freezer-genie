@@ -29,7 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getCategoryConfig, getCategoryLabel } from "@/components/category-icon";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getCustomCategories, getVisibleLocations, getLocationLabel } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getCustomCategories, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, type ItemTag } from "@/components/settings-panel";
+import { Badge } from "@/components/ui/badge";
 import { 
   categories, 
   meatSubcategories,
@@ -75,8 +76,11 @@ export function AddEditItemDialog({
       notes: "",
       lowStockThreshold: getDefaultLowStock(),
       location: "unassigned",
+      tags: [],
     },
   });
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const watchedCategory = form.watch("category");
 
@@ -93,7 +97,9 @@ export function AddEditItemDialog({
           notes: item.notes || "",
           lowStockThreshold: item.lowStockThreshold || 0,
           location: item.location || "unassigned",
+          tags: item.tags || [],
         });
+        setSelectedTags(item.tags || []);
       } else {
         form.reset({
           name: "",
@@ -105,7 +111,9 @@ export function AddEditItemDialog({
           notes: "",
           lowStockThreshold: getDefaultLowStock(),
           location: "unassigned",
+          tags: [],
         });
+        setSelectedTags([]);
       }
     }
   }, [open, item, form]);
@@ -117,7 +125,15 @@ export function AddEditItemDialog({
   }, [watchedCategory, form]);
 
   const handleSubmit = (data: FreezerItemFormData) => {
-    onSubmit(data);
+    onSubmit({ ...data, tags: selectedTags });
+  };
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tagId) 
+        ? prev.filter(t => t !== tagId)
+        : [...prev, tagId]
+    );
   };
 
   const handleBarcodeScanned = (productName: string) => {
@@ -570,6 +586,23 @@ export function AddEditItemDialog({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tags</label>
+              <div className="flex flex-wrap gap-2">
+                {getAvailableTags().map((tag) => (
+                  <Badge
+                    key={tag.id}
+                    variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                    className="cursor-pointer toggle-elevate"
+                    onClick={() => toggleTag(tag.id)}
+                    data-testid={`tag-${tag.id}`}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
 
             <DialogFooter className="gap-2 sm:gap-0">
               <Button

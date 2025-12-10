@@ -23,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, type ItemTag } from "@/components/settings-panel";
+import { Badge } from "@/components/ui/badge";
 import { 
   categories,
   meatSubcategories,
@@ -72,8 +73,11 @@ export default function AddEditItemPage() {
       notes: "",
       lowStockThreshold: getDefaultLowStock(),
       location: "unassigned",
+      tags: [],
     },
   });
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const watchedCategory = form.watch("category");
 
@@ -89,9 +93,19 @@ export default function AddEditItemPage() {
         notes: item.notes || "",
         lowStockThreshold: item.lowStockThreshold || 0,
         location: item.location || "unassigned",
+        tags: item.tags || [],
       });
+      setSelectedTags(item.tags || []);
     }
   }, [isEditing, item, form]);
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tagId) 
+        ? prev.filter(t => t !== tagId)
+        : [...prev, tagId]
+    );
+  };
 
   useEffect(() => {
     if (watchedCategory !== "meat_fish" && watchedCategory !== "produce" && watchedCategory !== "prepared_meals" && watchedCategory !== "frozen_goods") {
@@ -165,10 +179,11 @@ export default function AddEditItemPage() {
   });
 
   const handleSubmit = (data: FreezerItemFormData) => {
+    const dataWithTags = { ...data, tags: selectedTags };
     if (isEditing) {
-      updateMutation.mutate(data);
+      updateMutation.mutate(dataWithTags);
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(dataWithTags);
     }
   };
 
@@ -646,6 +661,23 @@ export default function AddEditItemPage() {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tags</label>
+              <div className="flex flex-wrap gap-2">
+                {getAvailableTags().map((tag) => (
+                  <Badge
+                    key={tag.id}
+                    variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                    className="cursor-pointer toggle-elevate"
+                    onClick={() => toggleTag(tag.id)}
+                    data-testid={`tag-${tag.id}`}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </form>
         </Form>
       </div>
