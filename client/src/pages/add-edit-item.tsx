@@ -115,7 +115,11 @@ export default function AddEditItemPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: FreezerItemFormData) => {
-      const payload = { ...data, quantity: String(data.quantity) };
+      const payload = { 
+        ...data, 
+        quantity: String(data.quantity),
+        subCategory: data.subCategory || null,
+      };
       const response = await apiRequest("POST", "/api/items", payload);
       return response.json();
     },
@@ -138,7 +142,11 @@ export default function AddEditItemPage() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: FreezerItemFormData) => {
-      const payload = { ...data, quantity: String(data.quantity) };
+      const payload = { 
+        ...data, 
+        quantity: String(data.quantity),
+        subCategory: data.subCategory || null,
+      };
       const response = await apiRequest("PUT", `/api/items/${itemId}`, payload);
       return response.json();
     },
