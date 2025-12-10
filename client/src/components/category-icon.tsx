@@ -8,7 +8,7 @@ import {
   Package,
   IceCream,
   Croissant,
-  Drumstick,
+  Bird,
   Fish,
   Shell,
   Ham,
@@ -70,7 +70,7 @@ export function getItemConfig(category: string, subCategory?: string | null): Ca
 }
 
 const meatSubcategoryConfig: Record<MeatSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
-  chicken: { icon: Drumstick, label: "Poultry", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
+  chicken: { icon: Bird, label: "Poultry", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
   beef: { icon: Beef, label: "Beef", color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-600" },
   pork: { icon: Ham, label: "Pork", color: "text-pink-600 dark:text-pink-400", bgColor: "bg-pink-100 dark:bg-pink-900/30", stripeColor: "bg-pink-600" },
   lamb: { icon: Beef, label: "Lamb", color: "text-rose-600 dark:text-rose-400", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-600" },
