@@ -42,6 +42,7 @@ import { meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcatego
 import { getCategoryConfig, getCategoryLabel } from "@/components/category-icon";
 import { getCustomCategories } from "@/components/settings-panel";
 import { Loader2, MapPin, Minus, Plus, ChevronLeft, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export default function AddEditItemPage() {
@@ -275,250 +276,213 @@ export default function AddEditItemPage() {
               )}
             />
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-category">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((cat) => {
-                          const config = getCategoryConfig(cat);
-                          const Icon = config.icon;
-                          return (
-                            <SelectItem 
-                              key={cat} 
-                              value={cat}
-                              data-testid={`select-category-${cat}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Icon className={`h-4 w-4 ${config.color}`} />
-                                {getCategoryLabel(cat)}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                        {getCustomCategories().map((customCat) => {
-                          const config = getCategoryConfig(customCat.id);
-                          const Icon = config.icon;
-                          return (
-                            <SelectItem 
-                              key={customCat.id} 
-                              value={customCat.id}
-                              data-testid={`select-category-${customCat.id}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Icon className={`h-4 w-4 ${config.color}`} />
-                                {customCat.name}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Category Visual Selector */}
+            <div className="space-y-2">
+              <FormLabel>Category</FormLabel>
+              <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                <div className="flex items-center gap-2 min-w-max">
+                  {categories.map((cat) => {
+                    const config = getCategoryConfig(cat);
+                    const Icon = config.icon;
+                    const isActive = watchedCategory === cat;
+                    return (
+                      <motion.button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                          form.setValue("category", cat);
+                          form.setValue("subCategory", null);
+                        }}
+                        className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                        data-testid={`button-category-${cat}`}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                          <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                        </div>
+                        <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{getCategoryLabel(cat)}</span>
+                      </motion.button>
+                    );
+                  })}
+                  {getCustomCategories().map((customCat) => {
+                    const config = getCategoryConfig(customCat.id);
+                    const Icon = config.icon;
+                    const isActive = watchedCategory === customCat.id;
+                    return (
+                      <motion.button
+                        key={customCat.id}
+                        type="button"
+                        onClick={() => {
+                          form.setValue("category", customCat.id);
+                          form.setValue("subCategory", null);
+                        }}
+                        className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                        data-testid={`button-category-${customCat.id}`}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                          <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                        </div>
+                        <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{customCat.name}</span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
 
-              {watchedCategory === "meat_fish" && (
-                <FormField
-                  control={form.control}
-                  name="subCategory"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-subcategory">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {meatSubcategories.map((sub) => {
-                            const config = meatSubcategoryConfig[sub];
-                            const Icon = config.icon;
-                            return (
-                              <SelectItem 
-                                key={sub} 
-                                value={sub}
-                                data-testid={`select-subcategory-${sub}`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className={`h-4 w-4 ${config.color}`} />
-                                  {config.label}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+            {/* Subcategory Visual Selector */}
+            {watchedCategory === "meat_fish" && (
+              <div className="space-y-2">
+                <FormLabel>Type</FormLabel>
+                <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                  <div className="flex items-center gap-2 min-w-max">
+                    {meatSubcategories.map((sub) => {
+                      const config = meatSubcategoryConfig[sub];
+                      const Icon = config.icon;
+                      const isActive = form.watch("subCategory") === sub;
+                      return (
+                        <motion.button
+                          key={sub}
+                          type="button"
+                          onClick={() => form.setValue("subCategory", isActive ? null : sub)}
+                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          data-testid={`button-subcategory-${sub}`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          </div>
+                          <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
-              {watchedCategory === "produce" && (
-                <FormField
-                  control={form.control}
-                  name="subCategory"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-subcategory">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {produceSubcategories.map((sub) => {
-                            const config = produceSubcategoryConfig[sub];
-                            const Icon = config.icon;
-                            return (
-                              <SelectItem 
-                                key={sub} 
-                                value={sub}
-                                data-testid={`select-subcategory-${sub}`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className={`h-4 w-4 ${config.color}`} />
-                                  {config.label}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+            {watchedCategory === "produce" && (
+              <div className="space-y-2">
+                <FormLabel>Type</FormLabel>
+                <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                  <div className="flex items-center gap-2 min-w-max">
+                    {produceSubcategories.map((sub) => {
+                      const config = produceSubcategoryConfig[sub];
+                      const Icon = config.icon;
+                      const isActive = form.watch("subCategory") === sub;
+                      return (
+                        <motion.button
+                          key={sub}
+                          type="button"
+                          onClick={() => form.setValue("subCategory", isActive ? null : sub)}
+                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          data-testid={`button-subcategory-${sub}`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          </div>
+                          <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
-              {watchedCategory === "prepared_meals" && (
-                <FormField
-                  control={form.control}
-                  name="subCategory"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-subcategory">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {preparedMealsSubcategories.map((sub) => {
-                            const config = preparedMealsSubcategoryConfig[sub];
-                            const Icon = config.icon;
-                            return (
-                              <SelectItem 
-                                key={sub} 
-                                value={sub}
-                                data-testid={`select-subcategory-${sub}`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className={`h-4 w-4 ${config.color}`} />
-                                  {config.label}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+            {watchedCategory === "prepared_meals" && (
+              <div className="space-y-2">
+                <FormLabel>Type</FormLabel>
+                <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                  <div className="flex items-center gap-2 min-w-max">
+                    {preparedMealsSubcategories.map((sub) => {
+                      const config = preparedMealsSubcategoryConfig[sub];
+                      const Icon = config.icon;
+                      const isActive = form.watch("subCategory") === sub;
+                      return (
+                        <motion.button
+                          key={sub}
+                          type="button"
+                          onClick={() => form.setValue("subCategory", isActive ? null : sub)}
+                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          data-testid={`button-subcategory-${sub}`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          </div>
+                          <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
-              {watchedCategory === "frozen_goods" && (
-                <FormField
-                  control={form.control}
-                  name="subCategory"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-subcategory">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {frozenGoodsSubcategories.map((sub) => {
-                            const config = frozenGoodsSubcategoryConfig[sub];
-                            const Icon = config.icon;
-                            return (
-                              <SelectItem 
-                                key={sub} 
-                                value={sub}
-                                data-testid={`select-subcategory-${sub}`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className={`h-4 w-4 ${config.color}`} />
-                                  {config.label}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+            {watchedCategory === "frozen_goods" && (
+              <div className="space-y-2">
+                <FormLabel>Type</FormLabel>
+                <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                  <div className="flex items-center gap-2 min-w-max">
+                    {frozenGoodsSubcategories.map((sub) => {
+                      const config = frozenGoodsSubcategoryConfig[sub];
+                      const Icon = config.icon;
+                      const isActive = form.watch("subCategory") === sub;
+                      return (
+                        <motion.button
+                          key={sub}
+                          type="button"
+                          onClick={() => form.setValue("subCategory", isActive ? null : sub)}
+                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          data-testid={`button-subcategory-${sub}`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          </div>
+                          <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
-              {watchedCategory === "desserts" && (
-                <FormField
-                  control={form.control}
-                  name="subCategory"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-subcategory">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {dessertsSubcategories.map((sub) => {
-                            const config = dessertsSubcategoryConfig[sub];
-                            const Icon = config.icon;
-                            return (
-                              <SelectItem 
-                                key={sub} 
-                                value={sub}
-                                data-testid={`select-subcategory-${sub}`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className={`h-4 w-4 ${config.color}`} />
-                                  {config.label}
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+            {watchedCategory === "desserts" && (
+              <div className="space-y-2">
+                <FormLabel>Type</FormLabel>
+                <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                  <div className="flex items-center gap-2 min-w-max">
+                    {dessertsSubcategories.map((sub) => {
+                      const config = dessertsSubcategoryConfig[sub];
+                      const Icon = config.icon;
+                      const isActive = form.watch("subCategory") === sub;
+                      return (
+                        <motion.button
+                          key={sub}
+                          type="button"
+                          onClick={() => form.setValue("subCategory", isActive ? null : sub)}
+                          className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                          data-testid={`button-subcategory-${sub}`}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                            <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                          </div>
+                          <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{config.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
-              <div className={hasMultipleFreezers ? "grid grid-cols-2 gap-3" : ""}>
+            <div className={hasMultipleFreezers ? "grid grid-cols-2 gap-3" : ""}>
                 {hasMultipleFreezers && (
                   <FormField
                     control={form.control}
@@ -601,7 +565,6 @@ export default function AddEditItemPage() {
                     </FormItem>
                   )}
                 />
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

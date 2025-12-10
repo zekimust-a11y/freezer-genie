@@ -75,17 +75,15 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
               <p className="text-xs text-muted-foreground">
                 {getFreezerLabel(item.freezerId)}
               </p>
-              {formattedAddedDate && (
-                <p className="text-xs text-muted-foreground">
-                  Date added: {formattedAddedDate}
-                </p>
-              )}
             </div>
           </div>
           <div className="text-right flex flex-col items-end gap-1">
             <ExpirationBadge expirationDate={item.expirationDate} />
             {formattedDate && (
               <p className="text-xs text-muted-foreground">Use by date: {formattedDate}</p>
+            )}
+            {formattedAddedDate && (
+              <p className="text-xs text-muted-foreground">Date added: {formattedAddedDate}</p>
             )}
           </div>
         </div>
