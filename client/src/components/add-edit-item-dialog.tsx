@@ -321,6 +321,7 @@ export function AddEditItemDialog({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="item" data-testid="select-unit-item">Item(s)</SelectItem>
+                        <SelectItem value="portion" data-testid="select-unit-portion">Portion(s)</SelectItem>
                         <SelectItem value="lb" data-testid="select-unit-lb">Pound(s)</SelectItem>
                         <SelectItem value="kg" data-testid="select-unit-kg">Kilogram(s)</SelectItem>
                         <SelectItem value="oz" data-testid="select-unit-oz">Ounce(s)</SelectItem>

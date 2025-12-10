@@ -397,6 +397,7 @@ export default function AddEditItemPage() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="item" data-testid="select-unit-item">Item(s)</SelectItem>
+                        <SelectItem value="portion" data-testid="select-unit-portion">Portion(s)</SelectItem>
                         <SelectItem value="lb" data-testid="select-unit-lb">lb</SelectItem>
                         <SelectItem value="kg" data-testid="select-unit-kg">kg</SelectItem>
                         <SelectItem value="oz" data-testid="select-unit-oz">oz</SelectItem>
