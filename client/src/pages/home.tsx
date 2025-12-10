@@ -386,49 +386,16 @@ export default function Home() {
           ) : filteredAndSortedItems.length === 0 ? (
             <EmptyState onAddItem={() => navigate("/add")} hasFilters />
           ) : viewMode === "cards" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredAndSortedItems.map((item, index) => (
-                <FreezerItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleEditItem}
-                  index={index}
-                />
-              ))}
-            </div>
-          ) : (
             <div className="space-y-4">
-              <div className="border rounded-md overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-muted/50">
-                    <tr className="text-left text-sm">
-                      <th scope="col" className="px-3 py-2 font-medium">Name</th>
-                      <th scope="col" className="px-3 py-2 font-medium">Qty</th>
-                      <th scope="col" className="px-3 py-2 font-medium">Use By</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {filteredAndSortedItems.map((item) => (
-                      <tr 
-                        key={item.id} 
-                        className="hover-elevate cursor-pointer"
-                        onClick={() => handleEditItem(item)}
-                        data-testid={`row-item-${item.id}`}
-                      >
-                        <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
-                        <td className="px-3 py-2 text-sm">
-                          {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
-                        </td>
-                        <td className="px-3 py-2 text-sm">
-                          {item.expirationDate 
-                            ? new Date(item.expirationDate).toLocaleDateString()
-                            : "-"
-                          }
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredAndSortedItems.map((item, index) => (
+                  <FreezerItemCard
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEditItem}
+                    index={index}
+                  />
+                ))}
               </div>
               
               <Card className="mt-6">
@@ -442,7 +409,7 @@ export default function Home() {
                       <Button 
                         variant="outline" 
                         onClick={handleShareInventory}
-                        data-testid="button-share-inventory-native-table"
+                        data-testid="button-share-inventory-native"
                       >
                         <Share2 className="h-4 w-4 mr-2" />
                         Share
@@ -451,7 +418,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       onClick={handleWhatsAppInventory}
-                      data-testid="button-share-inventory-whatsapp-table"
+                      data-testid="button-share-inventory-whatsapp"
                     >
                       <SiWhatsapp className="h-4 w-4 mr-2" />
                       WhatsApp
@@ -459,7 +426,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       onClick={handleEmailInventory}
-                      data-testid="button-share-inventory-email-table"
+                      data-testid="button-share-inventory-email"
                     >
                       <Mail className="h-4 w-4 mr-2" />
                       Email
@@ -467,7 +434,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       onClick={handleSMSInventory}
-                      data-testid="button-share-inventory-sms-table"
+                      data-testid="button-share-inventory-sms"
                     >
                       <MessageCircle className="h-4 w-4 mr-2" />
                       SMS
@@ -475,7 +442,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       onClick={handleCopyInventory}
-                      data-testid="button-share-inventory-copy-table"
+                      data-testid="button-share-inventory-copy"
                     >
                       {copied ? <CheckCheck className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
                       {copied ? "Copied" : "Copy"}
@@ -483,6 +450,39 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          ) : (
+            <div className="border rounded-md overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr className="text-left text-sm">
+                    <th scope="col" className="px-3 py-2 font-medium">Name</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Qty</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Use By</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredAndSortedItems.map((item) => (
+                    <tr 
+                      key={item.id} 
+                      className="hover-elevate cursor-pointer"
+                      onClick={() => handleEditItem(item)}
+                      data-testid={`row-item-${item.id}`}
+                    >
+                      <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
+                      <td className="px-3 py-2 text-sm">
+                        {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
+                      </td>
+                      <td className="px-3 py-2 text-sm">
+                        {item.expirationDate 
+                          ? new Date(item.expirationDate).toLocaleDateString()
+                          : "-"
+                        }
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </main>
