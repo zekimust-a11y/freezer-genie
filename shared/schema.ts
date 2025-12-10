@@ -69,6 +69,7 @@ export type PreparedMealsSubcategory = (typeof preparedMealsSubcategories)[numbe
 
 export const frozenGoodsSubcategories = [
   "pizza",
+  "pasta",
   "other_frozen",
 ] as const;
 

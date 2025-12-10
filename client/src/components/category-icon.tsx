@@ -68,6 +68,7 @@ const preparedMealsSubcategoryConfig: Record<PreparedMealsSubcategory, { icon: t
 
 const frozenGoodsSubcategoryConfig: Record<FrozenGoodsSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
   pizza: { icon: Pizza, label: "Pizzas", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
+  pasta: { icon: UtensilsCrossed, label: "Pasta", color: "text-yellow-600 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-900/30", stripeColor: "bg-yellow-600" },
   other_frozen: { icon: Snowflake, label: "Other", color: "text-cyan-500 dark:text-cyan-400", bgColor: "bg-cyan-100 dark:bg-cyan-900/30", stripeColor: "bg-cyan-500" },
 };
 
