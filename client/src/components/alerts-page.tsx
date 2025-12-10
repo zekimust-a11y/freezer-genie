@@ -66,9 +66,11 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <CategoryIcon category={item.category} />
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{item.name}</p>
+              <p className="font-medium truncate">
+                {item.name} <span className="font-normal text-muted-foreground">({item.quantity} {item.unit})</span>
+              </p>
               <p className="text-xs text-muted-foreground">
-                {getLocationLabel(item.location as Location)} - {item.quantity} {item.unit}
+                {getLocationLabel(item.location as Location)}
               </p>
             </div>
           </div>

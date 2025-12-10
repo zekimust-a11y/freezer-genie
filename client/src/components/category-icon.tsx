@@ -10,7 +10,7 @@ import {
   Croissant,
   Bird,
   Fish,
-  Shell,
+  Shrimp,
   Ham,
   Milk,
   Tag,
@@ -76,7 +76,7 @@ const meatSubcategoryConfig: Record<MeatSubcategory, { icon: typeof Beef; label:
   pork: { icon: Ham, label: "Pork", color: "text-pink-600 dark:text-pink-400", bgColor: "bg-pink-100 dark:bg-pink-900/30", stripeColor: "bg-pink-600" },
   lamb: { icon: Drumstick, label: "Lamb", color: "text-rose-600 dark:text-rose-400", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-600" },
   fish: { icon: Fish, label: "Fish", color: "text-blue-500 dark:text-blue-400", bgColor: "bg-blue-100 dark:bg-blue-900/30", stripeColor: "bg-blue-500" },
-  seafood: { icon: Shell, label: "Seafood", color: "text-teal-500 dark:text-teal-400", bgColor: "bg-teal-100 dark:bg-teal-900/30", stripeColor: "bg-teal-500" },
+  seafood: { icon: Shrimp, label: "Seafood", color: "text-teal-500 dark:text-teal-400", bgColor: "bg-teal-100 dark:bg-teal-900/30", stripeColor: "bg-teal-500" },
   other_meat: { icon: Package, label: "Other", color: "text-gray-500 dark:text-gray-400", bgColor: "bg-gray-100 dark:bg-gray-800/30", stripeColor: "bg-gray-500" },
 };
 
