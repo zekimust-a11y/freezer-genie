@@ -219,6 +219,52 @@ export function RecipesPage({ items }: RecipesPageProps) {
 
   return (
     <div className="p-4 space-y-4 pb-32">
+      {matchingRecipes.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ChefHat className="h-5 w-5" />
+              Recipe Ideas for Your Ingredients
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2">
+              {matchingRecipes.map((recipe) => (
+                <button
+                  key={recipe.name}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-muted hover-elevate text-left w-full"
+                  onClick={() => window.open(recipe.url, "_blank")}
+                  data-testid={`button-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
+                >
+                  <img 
+                    src={recipe.image} 
+                    alt={recipe.name}
+                    className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-sm">{recipe.name}</span>
+                    <p className="text-xs mt-0.5 flex flex-wrap gap-1">
+                      {recipe.allIngredients.map((ing) => (
+                        <span 
+                          key={ing}
+                          className={isIngredientInFreezer(ing) 
+                            ? "bg-primary/20 text-primary font-medium px-1.5 py-0.5 rounded" 
+                            : "text-muted-foreground"
+                          }
+                        >
+                          {ing}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                  <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
@@ -497,49 +543,6 @@ export function RecipesPage({ items }: RecipesPageProps) {
           )}
         </CardContent>
       </Card>
-
-      {matchingRecipes.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Recipe Ideas for Your Ingredients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-2">
-              {matchingRecipes.map((recipe) => (
-                <button
-                  key={recipe.name}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-muted hover-elevate text-left w-full"
-                  onClick={() => window.open(recipe.url, "_blank")}
-                  data-testid={`button-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
-                >
-                  <img 
-                    src={recipe.image} 
-                    alt={recipe.name}
-                    className="w-14 h-14 rounded-md object-cover flex-shrink-0"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <span className="font-medium text-sm">{recipe.name}</span>
-                    <p className="text-xs mt-0.5 flex flex-wrap gap-1">
-                      {recipe.allIngredients.map((ing) => (
-                        <span 
-                          key={ing}
-                          className={isIngredientInFreezer(ing) 
-                            ? "bg-primary/20 text-primary font-medium px-1.5 py-0.5 rounded" 
-                            : "text-muted-foreground"
-                          }
-                        >
-                          {ing}
-                        </span>
-                      ))}
-                    </p>
-                  </div>
-                  <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       <p className="text-xs text-muted-foreground text-center px-4">
         Recipes provided by BBC Good Food. Click any ingredient or recipe to search on their website.
