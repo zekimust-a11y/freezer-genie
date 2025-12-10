@@ -58,13 +58,16 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <Badge variant="destructive">
-                      {item.quantity} / {item.lowStockThreshold} {item.unit}
-                    </Badge>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Need {(item.lowStockThreshold ?? 0) - item.quantity + 1}+ more
+                  <div className="text-right space-y-0.5">
+                    <p className="text-xs text-muted-foreground">
+                      In stock: <span className="font-medium text-foreground">{item.quantity} {item.unit}</span>
                     </p>
+                    <p className="text-xs text-muted-foreground">
+                      Minimum: <span className="font-medium text-foreground">{item.lowStockThreshold} {item.unit}</span>
+                    </p>
+                    <Badge variant="destructive" className="mt-1">
+                      Need {Math.max(1, (item.lowStockThreshold ?? 0) - Number(item.quantity) + 1)} more
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
