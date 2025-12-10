@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState } from "react";
-import { Package, ShoppingCart, AlertTriangle, Settings, Plus } from "lucide-react";
+import { Package, ShoppingCart, AlertTriangle, Settings, Plus, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
-type Tab = "inventory" | "alerts" | "list" | "settings";
+type Tab = "inventory" | "alerts" | "list" | "recipes" | "settings";
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -63,6 +63,7 @@ export function BottomNav({
   const inventoryRef = useRef<HTMLButtonElement>(null);
   const alertsRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLButtonElement>(null);
+  const recipesRef = useRef<HTMLButtonElement>(null);
   const settingsRef = useRef<HTMLButtonElement>(null);
   
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
@@ -71,6 +72,7 @@ export function BottomNav({
     inventory: inventoryRef,
     alerts: alertsRef,
     list: listRef,
+    recipes: recipesRef,
     settings: settingsRef,
   };
 
@@ -142,6 +144,15 @@ export function BottomNav({
           testId="button-nav-list"
           badge={listCount}
           itemRef={listRef}
+        />
+
+        <NavItem
+          icon={ChefHat}
+          label="Recipes"
+          isActive={activeTab === "recipes"}
+          onClick={() => onTabChange("recipes")}
+          testId="button-nav-recipes"
+          itemRef={recipesRef}
         />
 
         <NavItem

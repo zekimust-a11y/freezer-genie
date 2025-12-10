@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreezer, getLocationLabel, getFreezers, getFreezerLabel } from "@/components/settings-panel";
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
+import { RecipesPage } from "@/components/recipes-page";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -25,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, Location } from "@shared/schema";
 
-type Tab = "inventory" | "alerts" | "list" | "settings";
+type Tab = "inventory" | "alerts" | "list" | "recipes" | "settings";
 type SortOption = "expiry" | "name" | "quantity" | "recent";
 
 const sortLabels: Record<SortOption, string> = {
@@ -359,6 +360,12 @@ export default function Home() {
       {activeTab === "list" && (
         <div className="max-w-6xl mx-auto">
           <ShoppingListPage items={items} onEditItem={handleEditItem} />
+        </div>
+      )}
+
+      {activeTab === "recipes" && (
+        <div className="max-w-6xl mx-auto">
+          <RecipesPage items={items} />
         </div>
       )}
 
