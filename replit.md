@@ -72,11 +72,22 @@ Preferred communication style: Simple, everyday language.
 **Freezer Item Model**
 - Unique ID (UUID/VARCHAR)
 - Name (required text field)
-- Category (enum: meat, vegetables, fruits, prepared_meals, dairy, frozen_goods, other)
+- Category (string - supports both built-in and custom categories)
 - Quantity (integer, default 1)
 - Unit (text, default "item")
 - Expiration date (optional date field)
 - Notes (optional text field)
+- Location (optional - shelf/drawer assignment)
+- Low stock threshold (optional integer)
+
+**Built-in Categories**
+- meat_fish, produce, prepared_meals, frozen_goods, dairy, desserts, bread, other
+
+**Custom Categories**
+- Users can add custom categories via Settings
+- Custom categories stored in localStorage
+- Custom categories appear in category dropdowns and filters
+- Custom categories use a default icon and gray styling
 
 **Validation Strategy**
 - Shared Zod schemas between frontend and backend
