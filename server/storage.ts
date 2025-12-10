@@ -70,6 +70,7 @@ export class DatabaseStorage implements IStorage {
         notes: insertItem.notes || null,
         lowStockThreshold: insertItem.lowStockThreshold ?? 0,
         location: (insertItem.location as Location) ?? "unassigned",
+        freezerId: insertItem.freezerId ?? "default",
         tags: insertItem.tags || null,
       })
       .returning();
@@ -89,6 +90,7 @@ export class DatabaseStorage implements IStorage {
         notes: updateData.notes || null,
         lowStockThreshold: updateData.lowStockThreshold ?? 0,
         location: (updateData.location as Location) ?? "unassigned",
+        freezerId: updateData.freezerId ?? "default",
         tags: updateData.tags || null,
       })
       .where(eq(freezerItems.id, id))
