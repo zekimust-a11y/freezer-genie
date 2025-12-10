@@ -166,7 +166,7 @@ export function setSelectedFreezer(freezerId: string): void {
 export function getFreezerOptions(): { id: string; name: string }[] {
   const freezers = getFreezers();
   return [
-    { id: "all", name: "Show items from" },
+    { id: "all", name: "All Freezers" },
     ...freezers.map(f => ({ id: f.id, name: f.name }))
   ];
 }
@@ -345,7 +345,7 @@ export function SettingsPanel() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">My Freezers</CardTitle>
+          <CardTitle className="text-lg">Show items from</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex gap-2">
