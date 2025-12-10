@@ -53,6 +53,13 @@ export const meatSubcategories = [
 
 export type MeatSubcategory = (typeof meatSubcategories)[number];
 
+export const produceSubcategories = [
+  "fruit",
+  "vegetable",
+] as const;
+
+export type ProduceSubcategory = (typeof produceSubcategories)[number];
+
 export const locations = [
   "top_shelf",
   "middle_shelf",

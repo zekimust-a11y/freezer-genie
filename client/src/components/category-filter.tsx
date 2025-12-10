@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { getCategoryConfig, meatSubcategoryConfig, getCategoryLabel } from "@/components/category-icon";
-import { meatSubcategories, type Category, type MeatSubcategory } from "@shared/schema";
+import { getCategoryConfig, meatSubcategoryConfig, produceSubcategoryConfig, getCategoryLabel } from "@/components/category-icon";
+import { meatSubcategories, produceSubcategories, type Category, type MeatSubcategory, type ProduceSubcategory } from "@shared/schema";
 import { getVisibleCategories, getCustomCategories, getHiddenCategories } from "@/components/settings-panel";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 
 interface CategoryFilterProps {
   selectedCategory: string | null;
-  selectedSubcategory: MeatSubcategory | null;
+  selectedSubcategory: MeatSubcategory | ProduceSubcategory | null;
   onCategoryChange: (category: string | null) => void;
-  onSubcategoryChange: (subcategory: MeatSubcategory | null) => void;
+  onSubcategoryChange: (subcategory: MeatSubcategory | ProduceSubcategory | null) => void;
 }
 
 export function CategoryFilter({ 
@@ -18,7 +18,7 @@ export function CategoryFilter({
   onCategoryChange,
   onSubcategoryChange
 }: CategoryFilterProps) {
-  const [showMeatSubmenu, setShowMeatSubmenu] = useState(false);
+  const [showSubmenu, setShowSubmenu] = useState<"meat" | "produce" | null>(null);
   const visibleCategories = getVisibleCategories();
   const customCategories = getCustomCategories();
   const hiddenCategories = getHiddenCategories();
@@ -26,35 +26,47 @@ export function CategoryFilter({
 
   const handleCategoryClick = (category: string) => {
     if (category === "meat_fish") {
-      if (selectedCategory === "meat_fish" && !showMeatSubmenu) {
+      if (selectedCategory === "meat_fish" && showSubmenu !== "meat") {
         onCategoryChange(null);
         onSubcategoryChange(null);
       } else {
         onCategoryChange("meat_fish");
-        setShowMeatSubmenu(true);
+        setShowSubmenu("meat");
+      }
+    } else if (category === "produce") {
+      if (selectedCategory === "produce" && showSubmenu !== "produce") {
+        onCategoryChange(null);
+        onSubcategoryChange(null);
+      } else {
+        onCategoryChange("produce");
+        setShowSubmenu("produce");
       }
     } else {
       onCategoryChange(selectedCategory === category ? null : category);
       onSubcategoryChange(null);
-      setShowMeatSubmenu(false);
+      setShowSubmenu(null);
     }
   };
 
-  const handleSubcategoryClick = (subcategory: MeatSubcategory) => {
+  const handleMeatSubcategoryClick = (subcategory: MeatSubcategory) => {
+    onSubcategoryChange(selectedSubcategory === subcategory ? null : subcategory);
+  };
+
+  const handleProduceSubcategoryClick = (subcategory: ProduceSubcategory) => {
     onSubcategoryChange(selectedSubcategory === subcategory ? null : subcategory);
   };
 
   const handleBackToCategories = () => {
-    setShowMeatSubmenu(false);
+    setShowSubmenu(null);
     onSubcategoryChange(null);
   };
 
   return (
     <div className="overflow-x-auto scrollbar-hide" data-testid="category-filter-container">
       <AnimatePresence mode="wait">
-        {showMeatSubmenu ? (
+        {showSubmenu === "meat" ? (
           <motion.div
-            key="submenu"
+            key="meat-submenu"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -81,7 +93,59 @@ export function CategoryFilter({
               return (
                 <motion.button
                   key={subcategory}
-                  onClick={() => handleSubcategoryClick(subcategory)}
+                  onClick={() => handleMeatSubcategoryClick(subcategory)}
+                  className={`flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors ${
+                    isActive 
+                      ? "" 
+                      : "text-muted-foreground"
+                  }`}
+                  data-testid={`button-filter-${subcategory}`}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className={`p-2 rounded-md transition-all ${
+                    isActive 
+                      ? `${config.stripeColor} text-white shadow-md` 
+                      : config.bgColor
+                  }`}>
+                    <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
+                  </div>
+                  <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>
+                    {config.label}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </motion.div>
+        ) : showSubmenu === "produce" ? (
+          <motion.div
+            key="produce-submenu"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2 backdrop-blur-sm bg-background/80 rounded-xl p-1.5 min-w-max"
+          >
+            <motion.button
+              onClick={handleBackToCategories}
+              className="flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors text-muted-foreground"
+              data-testid="button-back-categories"
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="p-2 rounded-md bg-muted">
+                <ChevronLeft className="h-7 w-7" />
+              </div>
+              <span className="text-[10px] font-medium whitespace-nowrap">Back</span>
+            </motion.button>
+
+            {produceSubcategories.map((subcategory) => {
+              const config = produceSubcategoryConfig[subcategory];
+              const Icon = config.icon;
+              const isActive = selectedSubcategory === subcategory;
+
+              return (
+                <motion.button
+                  key={subcategory}
+                  onClick={() => handleProduceSubcategoryClick(subcategory)}
                   className={`flex flex-col items-center justify-center gap-0.5 w-16 py-2 rounded-lg transition-colors ${
                     isActive 
                       ? "" 
