@@ -546,31 +546,6 @@ export function SettingsPanel() {
           <CardTitle className="text-lg">My Freezers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Freezer name..."
-              value={newFreezerName}
-              onChange={(e) => setNewFreezerName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAddFreezer()}
-              className="flex-1"
-              data-testid="input-new-freezer"
-            />
-            <Select value={newFreezerType} onValueChange={(v) => setNewFreezerType(v as FreezerType)}>
-              <SelectTrigger className="w-[140px]" data-testid="select-new-freezer-type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(freezerTypeLabels) as FreezerType[]).map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {freezerTypeLabels[type]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button size="icon" onClick={handleAddFreezer} data-testid="button-add-freezer">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
           {freezers.map((freezer) => (
             <div
               key={freezer.id}
@@ -609,6 +584,35 @@ export function SettingsPanel() {
               )}
             </div>
           ))}
+          
+          <div className="pt-2">
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">Add new freezer</h4>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Freezer name..."
+                value={newFreezerName}
+                onChange={(e) => setNewFreezerName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAddFreezer()}
+                className="flex-1"
+                data-testid="input-new-freezer"
+              />
+              <Select value={newFreezerType} onValueChange={(v) => setNewFreezerType(v as FreezerType)}>
+                <SelectTrigger className="w-[140px]" data-testid="select-new-freezer-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(freezerTypeLabels) as FreezerType[]).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {freezerTypeLabels[type]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button size="icon" onClick={handleAddFreezer} data-testid="button-add-freezer">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

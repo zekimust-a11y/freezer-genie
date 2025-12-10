@@ -692,6 +692,23 @@ export default function AddEditItemPage() {
               />
             </div>
 
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tags</label>
+              <div className="flex flex-wrap gap-2">
+                {getAvailableTags().map((tag) => (
+                  <Badge
+                    key={tag.id}
+                    variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                    className="cursor-pointer toggle-elevate"
+                    onClick={() => toggleTag(tag.id)}
+                    data-testid={`tag-${tag.id}`}
+                  >
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="notes"
@@ -711,23 +728,6 @@ export default function AddEditItemPage() {
                 </FormItem>
               )}
             />
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tags</label>
-              <div className="flex flex-wrap gap-2">
-                {getAvailableTags().map((tag) => (
-                  <Badge
-                    key={tag.id}
-                    variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                    className="cursor-pointer toggle-elevate"
-                    onClick={() => toggleTag(tag.id)}
-                    data-testid={`tag-${tag.id}`}
-                  >
-                    {tag.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
           </form>
         </Form>
       </div>
