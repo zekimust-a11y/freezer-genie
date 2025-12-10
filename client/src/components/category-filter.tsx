@@ -33,7 +33,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
                   ? `${config.stripeColor} text-white shadow-md` 
                   : config.bgColor
               }`}>
-                <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                <Icon className={`h-7 w-7 ${isActive ? "text-white" : config.color}`} />
               </div>
               <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>
                 {config.label}
