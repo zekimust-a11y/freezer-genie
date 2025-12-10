@@ -87,6 +87,32 @@ export const locations = [
 
 export type Location = (typeof locations)[number];
 
+export const defaultTags = [
+  "organic",
+  "vegan",
+  "vegetarian",
+  "free_range",
+  "gluten_free",
+  "low_fat",
+  "sugar_free",
+  "raw",
+  "cooked",
+] as const;
+
+export type DefaultTag = (typeof defaultTags)[number];
+
+export const tagLabels: Record<DefaultTag, string> = {
+  organic: "Organic",
+  vegan: "Vegan",
+  vegetarian: "Vegetarian",
+  free_range: "Free Range",
+  gluten_free: "Gluten Free",
+  low_fat: "Low Fat",
+  sugar_free: "Sugar Free",
+  raw: "Raw",
+  cooked: "Cooked",
+};
+
 export const freezerItems = pgTable("freezer_items", {
   id: varchar("id").primaryKey(),
   name: text("name").notNull(),
@@ -98,6 +124,7 @@ export const freezerItems = pgTable("freezer_items", {
   notes: text("notes"),
   lowStockThreshold: integer("low_stock_threshold").default(0),
   location: text("location").notNull().default("unassigned"),
+  tags: text("tags").array(),
 });
 
 export const insertFreezerItemSchema = createInsertSchema(freezerItems).omit({
@@ -115,6 +142,7 @@ export const freezerItemFormSchema = insertFreezerItemSchema.extend({
   expirationDate: z.string().nullable().optional(),
   lowStockThreshold: z.coerce.number().min(0).optional(),
   location: z.string().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export type FreezerItemFormData = z.infer<typeof freezerItemFormSchema>;
