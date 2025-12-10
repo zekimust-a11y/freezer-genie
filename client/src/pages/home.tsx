@@ -398,7 +398,7 @@ export default function Home() {
                 ))}
               </div>
               
-              <Card className="mt-6">
+              <Card className="mt-6 bg-muted/50">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Share2 className="h-4 w-4 text-muted-foreground" />
