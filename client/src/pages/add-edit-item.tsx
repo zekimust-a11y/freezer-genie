@@ -723,7 +723,7 @@ export default function AddEditItemPage() {
                 name="lowStockThreshold"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Low Stock</FormLabel>
+                    <FormLabel>Alert me when stock is</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
