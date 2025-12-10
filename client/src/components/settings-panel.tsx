@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Snowflake, Plus, X, Refrigerator, Eye, EyeOff } from "lucide-react";
-import { categories, locations, locationLabels as defaultLocationLabels, type Category, type Location } from "@shared/schema";
+import { categories, locations, locationLabels as defaultLocationLabels, defaultTags, tagLabels, type Category, type Location, type DefaultTag } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
 export type DateFormat = "MMM d, yyyy" | "dd/MM/yyyy" | "MM/dd/yyyy" | "yyyy-MM-dd";
@@ -250,6 +250,35 @@ export function getVisibleLocations(): Location[] {
   return locations.filter(loc => !hidden.includes(loc));
 }
 
+export interface ItemTag {
+  id: string;
+  name: string;
+  isDefault: boolean;
+}
+
+export function getAvailableTags(): ItemTag[] {
+  try {
+    const stored = localStorage.getItem("availableTags");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  // Return default tags on first load
+  return defaultTags.map(tag => ({
+    id: tag,
+    name: tagLabels[tag],
+    isDefault: true,
+  }));
+}
+
+export function getTagLabel(tagId: string): string {
+  const tags = getAvailableTags();
+  const found = tags.find(t => t.id === tagId);
+  return found ? found.name : tagId;
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
@@ -267,6 +296,8 @@ export function SettingsPanel() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [locationLabelsState, setLocationLabelsState] = useState<Record<Location, string>>(getLocationLabels);
   const [hiddenLocations, setHiddenLocations] = useState<Location[]>(getHiddenLocations);
+  const [availableTags, setAvailableTags] = useState<ItemTag[]>(getAvailableTags);
+  const [newTagName, setNewTagName] = useState("");
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -315,6 +346,28 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("hiddenLocations", JSON.stringify(hiddenLocations));
   }, [hiddenLocations]);
+
+  useEffect(() => {
+    localStorage.setItem("availableTags", JSON.stringify(availableTags));
+  }, [availableTags]);
+
+  const handleAddTag = () => {
+    const trimmed = newTagName.trim();
+    if (trimmed && !availableTags.some(t => t.name.toLowerCase() === trimmed.toLowerCase())) {
+      const id = `custom_tag_${Date.now()}`;
+      const newTag: ItemTag = { id, name: trimmed, isDefault: false };
+      setAvailableTags([...availableTags, newTag]);
+      setNewTagName("");
+    }
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    setAvailableTags(availableTags.filter(t => t.id !== tagId));
+  };
+
+  const handleTagNameChange = (tagId: string, name: string) => {
+    setAvailableTags(availableTags.map(t => t.id === tagId ? { ...t, name } : t));
+  };
 
   const handleLocationLabelChange = (location: Location, newLabel: string) => {
     setLocationLabelsState(prev => ({
@@ -681,6 +734,54 @@ export function SettingsPanel() {
               data-testid="input-new-location"
             />
             <Button size="icon" onClick={handleAddLocation} data-testid="button-add-location">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Item Tags</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Manage tags that can be applied to items (e.g., dietary info, preparation status)
+          </p>
+          
+          <div className="space-y-2">
+            {availableTags.map((tag) => (
+              <div
+                key={tag.id}
+                className="flex items-center gap-2 bg-muted p-2 rounded-md"
+              >
+                <Input
+                  value={tag.name}
+                  onChange={(e) => handleTagNameChange(tag.id, e.target.value)}
+                  className="flex-1 h-8"
+                  data-testid={`input-tag-name-${tag.id}`}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleRemoveTag(tag.id)}
+                  data-testid={`button-remove-tag-${tag.id}`}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex gap-2 pt-2">
+            <Input
+              placeholder="Add new tag..."
+              value={newTagName}
+              onChange={(e) => setNewTagName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+              data-testid="input-new-tag"
+            />
+            <Button size="icon" onClick={handleAddTag} data-testid="button-add-tag">
               <Plus className="h-4 w-4" />
             </Button>
           </div>
