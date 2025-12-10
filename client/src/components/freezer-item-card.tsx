@@ -15,7 +15,6 @@ interface FreezerItemCardProps {
   index?: number;
 }
 
-const weightUnits = ["lb", "kg", "oz", "g"];
 
 function ExpirationRing({ expirationDate }: { expirationDate: string }) {
   const expiry = parseISO(expirationDate);
@@ -70,7 +69,6 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
     : null;
 
   const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
-  const isWeightUnit = weightUnits.includes(item.unit);
   const hasLocation = item.location && item.location !== "unassigned";
   const config = getCategoryConfig(item.category);
 
@@ -105,7 +103,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                     {item.name}
                   </h3>
                   <span className="text-xs text-muted-foreground">
-                    x {item.quantity}{isWeightUnit && ` ${item.unit}`}
+                    x {item.quantity} {item.unit}
                   </span>
                 </div>
               </div>
