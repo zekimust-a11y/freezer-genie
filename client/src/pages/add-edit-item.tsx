@@ -518,60 +518,58 @@ export default function AddEditItemPage() {
                 />
               )}
 
-              {watchedCategory !== "meat_fish" && watchedCategory !== "produce" && watchedCategory !== "prepared_meals" && watchedCategory !== "frozen_goods" && watchedCategory !== "desserts" && (
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Location</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-location">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || "unassigned"}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-location">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem 
+                          value="unassigned"
+                          data-testid="select-location-unassigned"
+                        >
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground" />
+                            {getLocationLabel("unassigned" as Location)}
+                          </div>
+                        </SelectItem>
+                        {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
                           <SelectItem 
-                            value="unassigned"
-                            data-testid="select-location-unassigned"
+                            key={location} 
+                            value={location}
+                            data-testid={`select-location-${location}`}
                           >
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground" />
-                              {getLocationLabel("unassigned" as Location)}
+                              {getLocationLabel(location)}
                             </div>
                           </SelectItem>
-                          {getVisibleLocations().filter(loc => loc !== "unassigned").map((location) => (
-                            <SelectItem 
-                              key={location} 
-                              value={location}
-                              data-testid={`select-location-${location}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-muted-foreground" />
-                                {getLocationLabel(location)}
-                              </div>
-                            </SelectItem>
-                          ))}
-                          {getCustomLocations().map((location) => (
-                            <SelectItem 
-                              key={location} 
-                              value={location}
-                              data-testid={`select-location-custom-${location}`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-muted-foreground" />
-                                {location}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                        ))}
+                        {getCustomLocations().map((location) => (
+                          <SelectItem 
+                            key={location} 
+                            value={location}
+                            data-testid={`select-location-custom-${location}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              {location}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
