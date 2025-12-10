@@ -15,7 +15,7 @@ import {
   type LucideIcon
 } from "lucide-react";
 import { Home, ShoppingBag, Pizza } from "lucide-react";
-import { GiRoastChicken, GiMeat, GiShrimp } from "react-icons/gi";
+import { GiRoastChicken, GiMeat, GiShrimp, GiDeerHead } from "react-icons/gi";
 import type { IconType } from "react-icons";
 import type { Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, DessertsSubcategory } from "@shared/schema";
 
@@ -75,6 +75,7 @@ const meatSubcategoryConfig: Record<MeatSubcategory, CategoryConfig> = {
   beef: { icon: Beef, label: "Beef", color: "text-red-400 dark:text-red-300", bgColor: "bg-red-100 dark:bg-red-900/30", stripeColor: "bg-red-300 dark:bg-red-400" },
   pork: { icon: Ham, label: "Pork", color: "text-pink-400 dark:text-pink-300", bgColor: "bg-pink-100 dark:bg-pink-900/30", stripeColor: "bg-pink-300 dark:bg-pink-400" },
   lamb: { icon: GiMeat, label: "Lamb", color: "text-rose-400 dark:text-rose-300", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-300 dark:bg-rose-400" },
+  game: { icon: GiDeerHead, label: "Game", color: "text-amber-600 dark:text-amber-400", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-400 dark:bg-amber-500" },
   fish: { icon: Fish, label: "Fish", color: "text-blue-400 dark:text-blue-300", bgColor: "bg-blue-100 dark:bg-blue-900/30", stripeColor: "bg-blue-300 dark:bg-blue-400" },
   seafood: { icon: GiShrimp, label: "Seafood", color: "text-teal-400 dark:text-teal-300", bgColor: "bg-teal-100 dark:bg-teal-900/30", stripeColor: "bg-teal-300 dark:bg-teal-400" },
   other_meat: { icon: Package, label: "Other", color: "text-gray-400 dark:text-gray-300", bgColor: "bg-gray-100 dark:bg-gray-800/30", stripeColor: "bg-gray-300 dark:bg-gray-400" },

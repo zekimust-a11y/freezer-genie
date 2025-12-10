@@ -46,6 +46,7 @@ export const meatSubcategories = [
   "beef",
   "pork",
   "lamb",
+  "game",
   "fish",
   "seafood",
   "other_meat",
