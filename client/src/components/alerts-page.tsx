@@ -54,6 +54,9 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
     ? format(parseISO(item.expirationDate), getDateFormat())
     : null;
   const daysInfo = getDaysLeftText(item.expirationDate);
+  const formattedAddedDate = item.createdAt 
+    ? format(new Date(item.createdAt), getDateFormat())
+    : null;
 
   return (
     <Card 
@@ -72,12 +75,17 @@ function ExpirationCard({ item, onEdit }: { item: FreezerItem; onEdit: () => voi
               <p className="text-xs text-muted-foreground">
                 {getFreezerLabel(item.freezerId)}
               </p>
+              {formattedAddedDate && (
+                <p className="text-xs text-muted-foreground">
+                  Date added: {formattedAddedDate}
+                </p>
+              )}
             </div>
           </div>
           <div className="text-right flex flex-col items-end gap-1">
             <ExpirationBadge expirationDate={item.expirationDate} />
             {formattedDate && (
-              <p className="text-xs text-muted-foreground">{formattedDate}</p>
+              <p className="text-xs text-muted-foreground">Use by date: {formattedDate}</p>
             )}
           </div>
         </div>
