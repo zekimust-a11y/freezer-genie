@@ -165,15 +165,28 @@ export function RecipesPage({ items }: RecipesPageProps) {
     if (availableTokens.has(lowerIngredient)) {
       return true;
     }
-    // Check for exact item name matches (first word or full name)
+    // Compound items that should not match their component words
+    const compoundExclusions: Record<string, string[]> = {
+      "ice cream": ["cream", "ice"],
+      "cream cheese": ["cream"],
+    };
+    // Check for item name matches
     return items.some(item => {
       const itemName = item.name.toLowerCase();
-      const firstWord = itemName.split(/\s+/)[0];
-      // Match if ingredient equals the first word or is a key part of the item name
-      // Exclude compound items like "ice cream" from matching just "cream"
-      return firstWord === lowerIngredient || 
+      // Check if this is a compound item that excludes the ingredient
+      for (const [compound, excluded] of Object.entries(compoundExclusions)) {
+        if (itemName.includes(compound) && excluded.includes(lowerIngredient)) {
+          return false;
+        }
+      }
+      const itemWords = itemName.split(/\s+/);
+      // Match if ingredient equals any word in item name (for "prawns" in "King prawns")
+      // Or if item name starts with ingredient (for "chicken" in "Chicken breast")
+      // Or exact match
+      return itemWords.includes(lowerIngredient) ||
         (itemName === lowerIngredient) ||
-        (itemName.startsWith(lowerIngredient + " "));
+        (itemName.startsWith(lowerIngredient + " ")) ||
+        (itemName.endsWith(" " + lowerIngredient));
     });
   };
 
