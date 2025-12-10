@@ -60,6 +60,13 @@ export const produceSubcategories = [
 
 export type ProduceSubcategory = (typeof produceSubcategories)[number];
 
+export const preparedMealsSubcategories = [
+  "home_made",
+  "store_bought",
+] as const;
+
+export type PreparedMealsSubcategory = (typeof preparedMealsSubcategories)[number];
+
 export const locations = [
   "top_shelf",
   "middle_shelf",

@@ -23,7 +23,7 @@ import { ArrowUpDown, Search, X, Snowflake, Refrigerator } from "lucide-react";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory } from "@shared/schema";
+import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
 type SortOption = "expiry" | "name" | "quantity" | "recent";
@@ -39,7 +39,7 @@ export default function Home() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | ProduceSubcategory | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | ProduceSubcategory | PreparedMealsSubcategory | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiry");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
@@ -67,7 +67,7 @@ export default function Home() {
 
     if (selectedCategory) {
       result = result.filter((item) => item.category === selectedCategory);
-      if (selectedSubcategory && (selectedCategory === "meat_fish" || selectedCategory === "produce")) {
+      if (selectedSubcategory && (selectedCategory === "meat_fish" || selectedCategory === "produce" || selectedCategory === "prepared_meals")) {
         result = result.filter((item) => item.subCategory === selectedSubcategory);
       }
     }

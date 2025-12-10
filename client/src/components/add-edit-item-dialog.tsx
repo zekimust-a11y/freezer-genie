@@ -34,13 +34,14 @@ import {
   categories, 
   meatSubcategories,
   produceSubcategories,
+  preparedMealsSubcategories,
   locationLabels,
   freezerItemFormSchema, 
   type FreezerItem, 
   type FreezerItemFormData,
   type Location
 } from "@shared/schema";
-import { meatSubcategoryConfig, produceSubcategoryConfig } from "@/components/category-icon";
+import { meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig } from "@/components/category-icon";
 import { Loader2, MapPin, ScanBarcode, Minus, Plus } from "lucide-react";
 
 interface AddEditItemDialogProps {
@@ -109,7 +110,7 @@ export function AddEditItemDialog({
   }, [open, item, form]);
 
   useEffect(() => {
-    if (watchedCategory !== "meat_fish" && watchedCategory !== "produce") {
+    if (watchedCategory !== "meat_fish" && watchedCategory !== "produce" && watchedCategory !== "prepared_meals") {
       form.setValue("subCategory", null);
     }
   }, [watchedCategory, form]);
@@ -274,6 +275,44 @@ export function AddEditItemDialog({
                         <SelectContent>
                           {produceSubcategories.map((sub) => {
                             const config = produceSubcategoryConfig[sub];
+                            const Icon = config.icon;
+                            return (
+                              <SelectItem 
+                                key={sub} 
+                                value={sub}
+                                data-testid={`select-subcategory-${sub}`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Icon className={`h-4 w-4 ${config.color}`} />
+                                  {config.label}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {watchedCategory === "prepared_meals" && (
+                <FormField
+                  control={form.control}
+                  name="subCategory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-subcategory">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {preparedMealsSubcategories.map((sub) => {
+                            const config = preparedMealsSubcategoryConfig[sub];
                             const Icon = config.icon;
                             return (
                               <SelectItem 
