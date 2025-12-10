@@ -135,16 +135,6 @@ export function BottomNav({
         </Button>
 
         <NavItem
-          icon={ShoppingCart}
-          label="List"
-          isActive={activeTab === "list"}
-          onClick={() => onTabChange("list")}
-          testId="button-nav-list"
-          badge={listCount}
-          itemRef={listRef}
-        />
-
-        <NavItem
           icon={AlertTriangle}
           label="Alerts"
           isActive={activeTab === "alerts"}
@@ -152,6 +142,16 @@ export function BottomNav({
           testId="button-nav-alerts"
           badge={alertCount}
           itemRef={alertsRef}
+        />
+
+        <NavItem
+          icon={ShoppingCart}
+          label="List"
+          isActive={activeTab === "list"}
+          onClick={() => onTabChange("list")}
+          testId="button-nav-list"
+          badge={listCount}
+          itemRef={listRef}
         />
       </div>
     </nav>
