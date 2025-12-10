@@ -4,13 +4,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Snowflake, Plus, X, LogOut } from "lucide-react";
+import { Snowflake, Plus, X, LogOut, Refrigerator } from "lucide-react";
 import { categories, type Category } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
 export type DateFormat = "MMM d, yyyy" | "dd/MM/yyyy" | "MM/dd/yyyy" | "yyyy-MM-dd";
 export type WeightUnit = "metric" | "imperial";
 export type DefaultExpiry = "none" | "7" | "14" | "30" | "60" | "90" | "180" | "365";
+export type FreezerType = "chest" | "under_counter" | "fridge_freezer" | "full_height" | "custom";
+
+export interface Freezer {
+  id: string;
+  name: string;
+  type: FreezerType;
+}
+
+const freezerTypeLabels: Record<FreezerType, string> = {
+  chest: "Chest Freezer",
+  under_counter: "Under Counter",
+  fridge_freezer: "Fridge Freezer",
+  full_height: "Full Height",
+  custom: "Custom",
+};
 
 const dateFormatOptions: { value: DateFormat; label: string; example: string }[] = [
   { value: "MMM d, yyyy", label: "Dec 15, 2024", example: "Dec 15, 2024" },
@@ -49,7 +64,7 @@ export function getDefaultCategory(): Category {
   if (stored && categories.includes(stored as Category)) {
     return stored as Category;
   }
-  return "meat";
+  return "meat_fish";
 }
 
 export function getDateFormat(): DateFormat {
@@ -106,6 +121,39 @@ export function getDefaultLowStock(): number {
   return 2;
 }
 
+export function getCategoryLabels(): Record<Category, string> {
+  try {
+    const stored = localStorage.getItem("categoryLabels");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  const defaults: Record<Category, string> = {} as Record<Category, string>;
+  categories.forEach(cat => {
+    defaults[cat] = categoryConfig[cat].label;
+  });
+  return defaults;
+}
+
+export function getCategoryLabel(category: Category): string {
+  const labels = getCategoryLabels();
+  return labels[category] || categoryConfig[category].label;
+}
+
+export function getFreezers(): Freezer[] {
+  try {
+    const stored = localStorage.getItem("freezers");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [{ id: "default", name: "My Freezer", type: "fridge_freezer" }];
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
@@ -114,6 +162,10 @@ export function SettingsPanel() {
   const [defaultLowStock, setDefaultLowStock] = useState<number>(getDefaultLowStock);
   const [customLocations, setCustomLocations] = useState<string[]>(getCustomLocations);
   const [newLocation, setNewLocation] = useState("");
+  const [categoryLabels, setCategoryLabels] = useState<Record<Category, string>>(getCategoryLabels);
+  const [freezers, setFreezers] = useState<Freezer[]>(getFreezers);
+  const [newFreezerName, setNewFreezerName] = useState("");
+  const [newFreezerType, setNewFreezerType] = useState<FreezerType>("fridge_freezer");
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -139,6 +191,14 @@ export function SettingsPanel() {
     localStorage.setItem("defaultLowStock", defaultLowStock.toString());
   }, [defaultLowStock]);
 
+  useEffect(() => {
+    localStorage.setItem("categoryLabels", JSON.stringify(categoryLabels));
+  }, [categoryLabels]);
+
+  useEffect(() => {
+    localStorage.setItem("freezers", JSON.stringify(freezers));
+  }, [freezers]);
+
   const handleAddLocation = () => {
     const trimmed = newLocation.trim();
     if (trimmed && !customLocations.includes(trimmed)) {
@@ -149,6 +209,36 @@ export function SettingsPanel() {
 
   const handleRemoveLocation = (location: string) => {
     setCustomLocations(customLocations.filter(l => l !== location));
+  };
+
+  const handleCategoryLabelChange = (category: Category, newLabel: string) => {
+    setCategoryLabels(prev => ({
+      ...prev,
+      [category]: newLabel || categoryConfig[category].label
+    }));
+  };
+
+  const handleAddFreezer = () => {
+    const trimmed = newFreezerName.trim();
+    if (trimmed) {
+      const newFreezer: Freezer = {
+        id: Date.now().toString(),
+        name: trimmed,
+        type: newFreezerType,
+      };
+      setFreezers([...freezers, newFreezer]);
+      setNewFreezerName("");
+    }
+  };
+
+  const handleRemoveFreezer = (id: string) => {
+    if (freezers.length > 1) {
+      setFreezers(freezers.filter(f => f.id !== id));
+    }
+  };
+
+  const handleFreezerTypeChange = (id: string, type: FreezerType) => {
+    setFreezers(freezers.map(f => f.id === id ? { ...f, type } : f));
   };
 
   return (
@@ -167,7 +257,7 @@ export function SettingsPanel() {
               <SelectContent>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
-                    {categoryConfig[cat].label}
+                    {categoryLabels[cat]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -233,6 +323,94 @@ export function SettingsPanel() {
               </SelectContent>
             </Select>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Freezers</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Freezer name..."
+              value={newFreezerName}
+              onChange={(e) => setNewFreezerName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddFreezer()}
+              className="flex-1"
+              data-testid="input-new-freezer"
+            />
+            <Select value={newFreezerType} onValueChange={(v) => setNewFreezerType(v as FreezerType)}>
+              <SelectTrigger className="w-[140px]" data-testid="select-new-freezer-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(freezerTypeLabels) as FreezerType[]).map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {freezerTypeLabels[type]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button size="icon" onClick={handleAddFreezer} data-testid="button-add-freezer">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          {freezers.map((freezer) => (
+            <div
+              key={freezer.id}
+              className="flex items-center gap-2 bg-muted p-2 rounded-md"
+            >
+              <Refrigerator className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm flex-1">{freezer.name}</span>
+              <Select 
+                value={freezer.type} 
+                onValueChange={(v) => handleFreezerTypeChange(freezer.id, v as FreezerType)}
+              >
+                <SelectTrigger className="w-[130px]" data-testid={`select-freezer-type-${freezer.id}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(freezerTypeLabels) as FreezerType[]).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {freezerTypeLabels[type]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {freezers.length > 1 && (
+                <button
+                  onClick={() => handleRemoveFreezer(freezer.id)}
+                  className="text-muted-foreground hover:text-foreground p-1"
+                  data-testid={`button-remove-freezer-${freezer.id}`}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Category Names</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {categories.map((cat) => (
+            <div key={cat} className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground w-24 truncate">
+                {categoryConfig[cat].label}
+              </span>
+              <Input
+                value={categoryLabels[cat] || ""}
+                onChange={(e) => handleCategoryLabelChange(cat, e.target.value)}
+                placeholder={categoryConfig[cat].label}
+                className="flex-1"
+                data-testid={`input-category-label-${cat}`}
+              />
+            </div>
+          ))}
         </CardContent>
       </Card>
 

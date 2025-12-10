@@ -54,6 +54,15 @@ export function CategoryIcon({ category, showLabel = false, className = "", size
 }
 
 export function getCategoryLabel(category: Category): string {
+  try {
+    const stored = localStorage.getItem("categoryLabels");
+    if (stored) {
+      const labels = JSON.parse(stored);
+      if (labels[category]) return labels[category];
+    }
+  } catch {
+    // ignore
+  }
   return categoryConfig[category].label;
 }
 
