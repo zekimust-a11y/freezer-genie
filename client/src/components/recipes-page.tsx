@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, Search, ChefHat, Sparkles, ChevronLeft } from "lucide-react";
+import { ExternalLink, Search, ChefHat, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, DessertsSubcategory } from "@shared/schema";
 import { categories, meatSubcategories, produceSubcategories, preparedMealsSubcategories, frozenGoodsSubcategories, dessertsSubcategories } from "@shared/schema";
@@ -95,14 +95,11 @@ const popularRecipeIdeas = [
   { name: "Roast duck", requiredTokens: ["poultry"], allIngredients: ["duck", "potatoes", "herbs", "orange"], url: "https://www.bbcgoodfood.com/search?q=roast+duck" },
 ];
 
-type SubcategoryType = "meat" | "produce" | "prepared_meals" | "frozen_goods" | "desserts" | null;
-
 export function RecipesPage({ items }: RecipesPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [showSubmenu, setShowSubmenu] = useState<SubcategoryType>(null);
-
+  
   const visibleCategories = getVisibleCategories();
   const customCategories = getCustomCategories();
   const hiddenCategories = getHiddenCategories();
@@ -129,32 +126,17 @@ export function RecipesPage({ items }: RecipesPageProps) {
   }, [items]);
 
   const handleCategoryClick = (category: string) => {
-    const categoriesWithSubmenus = ["meat_fish", "produce", "prepared_meals", "frozen_goods", "desserts"];
-    
-    if (categoriesWithSubmenus.includes(category)) {
-      if (selectedCategory === category && showSubmenu) {
-        setSelectedCategory(null);
-        setSelectedSubcategory(null);
-        setShowSubmenu(null);
-      } else {
-        setSelectedCategory(category);
-        setSelectedSubcategory(null);
-        setShowSubmenu(category === "meat_fish" ? "meat" : category as SubcategoryType);
-      }
-    } else {
-      setSelectedCategory(selectedCategory === category ? null : category);
+    if (selectedCategory === category) {
+      setSelectedCategory(null);
       setSelectedSubcategory(null);
-      setShowSubmenu(null);
+    } else {
+      setSelectedCategory(category);
+      setSelectedSubcategory(null);
     }
   };
 
   const handleSubcategoryClick = (subcategory: string) => {
     setSelectedSubcategory(selectedSubcategory === subcategory ? null : subcategory);
-  };
-
-  const handleBackToCategories = () => {
-    setShowSubmenu(null);
-    setSelectedSubcategory(null);
   };
 
   const availableTokens = useMemo(() => {
@@ -247,29 +229,61 @@ export function RecipesPage({ items }: RecipesPageProps) {
           <CardTitle className="text-base">Find me a recipe by ingredient</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Category Filter */}
+          {/* Category Filter - Main Categories */}
           <div className="overflow-x-auto -mx-4 px-4 pb-2">
-            <AnimatePresence mode="wait">
-              {showSubmenu === "meat" ? (
-                <motion.div
-                  key="meat-submenu"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 min-w-max"
-                >
+            <div className="flex items-center gap-2 min-w-max">
+              {visibleCategories.map((category) => {
+                const config = getCategoryConfig(category);
+                const Icon = config.icon;
+                const isActive = selectedCategory === category;
+                return (
                   <motion.button
-                    onClick={handleBackToCategories}
-                    className="flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors text-muted-foreground"
-                    data-testid="button-recipe-back-categories"
+                    key={category}
+                    onClick={() => handleCategoryClick(category)}
+                    className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                    data-testid={`button-recipe-filter-${category}`}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <div className="p-1.5 rounded-md bg-muted">
-                      <ChevronLeft className="h-5 w-5" />
+                    <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                      <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
                     </div>
-                    <span className="text-[10px] font-medium">Back</span>
+                    <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{getCategoryLabel(category)}</span>
                   </motion.button>
+                );
+              })}
+              {visibleCustomCategories.map((customCat) => {
+                const config = getCategoryConfig(customCat.id);
+                const Icon = config.icon;
+                const isActive = selectedCategory === customCat.id;
+                return (
+                  <motion.button
+                    key={customCat.id}
+                    onClick={() => handleCategoryClick(customCat.id)}
+                    className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
+                    data-testid={`button-recipe-filter-${customCat.id}`}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
+                      <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
+                    </div>
+                    <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{customCat.name}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Subcategory Filter - Shows under selected category */}
+          <AnimatePresence>
+            {selectedCategory === "meat_fish" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-x-auto -mx-4 px-4 pb-2"
+              >
+                <div className="flex items-center gap-2 min-w-max">
                   {meatSubcategories.map((subcategory) => {
                     const config = meatSubcategoryConfig[subcategory];
                     const Icon = config.icon;
@@ -289,27 +303,19 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       </motion.button>
                     );
                   })}
-                </motion.div>
-              ) : showSubmenu === "produce" ? (
-                <motion.div
-                  key="produce-submenu"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 min-w-max"
-                >
-                  <motion.button
-                    onClick={handleBackToCategories}
-                    className="flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors text-muted-foreground"
-                    data-testid="button-recipe-back-categories"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <div className="p-1.5 rounded-md bg-muted">
-                      <ChevronLeft className="h-5 w-5" />
-                    </div>
-                    <span className="text-[10px] font-medium">Back</span>
-                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCategory === "produce" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-x-auto -mx-4 px-4 pb-2"
+              >
+                <div className="flex items-center gap-2 min-w-max">
                   {produceSubcategories.map((subcategory) => {
                     const config = produceSubcategoryConfig[subcategory];
                     const Icon = config.icon;
@@ -329,27 +335,19 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       </motion.button>
                     );
                   })}
-                </motion.div>
-              ) : showSubmenu === "prepared_meals" ? (
-                <motion.div
-                  key="prepared-meals-submenu"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 min-w-max"
-                >
-                  <motion.button
-                    onClick={handleBackToCategories}
-                    className="flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors text-muted-foreground"
-                    data-testid="button-recipe-back-categories"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <div className="p-1.5 rounded-md bg-muted">
-                      <ChevronLeft className="h-5 w-5" />
-                    </div>
-                    <span className="text-[10px] font-medium">Back</span>
-                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCategory === "prepared_meals" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-x-auto -mx-4 px-4 pb-2"
+              >
+                <div className="flex items-center gap-2 min-w-max">
                   {preparedMealsSubcategories.map((subcategory) => {
                     const config = preparedMealsSubcategoryConfig[subcategory];
                     const Icon = config.icon;
@@ -369,27 +367,19 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       </motion.button>
                     );
                   })}
-                </motion.div>
-              ) : showSubmenu === "frozen_goods" ? (
-                <motion.div
-                  key="frozen-goods-submenu"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 min-w-max"
-                >
-                  <motion.button
-                    onClick={handleBackToCategories}
-                    className="flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors text-muted-foreground"
-                    data-testid="button-recipe-back-categories"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <div className="p-1.5 rounded-md bg-muted">
-                      <ChevronLeft className="h-5 w-5" />
-                    </div>
-                    <span className="text-[10px] font-medium">Back</span>
-                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCategory === "frozen_goods" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-x-auto -mx-4 px-4 pb-2"
+              >
+                <div className="flex items-center gap-2 min-w-max">
                   {frozenGoodsSubcategories.map((subcategory) => {
                     const config = frozenGoodsSubcategoryConfig[subcategory];
                     const Icon = config.icon;
@@ -409,27 +399,19 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       </motion.button>
                     );
                   })}
-                </motion.div>
-              ) : showSubmenu === "desserts" ? (
-                <motion.div
-                  key="desserts-submenu"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 min-w-max"
-                >
-                  <motion.button
-                    onClick={handleBackToCategories}
-                    className="flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors text-muted-foreground"
-                    data-testid="button-recipe-back-categories"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <div className="p-1.5 rounded-md bg-muted">
-                      <ChevronLeft className="h-5 w-5" />
-                    </div>
-                    <span className="text-[10px] font-medium">Back</span>
-                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCategory === "desserts" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-x-auto -mx-4 px-4 pb-2"
+              >
+                <div className="flex items-center gap-2 min-w-max">
                   {dessertsSubcategories.map((subcategory) => {
                     const config = dessertsSubcategoryConfig[subcategory];
                     const Icon = config.icon;
@@ -449,58 +431,10 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       </motion.button>
                     );
                   })}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="main-categories"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-center gap-2 min-w-max"
-                >
-                  {visibleCategories.map((category) => {
-                    const config = getCategoryConfig(category);
-                    const Icon = config.icon;
-                    const isActive = selectedCategory === category;
-                    return (
-                      <motion.button
-                        key={category}
-                        onClick={() => handleCategoryClick(category)}
-                        className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
-                        data-testid={`button-recipe-filter-${category}`}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                          <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
-                        </div>
-                        <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{getCategoryLabel(category)}</span>
-                      </motion.button>
-                    );
-                  })}
-                  {visibleCustomCategories.map((customCat) => {
-                    const config = getCategoryConfig(customCat.id);
-                    const Icon = config.icon;
-                    const isActive = selectedCategory === customCat.id;
-                    return (
-                      <motion.button
-                        key={customCat.id}
-                        onClick={() => handleCategoryClick(customCat.id)}
-                        className={`flex flex-col items-center justify-center gap-0.5 w-14 py-1.5 rounded-lg transition-colors ${isActive ? "" : "text-muted-foreground"}`}
-                        data-testid={`button-recipe-filter-${customCat.id}`}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <div className={`p-1.5 rounded-md transition-all ${isActive ? `${config.stripeColor} text-white shadow-md` : config.bgColor}`}>
-                          <Icon className={`h-5 w-5 ${isActive ? "text-white" : config.color}`} />
-                        </div>
-                        <span className={`text-[10px] font-medium whitespace-nowrap ${isActive ? config.color : ""}`}>{customCat.name}</span>
-                      </motion.button>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
