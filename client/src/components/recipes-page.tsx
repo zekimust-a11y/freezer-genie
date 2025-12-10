@@ -31,6 +31,10 @@ function extractIngredientTokens(itemName: string): string[] {
   // Protein matches
   if (name.includes("chicken")) tokens.push("chicken");
   if (name.includes("beef") || name.includes("steak") || name.includes("sirloin")) tokens.push("beef");
+  if (name.includes("pork chop")) tokens.push("pork chops");
+  if (name.includes("minced pork") || name.includes("pork mince")) tokens.push("minced pork");
+  if (name.includes("sausage")) tokens.push("sausage");
+  if (name.includes("bacon")) tokens.push("bacon");
   if (name.includes("pork") || name.includes("sausage") || name.includes("bacon")) tokens.push("pork");
   if (name.includes("lamb")) tokens.push("lamb");
   if (name.includes("fish") || name.includes("cod") || name.includes("salmon") || name.includes("haddock") || name.includes("trout")) tokens.push("fish");
@@ -83,8 +87,9 @@ const popularRecipeIdeas = [
   { name: "Bolognese", requiredTokens: ["beef"], allIngredients: ["minced beef", "tomatoes", "onion", "pasta"], url: "https://www.bbcgoodfood.com/search?q=spaghetti+bolognese", image: "https://images.unsplash.com/photo-1622973536968-3ead9e780960?w=100&h=100&fit=crop" },
   { name: "Shepherd's pie", requiredTokens: ["lamb"], allIngredients: ["lamb", "potatoes", "carrots", "peas"], url: "https://www.bbcgoodfood.com/search?q=shepherds+pie", image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=100&h=100&fit=crop" },
   { name: "Lamb stew", requiredTokens: ["lamb"], allIngredients: ["lamb", "potatoes", "carrots", "stock"], url: "https://www.bbcgoodfood.com/search?q=lamb+stew", image: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=100&h=100&fit=crop" },
-  { name: "Pork chops", requiredTokens: ["pork"], allIngredients: ["pork chops", "apples", "sage", "butter"], url: "https://www.bbcgoodfood.com/search?q=pork+chops", image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=100&h=100&fit=crop" },
-  { name: "Sausage casserole", requiredTokens: ["pork"], allIngredients: ["sausages", "beans", "tomatoes", "onion"], url: "https://www.bbcgoodfood.com/search?q=sausage+casserole", image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=100&h=100&fit=crop" },
+  { name: "Pork chops", requiredTokens: ["pork chops"], allIngredients: ["pork chops", "apples", "sage", "butter"], url: "https://www.bbcgoodfood.com/search?q=pork+chops", image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=100&h=100&fit=crop" },
+  { name: "Sausage casserole", requiredTokens: ["sausage"], allIngredients: ["sausages", "beans", "tomatoes", "onion"], url: "https://www.bbcgoodfood.com/search?q=sausage+casserole", image: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=100&h=100&fit=crop" },
+  { name: "Pork mince stir fry", requiredTokens: ["minced pork"], allIngredients: ["minced pork", "vegetables", "soy sauce", "ginger"], url: "https://www.bbcgoodfood.com/search?q=pork+mince+stir+fry", image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=100&h=100&fit=crop" },
   { name: "Prawn stir fry", requiredTokens: ["seafood"], allIngredients: ["prawns", "vegetables", "soy sauce", "ginger"], url: "https://www.bbcgoodfood.com/search?q=prawn+stir+fry", image: "https://images.unsplash.com/photo-1625943553852-781c6dd46faa?w=100&h=100&fit=crop" },
   { name: "Garlic prawns", requiredTokens: ["seafood"], allIngredients: ["prawns", "garlic", "butter", "parsley"], url: "https://www.bbcgoodfood.com/search?q=garlic+prawns", image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=100&h=100&fit=crop" },
   { name: "Vegetable soup", requiredTokens: ["vegetables"], allIngredients: ["vegetables", "stock", "onion", "herbs"], url: "https://www.bbcgoodfood.com/search?q=vegetable+soup", image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=100&h=100&fit=crop" },
