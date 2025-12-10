@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Snowflake, Plus, X, LogOut, Refrigerator, Eye, EyeOff, Tag } from "lucide-react";
+import { Snowflake, Plus, X, LogOut, Refrigerator, Eye, EyeOff } from "lucide-react";
 import { categories, locations, locationLabels as defaultLocationLabels, type Category, type Location } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
@@ -585,17 +585,31 @@ export function SettingsPanel() {
               </div>
             );
           })}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Custom Categories</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex gap-2">
+          
+          {customCategories.map((cat) => (
+            <div
+              key={cat.id}
+              className="flex items-center gap-3"
+            >
+              <button
+                onClick={() => handleRemoveCategory(cat.id)}
+                className="p-1 text-muted-foreground hover:text-destructive"
+                data-testid={`button-remove-category-${cat.id}`}
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <Input
+                value={cat.name}
+                onChange={(e) => handleCustomCategoryNameChange(cat.id, e.target.value)}
+                className="flex-1"
+                data-testid={`input-custom-category-${cat.id}`}
+              />
+            </div>
+          ))}
+          
+          <div className="flex gap-2 pt-2 border-t">
             <Input
-              placeholder="Add category name..."
+              placeholder="Add new category..."
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
@@ -605,35 +619,6 @@ export function SettingsPanel() {
               <Plus className="h-4 w-4" />
             </Button>
           </div>
-          {customCategories.length > 0 ? (
-            <div className="space-y-2">
-              {customCategories.map((cat) => (
-                <div
-                  key={cat.id}
-                  className="flex items-center gap-2 bg-muted p-2 rounded-md"
-                >
-                  <Tag className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <Input
-                    value={cat.name}
-                    onChange={(e) => handleCustomCategoryNameChange(cat.id, e.target.value)}
-                    className="flex-1 h-8"
-                    data-testid={`input-custom-category-${cat.id}`}
-                  />
-                  <button
-                    onClick={() => handleRemoveCategory(cat.id)}
-                    className="text-muted-foreground hover:text-foreground p-1"
-                    data-testid={`button-remove-category-${cat.id}`}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              No custom categories added yet.
-            </p>
-          )}
         </CardContent>
       </Card>
 
