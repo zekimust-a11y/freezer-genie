@@ -109,7 +109,7 @@ export function RecipesPage({ items }: RecipesPageProps) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Search by Ingredient</CardTitle>
+          <CardTitle className="text-base">Find me a recipe by ingredient</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="relative">
