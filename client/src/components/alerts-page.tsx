@@ -93,13 +93,13 @@ export function AlertsPage({ items, onEditItem }: AlertsPageProps) {
     <div className="p-4 space-y-6">
       <div className="flex items-center gap-2">
         <AlertTriangle className="h-5 w-5 text-destructive" />
-        <h1 className="text-lg font-semibold">Expiration Alerts</h1>
+        <h1 className="text-lg font-semibold">Use By Alerts</h1>
       </div>
 
       {!hasAlerts ? (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No expiration alerts</p>
+          <p className="text-muted-foreground">No use by alerts</p>
           <p className="text-sm text-muted-foreground">All your items are fresh!</p>
         </div>
       ) : (
@@ -120,7 +120,7 @@ export function AlertsPage({ items, onEditItem }: AlertsPageProps) {
             <div className="space-y-3">
               <h2 className="text-sm font-medium text-orange-500 flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                Expiring Today ({expiringTodayItems.length})
+                Use By Today ({expiringTodayItems.length})
               </h2>
               {expiringTodayItems.map((item) => (
                 <ExpirationCard key={item.id} item={item} onEdit={() => onEditItem(item)} />
@@ -132,7 +132,7 @@ export function AlertsPage({ items, onEditItem }: AlertsPageProps) {
             <div className="space-y-3">
               <h2 className="text-sm font-medium text-yellow-500 flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                Expiring Soon ({expiringSoonItems.length})
+                Use By Soon ({expiringSoonItems.length})
               </h2>
               {expiringSoonItems.map((item) => (
                 <ExpirationCard key={item.id} item={item} onEdit={() => onEditItem(item)} />

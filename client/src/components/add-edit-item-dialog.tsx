@@ -318,7 +318,7 @@ export function AddEditItemDialog({
                 name="expirationDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expiration Date</FormLabel>
+                    <FormLabel>Use By Date</FormLabel>
                     <FormControl>
                       <Input
                         type="date"

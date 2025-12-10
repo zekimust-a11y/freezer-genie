@@ -392,7 +392,7 @@ export default function AddEditItemPage() {
                 name="expirationDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expiry</FormLabel>
+                    <FormLabel>Use By</FormLabel>
                     <FormControl>
                       <Input
                         type="date"

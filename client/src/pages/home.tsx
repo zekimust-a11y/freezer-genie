@@ -29,7 +29,7 @@ type Tab = "inventory" | "alerts" | "list" | "settings";
 type SortOption = "expiry" | "name" | "quantity" | "recent";
 
 const sortLabels: Record<SortOption, string> = {
-  expiry: "Expiry Date",
+  expiry: "Use By Date",
   name: "Name",
   quantity: "Quantity",
   recent: "Recently Added",

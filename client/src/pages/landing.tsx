@@ -30,7 +30,7 @@ export default function Landing() {
             Keep Track of Your Freezer Contents
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Never let food go to waste again. Track what's in your freezer, get expiration alerts, and know when you're running low on essentials.
+            Never let food go to waste again. Track what's in your freezer, get use by alerts, and know when you're running low on essentials.
           </p>
           <Button size="lg" asChild data-testid="button-get-started">
             <a href="/api/login">Get Started</a>
@@ -51,9 +51,9 @@ export default function Landing() {
           <Card>
             <CardContent className="pt-6 text-center">
               <Clock className="h-10 w-10 mx-auto mb-4 text-amber-500" />
-              <h3 className="font-semibold mb-2">Expiration Alerts</h3>
+              <h3 className="font-semibold mb-2">Use By Alerts</h3>
               <p className="text-sm text-muted-foreground">
-                Get notified when items are expiring soon so nothing goes to waste.
+                Get notified when items need to be used soon so nothing goes to waste.
               </p>
             </CardContent>
           </Card>

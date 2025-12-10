@@ -204,7 +204,7 @@ export function SettingsPanel() {
             </Select>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Default Expiry</span>
+            <span className="text-sm">Default Use By</span>
             <Select value={defaultExpiry} onValueChange={(v) => setDefaultExpiry(v as DefaultExpiry)}>
               <SelectTrigger className="w-[160px]" data-testid="select-default-expiry">
                 <SelectValue />

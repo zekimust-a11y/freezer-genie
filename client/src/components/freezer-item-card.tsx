@@ -153,12 +153,12 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                     <ExpirationBadge expirationDate={item.expirationDate} />
                     {formattedDate && (
                       <span className="text-xs text-muted-foreground">
-                        Expiry date: {formattedDate}
+                        Use by: {formattedDate}
                       </span>
                     )}
                   </>
                 ) : (
-                  <span className="text-xs text-muted-foreground italic">No expiry set</span>
+                  <span className="text-xs text-muted-foreground italic">No use by date set</span>
                 )}
               </div>
             </div>
