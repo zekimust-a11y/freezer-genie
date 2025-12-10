@@ -386,19 +386,52 @@ export default function Home() {
           ) : filteredAndSortedItems.length === 0 ? (
             <EmptyState onAddItem={() => navigate("/add")} hasFilters />
           ) : viewMode === "cards" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredAndSortedItems.map((item, index) => (
+                <FreezerItemCard
+                  key={item.id}
+                  item={item}
+                  onEdit={handleEditItem}
+                  index={index}
+                />
+              ))}
+            </div>
+          ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredAndSortedItems.map((item, index) => (
-                  <FreezerItemCard
-                    key={item.id}
-                    item={item}
-                    onEdit={handleEditItem}
-                    index={index}
-                  />
-                ))}
+              <div className="border rounded-md overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr className="text-left text-sm">
+                      <th scope="col" className="px-3 py-2 font-medium">Name</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Qty</th>
+                      <th scope="col" className="px-3 py-2 font-medium">Use By</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {filteredAndSortedItems.map((item) => (
+                      <tr 
+                        key={item.id} 
+                        className="hover-elevate cursor-pointer"
+                        onClick={() => handleEditItem(item)}
+                        data-testid={`row-item-${item.id}`}
+                      >
+                        <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
+                        <td className="px-3 py-2 text-sm">
+                          {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
+                        </td>
+                        <td className="px-3 py-2 text-sm">
+                          {item.expirationDate 
+                            ? new Date(item.expirationDate).toLocaleDateString()
+                            : "-"
+                          }
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
               
-              <Card className="mt-6 bg-muted/50">
+              <Card className="mt-2 bg-muted/50">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Share2 className="h-4 w-4 text-muted-foreground" />
@@ -450,39 +483,6 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-          ) : (
-            <div className="border rounded-md overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr className="text-left text-sm">
-                    <th scope="col" className="px-3 py-2 font-medium">Name</th>
-                    <th scope="col" className="px-3 py-2 font-medium">Qty</th>
-                    <th scope="col" className="px-3 py-2 font-medium">Use By</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {filteredAndSortedItems.map((item) => (
-                    <tr 
-                      key={item.id} 
-                      className="hover-elevate cursor-pointer"
-                      onClick={() => handleEditItem(item)}
-                      data-testid={`row-item-${item.id}`}
-                    >
-                      <td className="px-3 py-2 text-sm font-medium">{item.name}</td>
-                      <td className="px-3 py-2 text-sm">
-                        {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
-                      </td>
-                      <td className="px-3 py-2 text-sm">
-                        {item.expirationDate 
-                          ? new Date(item.expirationDate).toLocaleDateString()
-                          : "-"
-                        }
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           )}
         </main>
