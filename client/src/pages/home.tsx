@@ -23,7 +23,7 @@ import { ArrowUpDown, Search, X, Snowflake } from "lucide-react";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import type { FreezerItem, Category } from "@shared/schema";
+import type { FreezerItem, Category, MeatSubcategory } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "settings";
 type SortOption = "expiry" | "name" | "quantity" | "recent";
@@ -39,6 +39,7 @@ export default function Home() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("expiry");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -59,6 +60,9 @@ export default function Home() {
 
     if (selectedCategory) {
       result = result.filter((item) => item.category === selectedCategory);
+      if (selectedSubcategory && selectedCategory === "meat_fish") {
+        result = result.filter((item) => item.subCategory === selectedSubcategory);
+      }
     }
 
     switch (sortBy) {
@@ -82,7 +86,7 @@ export default function Home() {
     }
 
     return result;
-  }, [items, selectedCategory, sortBy, searchQuery]);
+  }, [items, selectedCategory, selectedSubcategory, sortBy, searchQuery]);
 
   const { user } = useAuth();
   const { processCommand } = useVoiceCommands();
@@ -230,7 +234,9 @@ export default function Home() {
         <div className="fixed left-0 right-0 z-50 bg-background border-t px-4 py-2" style={{ bottom: 'calc(64px + env(safe-area-inset-bottom))' }}>
           <CategoryFilter
             selectedCategory={selectedCategory}
+            selectedSubcategory={selectedSubcategory}
             onCategoryChange={setSelectedCategory}
+            onSubcategoryChange={setSelectedSubcategory}
           />
         </div>
       )}

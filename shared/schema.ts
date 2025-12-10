@@ -40,6 +40,18 @@ export const categories = [
 
 export type Category = (typeof categories)[number];
 
+export const meatSubcategories = [
+  "chicken",
+  "beef",
+  "pork",
+  "lamb",
+  "fish",
+  "seafood",
+  "other_meat",
+] as const;
+
+export type MeatSubcategory = (typeof meatSubcategories)[number];
+
 export const locations = [
   "top_shelf",
   "middle_shelf",
@@ -57,6 +69,7 @@ export const freezerItems = pgTable("freezer_items", {
   id: varchar("id").primaryKey(),
   name: text("name").notNull(),
   category: text("category").notNull().$type<Category>(),
+  subCategory: text("sub_category").$type<MeatSubcategory>(),
   quantity: integer("quantity").notNull().default(1),
   unit: text("unit").notNull().default("item"),
   expirationDate: date("expiration_date"),
