@@ -133,10 +133,12 @@ export const freezerItems = pgTable("freezer_items", {
   lowStockThreshold: integer("low_stock_threshold").default(0),
   location: text("location").notNull().default("unassigned"),
   tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertFreezerItemSchema = createInsertSchema(freezerItems).omit({
   id: true,
+  createdAt: true,
 });
 
 export type InsertFreezerItem = z.infer<typeof insertFreezerItemSchema>;

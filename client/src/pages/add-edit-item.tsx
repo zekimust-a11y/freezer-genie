@@ -3,6 +3,7 @@ import { useLocation, useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -728,6 +729,12 @@ export default function AddEditItemPage() {
                 </FormItem>
               )}
             />
+
+            {isEditing && item?.createdAt && (
+              <div className="text-xs text-muted-foreground text-center pt-4 border-t">
+                Added on {format(new Date(item.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+              </div>
+            )}
           </form>
         </Form>
       </div>
