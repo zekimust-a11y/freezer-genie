@@ -99,6 +99,8 @@ const frozenGoodsSubcategoryConfig: Record<FrozenGoodsSubcategory, { icon: typeo
 const dessertsSubcategoryConfig: Record<DessertsSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
   home_made: { icon: Home, label: "Home Made", color: "text-pink-600 dark:text-pink-400", bgColor: "bg-pink-100 dark:bg-pink-900/30", stripeColor: "bg-pink-600" },
   store_bought: { icon: ShoppingBag, label: "Store Bought", color: "text-purple-500 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", stripeColor: "bg-purple-500" },
+  cakes: { icon: IceCream, label: "Cakes", color: "text-rose-500 dark:text-rose-400", bgColor: "bg-rose-100 dark:bg-rose-900/30", stripeColor: "bg-rose-500" },
+  sauces: { icon: Package, label: "Sauces", color: "text-amber-500 dark:text-amber-400", bgColor: "bg-amber-100 dark:bg-amber-900/30", stripeColor: "bg-amber-500" },
 };
 
 interface CategoryIconProps {
