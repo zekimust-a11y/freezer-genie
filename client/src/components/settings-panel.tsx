@@ -490,7 +490,7 @@ export function SettingsPanel() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Show items from</CardTitle>
+          <CardTitle className="text-lg">My Freezers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex gap-2">
