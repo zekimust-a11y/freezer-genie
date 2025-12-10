@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, type ItemTag } from "@/components/settings-panel";
+import { getDefaultCategory, getCustomLocations, getDefaultExpiryDate, getDefaultLowStock, getVisibleLocations, getLocationLabel, getAvailableTags, getTagLabel, getFreezers, type ItemTag } from "@/components/settings-panel";
 import { Badge } from "@/components/ui/badge";
 import { 
   categories,
@@ -63,6 +63,9 @@ export default function AddEditItemPage() {
     enabled: isEditing,
   });
 
+  const freezers = getFreezers();
+  const hasMultipleFreezers = freezers.length > 1;
+
   const form = useForm<FreezerItemFormData>({
     resolver: zodResolver(freezerItemFormSchema),
     defaultValues: {
@@ -75,6 +78,7 @@ export default function AddEditItemPage() {
       notes: "",
       lowStockThreshold: getDefaultLowStock(),
       location: "unassigned",
+      freezerId: freezers[0]?.id || "default",
       tags: [],
     },
   });
@@ -95,6 +99,7 @@ export default function AddEditItemPage() {
         notes: item.notes || "",
         lowStockThreshold: item.lowStockThreshold || 0,
         location: item.location || "unassigned",
+        freezerId: item.freezerId || freezers[0]?.id || "default",
         tags: item.tags || [],
       });
       setSelectedTags(item.tags || []);
@@ -705,6 +710,37 @@ export default function AddEditItemPage() {
                 )}
               />
             </div>
+
+            {hasMultipleFreezers && (
+              <FormField
+                control={form.control}
+                name="freezerId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Freezer</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || freezers[0]?.id || "default"}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-freezer">
+                          <SelectValue placeholder="Select freezer" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {freezers.map((freezer) => (
+                          <SelectItem 
+                            key={freezer.id} 
+                            value={freezer.id}
+                            data-testid={`select-freezer-${freezer.id}`}
+                          >
+                            {freezer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <div className="space-y-2">
               <label className="text-base font-medium">Tags</label>

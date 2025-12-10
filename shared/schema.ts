@@ -135,6 +135,7 @@ export const freezerItems = pgTable("freezer_items", {
   notes: text("notes"),
   lowStockThreshold: integer("low_stock_threshold").default(0),
   location: text("location").notNull().default("unassigned"),
+  freezerId: text("freezer_id").default("default"),
   tags: text("tags").array(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -155,6 +156,7 @@ export const freezerItemFormSchema = insertFreezerItemSchema.extend({
   expirationDate: z.string().nullable().optional(),
   lowStockThreshold: z.coerce.number().min(0).optional(),
   location: z.string().optional(),
+  freezerId: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });
 
