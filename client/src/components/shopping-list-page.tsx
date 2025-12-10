@@ -94,7 +94,7 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
                       Minimum: <span className="font-medium text-foreground">{formatQuantity(item.lowStockThreshold ?? 0, item.unit)} {getUnitLabel(item.unit, item.lowStockThreshold ?? 0)}</span>
                     </p>
                     <Badge variant="destructive" className="mt-1">
-                      Need {formatQuantity(Math.max(0.01, (item.lowStockThreshold ?? 0) - Number(item.quantity)), item.unit)} more
+                      Need {formatQuantity(Math.max(0.01, (item.lowStockThreshold ?? 0) - Number(item.quantity)), item.unit)} more {getUnitLabel(item.unit, Math.max(1, (item.lowStockThreshold ?? 0) - Number(item.quantity)))}
                     </Badge>
                   </div>
                 </div>
