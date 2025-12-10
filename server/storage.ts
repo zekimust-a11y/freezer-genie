@@ -63,6 +63,7 @@ export class DatabaseStorage implements IStorage {
         id,
         name: insertItem.name,
         category: insertItem.category as Category,
+        subCategory: insertItem.subCategory || null,
         quantity: insertItem.quantity ?? 1,
         unit: insertItem.unit ?? "item",
         expirationDate: insertItem.expirationDate || null,
@@ -80,6 +81,7 @@ export class DatabaseStorage implements IStorage {
       .set({
         name: updateData.name,
         category: updateData.category as Category,
+        subCategory: updateData.subCategory || null,
         quantity: updateData.quantity ?? 1,
         unit: updateData.unit ?? "item",
         expirationDate: updateData.expirationDate || null,
