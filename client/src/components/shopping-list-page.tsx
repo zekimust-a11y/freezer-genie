@@ -162,13 +162,13 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
             </Card>
           ))}
 
-          <Card className="mt-6">
+          <Card className="mt-6 bg-muted/50">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center justify-center gap-2 mb-3">
                 <Share2 className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Share this list with someone else</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
                 {typeof navigator !== 'undefined' && navigator.share && (
                   <Button 
                     variant="outline" 
