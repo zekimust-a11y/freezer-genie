@@ -1,8 +1,11 @@
 import { 
   freezerItems, 
+  freezers,
   users,
   type FreezerItem, 
   type InsertFreezerItem, 
+  type Freezer,
+  type InsertFreezer,
   type Category,
   type Location,
   type User,
@@ -21,6 +24,11 @@ export interface IStorage {
   createItem(item: InsertFreezerItem): Promise<FreezerItem>;
   updateItem(id: string, item: InsertFreezerItem): Promise<FreezerItem | undefined>;
   deleteItem(id: string): Promise<boolean>;
+  // Freezer operations
+  getAllFreezers(): Promise<Freezer[]>;
+  createFreezer(freezer: InsertFreezer): Promise<Freezer>;
+  updateFreezer(id: string, freezer: InsertFreezer): Promise<Freezer | undefined>;
+  deleteFreezer(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -100,6 +108,47 @@ export class DatabaseStorage implements IStorage {
 
   async deleteItem(id: string): Promise<boolean> {
     const result = await db.delete(freezerItems).where(eq(freezerItems.id, id)).returning();
+    return result.length > 0;
+  }
+
+  // Freezer operations
+  async getAllFreezers(): Promise<Freezer[]> {
+    const result = await db.select().from(freezers);
+    if (result.length === 0) {
+      // Create default freezer if none exist
+      const defaultFreezer = await this.createFreezer({ name: "My Freezer", type: "fridge_freezer" });
+      return [defaultFreezer];
+    }
+    return result;
+  }
+
+  async createFreezer(insertFreezer: InsertFreezer): Promise<Freezer> {
+    const id = crypto.randomUUID();
+    const [freezer] = await db
+      .insert(freezers)
+      .values({
+        id,
+        name: insertFreezer.name,
+        type: insertFreezer.type ?? "fridge_freezer",
+      })
+      .returning();
+    return freezer;
+  }
+
+  async updateFreezer(id: string, updateData: InsertFreezer): Promise<Freezer | undefined> {
+    const [freezer] = await db
+      .update(freezers)
+      .set({
+        name: updateData.name,
+        type: updateData.type ?? "fridge_freezer",
+      })
+      .where(eq(freezers.id, id))
+      .returning();
+    return freezer || undefined;
+  }
+
+  async deleteFreezer(id: string): Promise<boolean> {
+    const result = await db.delete(freezers).where(eq(freezers.id, id)).returning();
     return result.length > 0;
   }
 }

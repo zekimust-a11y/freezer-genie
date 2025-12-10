@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Snowflake, Plus, X, Refrigerator, Eye, EyeOff } from "lucide-react";
 import { categories, locations, locationLabels as defaultLocationLabels, defaultTags, tagLabels, type Category, type Location, type DefaultTag } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
+import { apiRequest } from "@/lib/queryClient";
 
 export type DateFormat = "MMM d, yyyy" | "dd/MM/yyyy" | "MM/dd/yyyy" | "yyyy-MM-dd";
 export type WeightUnit = "metric" | "imperial";
@@ -312,6 +313,7 @@ export function SettingsPanel() {
   const [newLocation, setNewLocation] = useState("");
   const [categoryLabels, setCategoryLabels] = useState<Record<Category, string>>(getCategoryLabels);
   const [freezers, setFreezers] = useState<Freezer[]>(getFreezers);
+  const [freezersLoaded, setFreezersLoaded] = useState(false);
   const [defaultFreezerId, setDefaultFreezerId] = useState<string>(getDefaultFreezerForNewItems);
   const [newFreezerName, setNewFreezerName] = useState("");
   const [newFreezerType, setNewFreezerType] = useState<FreezerType>("fridge_freezer");
@@ -351,9 +353,35 @@ export function SettingsPanel() {
     localStorage.setItem("categoryLabels", JSON.stringify(categoryLabels));
   }, [categoryLabels]);
 
+  // Fetch freezers from API on mount
   useEffect(() => {
-    localStorage.setItem("freezers", JSON.stringify(freezers));
-  }, [freezers]);
+    async function fetchFreezers() {
+      try {
+        const response = await fetch("/api/freezers");
+        if (response.ok) {
+          const data = await response.json();
+          const mappedFreezers: Freezer[] = data.map((f: { id: string; name: string; type: string }) => ({
+            id: f.id,
+            name: f.name,
+            type: f.type as FreezerType,
+          }));
+          setFreezers(mappedFreezers);
+          localStorage.setItem("freezers", JSON.stringify(mappedFreezers));
+        }
+      } catch (error) {
+        console.error("Failed to fetch freezers:", error);
+      } finally {
+        setFreezersLoaded(true);
+      }
+    }
+    fetchFreezers();
+  }, []);
+
+  useEffect(() => {
+    if (freezersLoaded) {
+      localStorage.setItem("freezers", JSON.stringify(freezers));
+    }
+  }, [freezers, freezersLoaded]);
 
   useEffect(() => {
     setDefaultFreezerForNewItems(defaultFreezerId);
@@ -457,31 +485,69 @@ export function SettingsPanel() {
     }));
   };
 
-  const handleAddFreezer = () => {
+  const handleAddFreezer = async () => {
     const trimmed = newFreezerName.trim();
     if (trimmed) {
-      const newFreezer: Freezer = {
-        id: Date.now().toString(),
-        name: trimmed,
-        type: newFreezerType,
-      };
-      setFreezers([...freezers, newFreezer]);
-      setNewFreezerName("");
+      try {
+        const response = await apiRequest("POST", "/api/freezers", {
+          name: trimmed,
+          type: newFreezerType,
+        });
+        const newFreezer = await response.json();
+        const mappedFreezer: Freezer = {
+          id: newFreezer.id,
+          name: newFreezer.name,
+          type: newFreezer.type as FreezerType,
+        };
+        setFreezers([...freezers, mappedFreezer]);
+        setNewFreezerName("");
+      } catch (error) {
+        console.error("Failed to add freezer:", error);
+      }
     }
   };
 
-  const handleRemoveFreezer = (id: string) => {
+  const handleRemoveFreezer = async (id: string) => {
     if (freezers.length > 1) {
-      setFreezers(freezers.filter(f => f.id !== id));
+      try {
+        await apiRequest("DELETE", `/api/freezers/${id}`);
+        setFreezers(freezers.filter(f => f.id !== id));
+      } catch (error) {
+        console.error("Failed to remove freezer:", error);
+      }
+    }
+  };
+
+  const handleFreezerUpdate = async (id: string, updates: Partial<Freezer>) => {
+    const freezer = freezers.find(f => f.id === id);
+    if (!freezer) return;
+    
+    const updatedFreezer = { ...freezer, ...updates };
+    try {
+      await apiRequest("PUT", `/api/freezers/${id}`, {
+        name: updatedFreezer.name,
+        type: updatedFreezer.type,
+      });
+      setFreezers(freezers.map(f => f.id === id ? updatedFreezer : f));
+    } catch (error) {
+      console.error("Failed to update freezer:", error);
     }
   };
 
   const handleFreezerTypeChange = (id: string, type: FreezerType) => {
-    setFreezers(freezers.map(f => f.id === id ? { ...f, type } : f));
+    handleFreezerUpdate(id, { type });
   };
 
   const handleFreezerNameChange = (id: string, name: string) => {
+    // Debounce the API call - only update local state immediately
     setFreezers(freezers.map(f => f.id === id ? { ...f, name } : f));
+  };
+
+  const handleFreezerNameBlur = (id: string) => {
+    const freezer = freezers.find(f => f.id === id);
+    if (freezer) {
+      handleFreezerUpdate(id, { name: freezer.name });
+    }
   };
 
   return (
@@ -500,6 +566,7 @@ export function SettingsPanel() {
               <Input
                 value={freezer.name}
                 onChange={(e) => handleFreezerNameChange(freezer.id, e.target.value)}
+                onBlur={() => handleFreezerNameBlur(freezer.id)}
                 className="flex-1 h-8"
                 data-testid={`input-freezer-name-${freezer.id}`}
               />

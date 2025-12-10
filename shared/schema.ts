@@ -172,3 +172,27 @@ export const locationLabels: Record<Location, string> = {
   drawer_3: "Drawer 3",
   unassigned: "Unassigned",
 };
+
+export const freezerTypes = [
+  "chest_freezer",
+  "upright_freezer",
+  "fridge_freezer",
+  "mini_freezer",
+] as const;
+
+export type FreezerType = (typeof freezerTypes)[number];
+
+export const freezers = pgTable("freezers", {
+  id: varchar("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type").notNull().default("fridge_freezer"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertFreezerSchema = createInsertSchema(freezers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertFreezer = z.infer<typeof insertFreezerSchema>;
+export type Freezer = typeof freezers.$inferSelect;

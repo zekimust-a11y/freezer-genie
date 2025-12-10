@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { CategoryFilter } from "@/components/category-filter";
@@ -45,8 +45,34 @@ export default function Home() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [selectedFreezerId, setSelectedFreezerId] = useState(getSelectedFreezer);
-  const freezerOptions = getFreezerOptions();
-  const hasMultipleFreezers = getFreezers().length > 1;
+  const [freezerOptions, setFreezerOptions] = useState(getFreezerOptions());
+  const [hasMultipleFreezers, setHasMultipleFreezers] = useState(getFreezers().length > 1);
+
+  // Fetch freezers from API and sync to localStorage
+  useEffect(() => {
+    async function syncFreezers() {
+      try {
+        const response = await fetch("/api/freezers");
+        if (response.ok) {
+          const data = await response.json();
+          const freezers = data.map((f: { id: string; name: string; type: string }) => ({
+            id: f.id,
+            name: f.name,
+            type: f.type,
+          }));
+          localStorage.setItem("freezers", JSON.stringify(freezers));
+          setFreezerOptions([
+            { id: "all", name: "All Freezers" },
+            ...freezers.map((f: { id: string; name: string }) => ({ id: f.id, name: f.name }))
+          ]);
+          setHasMultipleFreezers(freezers.length > 1);
+        }
+      } catch (error) {
+        console.error("Failed to sync freezers:", error);
+      }
+    }
+    syncFreezers();
+  }, []);
 
   const handleFreezerChange = (freezerId: string) => {
     setSelectedFreezerId(freezerId);

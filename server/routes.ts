@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertFreezerItemSchema } from "@shared/schema";
+import { insertFreezerItemSchema, insertFreezerSchema } from "@shared/schema";
 import { fromError } from "zod-validation-error";
 
 export async function registerRoutes(
@@ -84,6 +84,63 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting item:", error);
       res.status(500).json({ error: "Failed to delete item" });
+    }
+  });
+
+  // Freezer routes
+  app.get("/api/freezers", async (_req, res) => {
+    try {
+      const freezersList = await storage.getAllFreezers();
+      res.json(freezersList);
+    } catch (error) {
+      console.error("Error fetching freezers:", error);
+      res.status(500).json({ error: "Failed to fetch freezers" });
+    }
+  });
+
+  app.post("/api/freezers", async (req, res) => {
+    try {
+      const result = insertFreezerSchema.safeParse(req.body);
+      if (!result.success) {
+        const validationError = fromError(result.error);
+        return res.status(400).json({ error: validationError.message });
+      }
+      const freezer = await storage.createFreezer(result.data);
+      res.status(201).json(freezer);
+    } catch (error) {
+      console.error("Error creating freezer:", error);
+      res.status(500).json({ error: "Failed to create freezer" });
+    }
+  });
+
+  app.put("/api/freezers/:id", async (req, res) => {
+    try {
+      const result = insertFreezerSchema.safeParse(req.body);
+      if (!result.success) {
+        const validationError = fromError(result.error);
+        return res.status(400).json({ error: validationError.message });
+      }
+      const freezer = await storage.updateFreezer(req.params.id, result.data);
+      if (!freezer) {
+        return res.status(404).json({ error: "Freezer not found" });
+      }
+      res.json(freezer);
+    } catch (error) {
+      console.error("Error updating freezer:", error);
+      res.status(500).json({ error: "Failed to update freezer" });
+    }
+  });
+
+  app.delete("/api/freezers/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteFreezer(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Freezer not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting freezer:", error);
+      res.status(500).json({ error: "Failed to delete freezer" });
     }
   });
 
