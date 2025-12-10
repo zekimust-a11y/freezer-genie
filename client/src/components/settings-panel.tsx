@@ -147,7 +147,7 @@ export function getDefaultLowStock(): number {
     const val = parseInt(stored);
     if (!isNaN(val)) return val;
   }
-  return 2;
+  return 0;
 }
 
 export function getCategoryLabels(): Record<Category, string> {
@@ -892,7 +892,7 @@ export function SettingsPanel() {
             </Select>
           </div>
           <div className="flex items-center justify-between gap-4">
-            <span className="text-sm">Low Stock Alert</span>
+            <span className="text-sm">Default Low Stock Alert</span>
             <Select value={defaultLowStock.toString()} onValueChange={(v) => setDefaultLowStock(parseInt(v))}>
               <SelectTrigger className="w-[160px]" data-testid="select-default-low-stock">
                 <SelectValue />
