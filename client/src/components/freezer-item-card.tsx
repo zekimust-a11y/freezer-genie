@@ -31,6 +31,14 @@ function getUnitLabel(unit: string, quantity: number): string {
   return unit;
 }
 
+function formatQuantity(quantity: number | string): string {
+  const num = typeof quantity === 'string' ? parseFloat(quantity) : quantity;
+  if (Number.isInteger(num)) {
+    return num.toString();
+  }
+  return num.toFixed(2).replace(/\.?0+$/, '');
+}
+
 interface FreezerItemCardProps {
   item: FreezerItem;
   onEdit: (item: FreezerItem) => void;
@@ -125,7 +133,7 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                     {item.name}
                   </h3>
                   <span className="text-xs text-muted-foreground">
-                    x {item.quantity} {getUnitLabel(item.unit, item.quantity)}
+                    x {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
                   </span>
                 </div>
               </div>

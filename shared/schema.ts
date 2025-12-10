@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, integer, date, timestamp, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, numeric, date, timestamp, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { sql } from "drizzle-orm";
@@ -118,7 +118,7 @@ export const freezerItems = pgTable("freezer_items", {
   name: text("name").notNull(),
   category: text("category").notNull(),
   subCategory: text("sub_category").$type<MeatSubcategory>(),
-  quantity: integer("quantity").notNull().default(1),
+  quantity: numeric("quantity", { precision: 10, scale: 2 }).notNull().default("1"),
   unit: text("unit").notNull().default("item"),
   expirationDate: date("expiration_date"),
   notes: text("notes"),
@@ -138,7 +138,7 @@ export const freezerItemFormSchema = insertFreezerItemSchema.extend({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   category: z.string().min(1, "Category is required"),
   subCategory: z.string().nullable().optional(),
-  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+  quantity: z.coerce.number().min(0.01, "Quantity must be greater than 0"),
   expirationDate: z.string().nullable().optional(),
   lowStockThreshold: z.coerce.number().min(0).optional(),
   location: z.string().optional(),

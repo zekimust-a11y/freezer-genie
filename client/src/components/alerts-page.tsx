@@ -128,18 +128,6 @@ export function AlertsPage({ items, onEditItem }: AlertsPageProps) {
               ))}
             </div>
           )}
-
-          {expiringSoonItems.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-sm font-medium text-yellow-500 flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Use By Soon ({expiringSoonItems.length})
-              </h2>
-              {expiringSoonItems.map((item) => (
-                <ExpirationCard key={item.id} item={item} onEdit={() => onEditItem(item)} />
-              ))}
-            </div>
-          )}
         </>
       )}
     </div>

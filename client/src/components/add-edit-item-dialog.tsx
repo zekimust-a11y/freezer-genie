@@ -457,22 +457,23 @@ export function AddEditItemDialog({
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => field.onChange(Math.max(1, (field.value || 1) - 1))}
+                          onClick={() => field.onChange(Math.max(0.01, (field.value || 1) - 1))}
                           data-testid="button-quantity-minus"
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
                         <Input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
+                          type="number"
+                          inputMode="decimal"
+                          step="0.01"
+                          min="0.01"
                           className="text-center text-lg font-medium"
                           data-testid="input-quantity"
                           {...field}
                           value={field.value || 1}
                           onChange={(e) => {
-                            const val = parseInt(e.target.value) || 1;
-                            field.onChange(Math.max(1, val));
+                            const val = parseFloat(e.target.value) || 0.01;
+                            field.onChange(Math.max(0.01, val));
                           }}
                         />
                         <Button
