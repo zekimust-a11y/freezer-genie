@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ExternalLink, Search, ChefHat, Sparkles } from "lucide-react";
+import { ExternalLink, Search, ChefHat, Sparkles, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, DessertsSubcategory } from "@shared/schema";
 import { categories, meatSubcategories, produceSubcategories, preparedMealsSubcategories, frozenGoodsSubcategories, dessertsSubcategories } from "@shared/schema";
@@ -100,10 +100,41 @@ const popularRecipeIdeas = [
   { name: "Roast duck", requiredTokens: ["poultry"], allIngredients: ["duck", "potatoes", "herbs", "orange"], url: "https://www.bbcgoodfood.com/search?q=roast+duck", image: "https://images.unsplash.com/photo-1518492104633-130d0cc84637?w=100&h=100&fit=crop" },
 ];
 
+const FAVORITES_STORAGE_KEY = "freezer-app-favorite-recipes";
+
+function loadFavorites(): string[] {
+  try {
+    const stored = localStorage.getItem(FAVORITES_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavorites(favorites: string[]) {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+}
+
 export function RecipesPage({ items }: RecipesPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<string[]>(() => loadFavorites());
+
+  useEffect(() => {
+    saveFavorites(favorites);
+  }, [favorites]);
+
+  const toggleFavorite = (recipeName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites(prev => 
+      prev.includes(recipeName) 
+        ? prev.filter(f => f !== recipeName)
+        : [...prev, recipeName]
+    );
+  };
+
+  const isFavorite = (recipeName: string) => favorites.includes(recipeName);
   
   const visibleCategories = getVisibleCategories();
   const customCategories = getCustomCategories();
@@ -217,8 +248,65 @@ export function RecipesPage({ items }: RecipesPageProps) {
 
   const topIngredients = ingredientsList.slice(0, 5);
 
+  const favoriteRecipes = useMemo(() => {
+    return popularRecipeIdeas.filter(recipe => favorites.includes(recipe.name));
+  }, [favorites]);
+
   return (
     <div className="p-4 space-y-4 pb-32">
+      {favoriteRecipes.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+              Saved Recipes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2">
+              {favoriteRecipes.map((recipe) => (
+                <div
+                  key={recipe.name}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-muted hover-elevate text-left w-full cursor-pointer"
+                  onClick={() => window.open(recipe.url, "_blank")}
+                  data-testid={`button-saved-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
+                >
+                  <img 
+                    src={recipe.image} 
+                    alt={recipe.name}
+                    className="w-14 h-14 rounded-md object-cover flex-shrink-0"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-sm">{recipe.name}</span>
+                    <p className="text-xs mt-0.5 flex flex-wrap gap-1">
+                      {recipe.allIngredients.map((ing) => (
+                        <span 
+                          key={ing}
+                          className={isIngredientInFreezer(ing) 
+                            ? "bg-primary/20 text-primary font-medium px-1.5 py-0.5 rounded" 
+                            : "text-muted-foreground"
+                          }
+                        >
+                          {ing}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => toggleFavorite(recipe.name, e)}
+                    className="p-1.5 rounded-full hover:bg-background/50 transition-colors flex-shrink-0"
+                    data-testid={`button-unsave-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
+                  >
+                    <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+                  </button>
+                  <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {matchingRecipes.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
@@ -230,9 +318,9 @@ export function RecipesPage({ items }: RecipesPageProps) {
           <CardContent>
             <div className="grid gap-2">
               {matchingRecipes.map((recipe) => (
-                <button
+                <div
                   key={recipe.name}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-muted hover-elevate text-left w-full"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-muted hover-elevate text-left w-full cursor-pointer"
                   onClick={() => window.open(recipe.url, "_blank")}
                   data-testid={`button-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
                 >
@@ -257,8 +345,17 @@ export function RecipesPage({ items }: RecipesPageProps) {
                       ))}
                     </p>
                   </div>
+                  <button
+                    onClick={(e) => toggleFavorite(recipe.name, e)}
+                    className="p-1.5 rounded-full hover:bg-background/50 transition-colors flex-shrink-0"
+                    data-testid={`button-favorite-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
+                  >
+                    <Heart 
+                      className={`h-5 w-5 transition-colors ${isFavorite(recipe.name) ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} 
+                    />
+                  </button>
                   <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                </button>
+                </div>
               ))}
             </div>
           </CardContent>
