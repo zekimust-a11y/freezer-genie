@@ -387,6 +387,7 @@ export function getUnitLabelConfig(unitId: string): { singular: string; plural: 
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
+  const [dateFormatLoaded, setDateFormatLoaded] = useState(false);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(getWeightUnit);
   const [defaultExpiry, setDefaultExpiry] = useState<DefaultExpiry>(getDefaultExpiry);
   const [defaultLowStock, setDefaultLowStock] = useState<number>(getDefaultLowStock);
@@ -415,8 +416,12 @@ export function SettingsPanel() {
   }, [defaultCategory]);
 
   useEffect(() => {
-    localStorage.setItem("dateFormat", dateFormat);
-  }, [dateFormat]);
+    if (dateFormatLoaded) {
+      localStorage.setItem("dateFormat", dateFormat);
+    } else {
+      setDateFormatLoaded(true);
+    }
+  }, [dateFormat, dateFormatLoaded]);
 
   useEffect(() => {
     localStorage.setItem("weightUnit", weightUnit);
