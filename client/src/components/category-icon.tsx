@@ -15,8 +15,8 @@ import {
   Milk,
   Tag
 } from "lucide-react";
-import { Home, ShoppingBag } from "lucide-react";
-import type { Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory } from "@shared/schema";
+import { Home, ShoppingBag, Pizza } from "lucide-react";
+import type { Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory } from "@shared/schema";
 
 type CategoryConfig = { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string };
 
@@ -66,6 +66,11 @@ const preparedMealsSubcategoryConfig: Record<PreparedMealsSubcategory, { icon: t
   store_bought: { icon: ShoppingBag, label: "Store Bought", color: "text-purple-500 dark:text-purple-400", bgColor: "bg-purple-100 dark:bg-purple-900/30", stripeColor: "bg-purple-500" },
 };
 
+const frozenGoodsSubcategoryConfig: Record<FrozenGoodsSubcategory, { icon: typeof Beef; label: string; color: string; bgColor: string; stripeColor: string }> = {
+  pizza: { icon: Pizza, label: "Pizzas", color: "text-orange-500 dark:text-orange-400", bgColor: "bg-orange-100 dark:bg-orange-900/30", stripeColor: "bg-orange-500" },
+  other_frozen: { icon: Snowflake, label: "Other", color: "text-cyan-500 dark:text-cyan-400", bgColor: "bg-cyan-100 dark:bg-cyan-900/30", stripeColor: "bg-cyan-500" },
+};
+
 interface CategoryIconProps {
   category: string;
   showLabel?: boolean;
@@ -106,4 +111,4 @@ export function getCategoryLabel(category: string): string {
   return config.label;
 }
 
-export { categoryConfig, meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig, customCategoryConfig };
+export { categoryConfig, meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig, frozenGoodsSubcategoryConfig, customCategoryConfig };
