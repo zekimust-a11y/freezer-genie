@@ -37,13 +37,14 @@ import {
   produceSubcategories,
   preparedMealsSubcategories,
   frozenGoodsSubcategories,
+  dessertsSubcategories,
   locationLabels,
   freezerItemFormSchema, 
   type FreezerItem, 
   type FreezerItemFormData,
   type Location
 } from "@shared/schema";
-import { meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig, frozenGoodsSubcategoryConfig } from "@/components/category-icon";
+import { meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig, frozenGoodsSubcategoryConfig, dessertsSubcategoryConfig } from "@/components/category-icon";
 import { Loader2, MapPin, ScanBarcode, Minus, Plus } from "lucide-react";
 
 interface AddEditItemDialogProps {
