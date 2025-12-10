@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { categoryConfig, meatSubcategoryConfig } from "@/components/category-icon";
-import { categories, meatSubcategories, type Category, type MeatSubcategory } from "@shared/schema";
+import { meatSubcategories, type Category, type MeatSubcategory } from "@shared/schema";
+import { getVisibleCategories } from "@/components/settings-panel";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 
@@ -18,6 +19,7 @@ export function CategoryFilter({
   onSubcategoryChange
 }: CategoryFilterProps) {
   const [showMeatSubmenu, setShowMeatSubmenu] = useState(false);
+  const visibleCategories = getVisibleCategories();
 
   const handleCategoryClick = (category: Category) => {
     if (category === "meat_fish") {
@@ -108,7 +110,7 @@ export function CategoryFilter({
             transition={{ duration: 0.2 }}
             className="flex items-center gap-2 backdrop-blur-sm bg-background/80 rounded-xl p-1.5 min-w-max"
           >
-            {categories.map((category) => {
+            {visibleCategories.map((category) => {
               const config = categoryConfig[category];
               const Icon = config.icon;
               const isActive = selectedCategory === category;

@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Snowflake, Plus, X, LogOut, Refrigerator } from "lucide-react";
+import { Snowflake, Plus, X, LogOut, Refrigerator, Eye, EyeOff } from "lucide-react";
 import { categories, type Category } from "@shared/schema";
 import { categoryConfig } from "@/components/category-icon";
 
@@ -171,6 +171,23 @@ export function getFreezerOptions(): { id: string; name: string }[] {
   ];
 }
 
+export function getHiddenCategories(): Category[] {
+  try {
+    const stored = localStorage.getItem("hiddenCategories");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return [];
+}
+
+export function getVisibleCategories(): Category[] {
+  const hidden = getHiddenCategories();
+  return categories.filter(cat => !hidden.includes(cat));
+}
+
 export function SettingsPanel() {
   const [defaultCategory, setDefaultCategory] = useState<Category>(getDefaultCategory);
   const [dateFormat, setDateFormat] = useState<DateFormat>(getDateFormat);
@@ -183,6 +200,7 @@ export function SettingsPanel() {
   const [freezers, setFreezers] = useState<Freezer[]>(getFreezers);
   const [newFreezerName, setNewFreezerName] = useState("");
   const [newFreezerType, setNewFreezerType] = useState<FreezerType>("fridge_freezer");
+  const [hiddenCategories, setHiddenCategories] = useState<Category[]>(getHiddenCategories);
 
   useEffect(() => {
     localStorage.setItem("defaultCategory", defaultCategory);
@@ -215,6 +233,18 @@ export function SettingsPanel() {
   useEffect(() => {
     localStorage.setItem("freezers", JSON.stringify(freezers));
   }, [freezers]);
+
+  useEffect(() => {
+    localStorage.setItem("hiddenCategories", JSON.stringify(hiddenCategories));
+  }, [hiddenCategories]);
+
+  const handleToggleCategoryVisibility = (category: Category) => {
+    setHiddenCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
 
   const handleAddLocation = () => {
     const trimmed = newLocation.trim();
@@ -423,20 +453,27 @@ export function SettingsPanel() {
           <CardTitle className="text-lg">Category Names</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {categories.map((cat) => (
-            <div key={cat} className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground w-24 truncate">
-                {categoryConfig[cat].label}
-              </span>
-              <Input
-                value={categoryLabels[cat] || ""}
-                onChange={(e) => handleCategoryLabelChange(cat, e.target.value)}
-                placeholder={categoryConfig[cat].label}
-                className="flex-1"
-                data-testid={`input-category-label-${cat}`}
-              />
-            </div>
-          ))}
+          {categories.map((cat) => {
+            const isHidden = hiddenCategories.includes(cat);
+            return (
+              <div key={cat} className={`flex items-center gap-3 ${isHidden ? "opacity-50" : ""}`}>
+                <button
+                  onClick={() => handleToggleCategoryVisibility(cat)}
+                  className="p-1 text-muted-foreground hover:text-foreground"
+                  data-testid={`button-toggle-category-${cat}`}
+                >
+                  {isHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+                <Input
+                  value={categoryLabels[cat] || ""}
+                  onChange={(e) => handleCategoryLabelChange(cat, e.target.value)}
+                  placeholder={categoryConfig[cat].label}
+                  className="flex-1"
+                  data-testid={`input-category-label-${cat}`}
+                />
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
 
