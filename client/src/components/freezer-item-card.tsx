@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, AlertCircle } from "lucide-react";
+import { MapPin, AlertCircle, Snowflake } from "lucide-react";
 import { CategoryIcon, getCategoryLabel, getCategoryConfig } from "@/components/category-icon";
 import { ExpirationBadge } from "@/components/expiration-badge";
-import { getDateFormat, getTagLabel } from "@/components/settings-panel";
+import { getDateFormat, getTagLabel, getFreezers, getFreezerLabel } from "@/components/settings-panel";
 import { type FreezerItem, type Location } from "@shared/schema";
 import { getLocationLabel } from "@/components/settings-panel";
 import { format, parseISO, isValid, differenceInDays } from "date-fns";
@@ -101,6 +101,9 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
   const isLowStock = (item.lowStockThreshold ?? 0) > 0 && item.quantity <= (item.lowStockThreshold ?? 0);
   const hasLocation = item.location && item.location !== "unassigned";
   const config = getCategoryConfig(item.category);
+  const freezers = getFreezers();
+  const hasMultipleFreezers = freezers.length > 1;
+  const freezerLabel = hasMultipleFreezers ? getFreezerLabel(item.freezerId) : null;
 
   return (
     <motion.div
@@ -160,11 +163,21 @@ export function FreezerItemCard({ item, onEdit, index = 0 }: FreezerItemCardProp
                 {item.notes}
               </p>
             )}
-            {/* Location */}
-            {hasLocation && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 mb-1">
-                <MapPin className="h-3 w-3" />
-                <span>{getLocationLabel(item.location as Location)}</span>
+            {/* Freezer and Location */}
+            {(freezerLabel || hasLocation) && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 mb-1 flex-wrap">
+                {freezerLabel && (
+                  <div className="flex items-center gap-1">
+                    <Snowflake className="h-3 w-3" />
+                    <span>{freezerLabel}</span>
+                  </div>
+                )}
+                {hasLocation && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    <span>{getLocationLabel(item.location as Location)}</span>
+                  </div>
+                )}
               </div>
             )}
 

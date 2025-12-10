@@ -191,6 +191,13 @@ export function setSelectedFreezer(freezerId: string): void {
   localStorage.setItem("selectedFreezer", freezerId);
 }
 
+export function getFreezerLabel(freezerId: string | null | undefined): string | null {
+  if (!freezerId) return null;
+  const freezers = getFreezers();
+  const freezer = freezers.find(f => f.id === freezerId);
+  return freezer?.name || null;
+}
+
 export function getDefaultFreezerForNewItems(): string {
   const stored = localStorage.getItem("defaultFreezerForNewItems");
   if (stored) {
