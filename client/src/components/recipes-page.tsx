@@ -20,6 +20,42 @@ function extractIngredientName(itemName: string): string {
   return filtered.join(" ").trim() || itemName;
 }
 
+function extractIngredientTokens(itemName: string): string[] {
+  const name = itemName.toLowerCase();
+  const tokens: string[] = [];
+  
+  // Protein matches
+  if (name.includes("chicken")) tokens.push("chicken");
+  if (name.includes("beef") || name.includes("steak") || name.includes("sirloin")) tokens.push("beef");
+  if (name.includes("pork") || name.includes("sausage") || name.includes("bacon")) tokens.push("pork");
+  if (name.includes("lamb")) tokens.push("lamb");
+  if (name.includes("fish") || name.includes("cod") || name.includes("salmon") || name.includes("haddock") || name.includes("trout")) tokens.push("fish");
+  if (name.includes("prawn") || name.includes("shrimp") || name.includes("seafood")) tokens.push("seafood");
+  if (name.includes("duck") || name.includes("turkey")) tokens.push("poultry");
+  
+  // Vegetables
+  if (name.includes("pea") || name.includes("carrot") || name.includes("broccoli") || name.includes("spinach") || 
+      name.includes("corn") || name.includes("bean") || name.includes("vegetable")) tokens.push("vegetables");
+  if (name.includes("potato") || name.includes("chips") || name.includes("fries")) tokens.push("potato");
+  if (name.includes("onion")) tokens.push("onion");
+  
+  // Fruits
+  if (name.includes("berry") || name.includes("blueberry") || name.includes("strawberry") || name.includes("raspberry")) tokens.push("berries");
+  if (name.includes("fruit") || name.includes("mango") || name.includes("banana")) tokens.push("fruit");
+  
+  // Dairy & other
+  if (name.includes("cheese") || name.includes("butter")) tokens.push("dairy");
+  if (name.includes("stock") || name.includes("broth")) tokens.push("stock");
+  if (name.includes("bread") || name.includes("loaf") || name.includes("roll")) tokens.push("bread");
+  if (name.includes("pizza")) tokens.push("pizza");
+  if (name.includes("pastry") || name.includes("filo") || name.includes("puff")) tokens.push("pastry");
+  if (name.includes("ice cream") || name.includes("icecream")) tokens.push("ice cream");
+  if (name.includes("soup")) tokens.push("soup");
+  if (name.includes("pasta") || name.includes("lasagne") || name.includes("spaghetti")) tokens.push("pasta");
+  
+  return tokens;
+}
+
 function generateBBCGoodFoodUrl(ingredient: string): string {
   const encoded = encodeURIComponent(ingredient.trim());
   return `https://www.bbcgoodfood.com/search?q=${encoded}`;
@@ -31,12 +67,28 @@ function generateMultiIngredientUrl(ingredients: string[]): string {
 }
 
 const popularRecipeIdeas = [
-  { name: "Chicken stir fry", ingredients: ["chicken", "vegetables"], url: "https://www.bbcgoodfood.com/search?q=chicken+stir+fry" },
-  { name: "Fish pie", ingredients: ["fish", "potato"], url: "https://www.bbcgoodfood.com/search?q=fish+pie" },
-  { name: "Beef casserole", ingredients: ["beef", "vegetables"], url: "https://www.bbcgoodfood.com/search?q=beef+casserole" },
-  { name: "Vegetable soup", ingredients: ["vegetables", "stock"], url: "https://www.bbcgoodfood.com/search?q=vegetable+soup" },
-  { name: "Pasta bake", ingredients: ["pasta", "cheese"], url: "https://www.bbcgoodfood.com/search?q=pasta+bake" },
-  { name: "Shepherd's pie", ingredients: ["lamb", "potato"], url: "https://www.bbcgoodfood.com/search?q=shepherds+pie" },
+  { name: "Chicken stir fry", requiredTokens: ["chicken"], displayIngredients: "chicken, vegetables", url: "https://www.bbcgoodfood.com/search?q=chicken+stir+fry" },
+  { name: "Chicken curry", requiredTokens: ["chicken"], displayIngredients: "chicken", url: "https://www.bbcgoodfood.com/search?q=chicken+curry" },
+  { name: "Roast chicken", requiredTokens: ["chicken"], displayIngredients: "chicken", url: "https://www.bbcgoodfood.com/search?q=roast+chicken" },
+  { name: "Fish pie", requiredTokens: ["fish"], displayIngredients: "fish", url: "https://www.bbcgoodfood.com/search?q=fish+pie" },
+  { name: "Fish and chips", requiredTokens: ["fish"], displayIngredients: "fish", url: "https://www.bbcgoodfood.com/search?q=fish+and+chips" },
+  { name: "Baked cod", requiredTokens: ["fish"], displayIngredients: "cod, fish", url: "https://www.bbcgoodfood.com/search?q=baked+cod" },
+  { name: "Beef casserole", requiredTokens: ["beef"], displayIngredients: "beef", url: "https://www.bbcgoodfood.com/search?q=beef+casserole" },
+  { name: "Beef stew", requiredTokens: ["beef"], displayIngredients: "beef", url: "https://www.bbcgoodfood.com/search?q=beef+stew" },
+  { name: "Steak and chips", requiredTokens: ["beef"], displayIngredients: "steak, beef", url: "https://www.bbcgoodfood.com/search?q=steak+and+chips" },
+  { name: "Bolognese", requiredTokens: ["beef"], displayIngredients: "minced beef", url: "https://www.bbcgoodfood.com/search?q=spaghetti+bolognese" },
+  { name: "Shepherd's pie", requiredTokens: ["lamb"], displayIngredients: "lamb", url: "https://www.bbcgoodfood.com/search?q=shepherds+pie" },
+  { name: "Lamb stew", requiredTokens: ["lamb"], displayIngredients: "lamb", url: "https://www.bbcgoodfood.com/search?q=lamb+stew" },
+  { name: "Pork chops", requiredTokens: ["pork"], displayIngredients: "pork", url: "https://www.bbcgoodfood.com/search?q=pork+chops" },
+  { name: "Sausage casserole", requiredTokens: ["pork"], displayIngredients: "sausages", url: "https://www.bbcgoodfood.com/search?q=sausage+casserole" },
+  { name: "Prawn stir fry", requiredTokens: ["seafood"], displayIngredients: "prawns", url: "https://www.bbcgoodfood.com/search?q=prawn+stir+fry" },
+  { name: "Garlic prawns", requiredTokens: ["seafood"], displayIngredients: "prawns", url: "https://www.bbcgoodfood.com/search?q=garlic+prawns" },
+  { name: "Vegetable soup", requiredTokens: ["vegetables"], displayIngredients: "vegetables", url: "https://www.bbcgoodfood.com/search?q=vegetable+soup" },
+  { name: "Vegetable stir fry", requiredTokens: ["vegetables"], displayIngredients: "vegetables", url: "https://www.bbcgoodfood.com/search?q=vegetable+stir+fry" },
+  { name: "Berry smoothie", requiredTokens: ["berries"], displayIngredients: "berries", url: "https://www.bbcgoodfood.com/search?q=berry+smoothie" },
+  { name: "Berry crumble", requiredTokens: ["berries"], displayIngredients: "berries", url: "https://www.bbcgoodfood.com/search?q=berry+crumble" },
+  { name: "Duck a l'orange", requiredTokens: ["poultry"], displayIngredients: "duck", url: "https://www.bbcgoodfood.com/search?q=duck+a+l+orange" },
+  { name: "Roast duck", requiredTokens: ["poultry"], displayIngredients: "duck", url: "https://www.bbcgoodfood.com/search?q=roast+duck" },
 ];
 
 export function RecipesPage({ items }: RecipesPageProps) {
@@ -60,6 +112,20 @@ export function RecipesPage({ items }: RecipesPageProps) {
 
     return uniqueIngredients;
   }, [items]);
+
+  const availableTokens = useMemo(() => {
+    const tokens = new Set<string>();
+    items.forEach(item => {
+      extractIngredientTokens(item.name).forEach(token => tokens.add(token));
+    });
+    return tokens;
+  }, [items]);
+
+  const matchingRecipes = useMemo(() => {
+    return popularRecipeIdeas.filter(recipe => 
+      recipe.requiredTokens.every(token => availableTokens.has(token))
+    );
+  }, [availableTokens]);
 
   const filteredIngredients = useMemo(() => {
     if (!searchQuery.trim()) return ingredientsList;
@@ -146,31 +212,33 @@ export function RecipesPage({ items }: RecipesPageProps) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Popular Recipe Ideas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-2">
-            {popularRecipeIdeas.map((recipe) => (
-              <button
-                key={recipe.name}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted hover-elevate text-left w-full"
-                onClick={() => window.open(recipe.url, "_blank")}
-                data-testid={`button-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
-              >
-                <div>
-                  <span className="font-medium text-sm">{recipe.name}</span>
-                  <p className="text-xs text-muted-foreground">
-                    {recipe.ingredients.join(", ")}
-                  </p>
-                </div>
-                <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {matchingRecipes.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Recipe Ideas for Your Ingredients</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2">
+              {matchingRecipes.map((recipe) => (
+                <button
+                  key={recipe.name}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted hover-elevate text-left w-full"
+                  onClick={() => window.open(recipe.url, "_blank")}
+                  data-testid={`button-recipe-${recipe.name.replace(/\s+/g, "-").toLowerCase()}`}
+                >
+                  <div>
+                    <span className="font-medium text-sm">{recipe.name}</span>
+                    <p className="text-xs text-muted-foreground">
+                      {recipe.displayIngredients}
+                    </p>
+                  </div>
+                  <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <p className="text-xs text-muted-foreground text-center px-4">
         Recipes provided by BBC Good Food. Click any ingredient or recipe to search on their website.
