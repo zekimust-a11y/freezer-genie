@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { CategoryFilter } from "@/components/category-filter";
 import { FreezerItemCard, formatQuantity, getUnitLabel } from "@/components/freezer-item-card";
+import { getCategoryLabel, getSubcategoryLabel } from "@/components/category-icon";
 import { EmptyState } from "@/components/empty-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { BottomNav } from "@/components/bottom-nav";
@@ -89,10 +90,18 @@ export default function Home() {
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter((item) => 
-        item.name.toLowerCase().includes(query) ||
-        item.notes?.toLowerCase().includes(query)
-      );
+      result = result.filter((item) => {
+        const categoryLabel = getCategoryLabel(item.category).toLowerCase();
+        const subCategoryLabel = getSubcategoryLabel(item.category, item.subCategory)?.toLowerCase() || "";
+        return (
+          item.name.toLowerCase().includes(query) ||
+          item.notes?.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query) ||
+          categoryLabel.includes(query) ||
+          item.subCategory?.toLowerCase().includes(query) ||
+          subCategoryLabel.includes(query)
+        );
+      });
     }
 
     if (selectedCategory) {

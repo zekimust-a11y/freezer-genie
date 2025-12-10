@@ -144,4 +144,25 @@ export function getCategoryLabel(category: string): string {
   return config.label;
 }
 
+export function getSubcategoryLabel(category: string, subCategory: string | null | undefined): string | null {
+  if (!subCategory) return null;
+  
+  if (category === 'meat_fish' && subCategory in meatSubcategoryConfig) {
+    return meatSubcategoryConfig[subCategory as MeatSubcategory].label;
+  }
+  if (category === 'produce' && subCategory in produceSubcategoryConfig) {
+    return produceSubcategoryConfig[subCategory as ProduceSubcategory].label;
+  }
+  if (category === 'prepared_meals' && subCategory in preparedMealsSubcategoryConfig) {
+    return preparedMealsSubcategoryConfig[subCategory as PreparedMealsSubcategory].label;
+  }
+  if (category === 'frozen_goods' && subCategory in frozenGoodsSubcategoryConfig) {
+    return frozenGoodsSubcategoryConfig[subCategory as FrozenGoodsSubcategory].label;
+  }
+  if (category === 'desserts' && subCategory in dessertsSubcategoryConfig) {
+    return dessertsSubcategoryConfig[subCategory as DessertsSubcategory].label;
+  }
+  return null;
+}
+
 export { categoryConfig, meatSubcategoryConfig, produceSubcategoryConfig, preparedMealsSubcategoryConfig, frozenGoodsSubcategoryConfig, dessertsSubcategoryConfig, customCategoryConfig };
