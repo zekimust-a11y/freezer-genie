@@ -29,11 +29,12 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
 export const categories = [
-  "meat",
-  "vegetables",
-  "fruits",
+  "meat_fish",
+  "produce",
   "prepared_meals",
   "frozen_goods",
+  "desserts",
+  "bread",
   "other",
 ] as const;
 
