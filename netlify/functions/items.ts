@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import { eq } from "drizzle-orm";
 import { fromError } from "zod-validation-error";
+import { randomUUID } from "crypto";
 import { freezerItems, insertFreezerItemSchema, type FreezerItem } from "./schema";
 
 const { Pool } = pg;
@@ -82,7 +83,7 @@ export const handler: Handler = async (event) => {
         };
       }
       
-      const newId = crypto.randomUUID();
+      const newId = randomUUID();
       const [item] = await db
         .insert(freezerItems)
         .values({
