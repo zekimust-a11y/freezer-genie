@@ -12,8 +12,8 @@ import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { RecipesPage } from "@/components/recipes-page";
 import { UserButton } from "@clerk/clerk-react";
+import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings, Share2, Mail, MessageCircle, Copy, CheckCheck, LogOut } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings, Share2, Mail, MessageCircle, Copy, CheckCheck } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { Card, CardContent } from "@/components/ui/card";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
@@ -41,7 +41,7 @@ const sortLabels: Record<SortOption, string> = {
 
 export default function Home() {
   const [, navigate] = useLocation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | ProduceSubcategory | PreparedMealsSubcategory | FrozenGoodsSubcategory | null>(null);
@@ -249,20 +249,6 @@ export default function Home() {
     
     const encoded = encodeURIComponent(text);
     window.open(`sms:?body=${encoded}`, "_blank");
-  };
-
-  const getUserInitials = () => {
-    if (user?.fullName) {
-      const names = user.fullName.split(' ');
-      if (names.length >= 2) {
-        return `${names[0][0]}${names[1][0]}`.toUpperCase();
-      }
-      return names[0][0].toUpperCase();
-    }
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    return "U";
   };
 
   return (
