@@ -5,7 +5,7 @@ import { join } from 'path';
 async function buildFunctions() {
   const functionsDir = 'netlify/functions';
   const files = await readdir(functionsDir);
-  const tsFiles = files.filter(f => f.endsWith('.ts') && f !== 'schema.ts');
+  const tsFiles = files.filter(f => f.endsWith('.ts') && f !== 'schema.ts' && f !== 'auth-utils.ts');
 
   console.log('Building Netlify Functions...');
   

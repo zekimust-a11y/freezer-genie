@@ -11,7 +11,7 @@ import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreeze
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { RecipesPage } from "@/components/recipes-page";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings, Share2, Mail, MessageCircle, Copy, CheckCheck } from "lucide-react";
+import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings, Share2, Mail, MessageCircle, Copy, CheckCheck, LogOut } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { Card, CardContent } from "@/components/ui/card";
 import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
@@ -41,6 +41,7 @@ const sortLabels: Record<SortOption, string> = {
 
 export default function Home() {
   const [, navigate] = useLocation();
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<MeatSubcategory | ProduceSubcategory | PreparedMealsSubcategory | FrozenGoodsSubcategory | null>(null);
@@ -142,7 +143,6 @@ export default function Home() {
     return result;
   }, [items, selectedCategory, selectedSubcategory, sortBy, searchQuery, selectedFreezerId]);
 
-  const { user } = useAuth();
   const { processCommand } = useVoiceCommands();
   const { toast } = useToast();
 
@@ -252,8 +252,12 @@ export default function Home() {
   };
 
   const getUserInitials = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    if (user?.fullName) {
+      const names = user.fullName.split(' ');
+      if (names.length >= 2) {
+        return `${names[0][0]}${names[1][0]}`.toUpperCase();
+      }
+      return names[0][0].toUpperCase();
     }
     if (user?.email) {
       return user.email[0].toUpperCase();
@@ -284,9 +288,17 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.profileImageUrl || undefined} style={{ objectFit: "cover" }} />
+                <AvatarImage src={user?.avatarUrl || undefined} style={{ objectFit: "cover" }} />
                 <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                title="Log out"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"

@@ -14,13 +14,12 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table for Replit Auth
+// User storage table for Netlify Identity
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
+  id: varchar("id").primaryKey(), // Netlify Identity user ID
+  email: varchar("email").unique().notNull(),
+  fullName: varchar("full_name"),
+  avatarUrl: varchar("avatar_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -127,6 +126,7 @@ export const tagLabels: Record<DefaultTag, string> = {
 
 export const freezerItems = pgTable("freezer_items", {
   id: varchar("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   category: text("category").notNull(),
   subCategory: text("sub_category").$type<MeatSubcategory>(),
@@ -143,6 +143,7 @@ export const freezerItems = pgTable("freezer_items", {
 
 export const insertFreezerItemSchema = createInsertSchema(freezerItems).omit({
   id: true,
+  userId: true,
   createdAt: true,
 });
 
@@ -185,6 +186,7 @@ export type FreezerType = (typeof freezerTypes)[number];
 
 export const freezers = pgTable("freezers", {
   id: varchar("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   type: text("type").notNull().default("fridge_freezer"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -192,6 +194,7 @@ export const freezers = pgTable("freezers", {
 
 export const insertFreezerSchema = createInsertSchema(freezers).omit({
   id: true,
+  userId: true,
   createdAt: true,
 });
 
@@ -200,12 +203,14 @@ export type Freezer = typeof freezers.$inferSelect;
 
 export const customLocations = pgTable("custom_locations", {
   id: varchar("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertCustomLocationSchema = createInsertSchema(customLocations).omit({
   id: true,
+  userId: true,
   createdAt: true,
 });
 
