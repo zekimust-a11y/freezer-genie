@@ -9,7 +9,7 @@ import Home from "@/pages/home";
 import AddEditItemPage from "@/pages/add-edit-item";
 import LoginPage from "@/pages/login";
 import NotFound from "@/pages/not-found";
-import { Loader2 } from "lucide-react";
+import { Loader2, Snowflake } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 
@@ -25,7 +25,8 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <Snowflake className="h-24 w-24 text-[#1975D2]" />
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );

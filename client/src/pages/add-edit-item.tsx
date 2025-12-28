@@ -332,11 +332,11 @@ export default function AddEditItemPage() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="flex-1 min-w-0"
+                        className="px-3"
                         onClick={() => setIsScannerOpen(true)}
                         data-testid="button-scan"
                       >
-                        <svg className="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg className="h-4 w-4 mr-1.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
                           <line x1="7" y1="12" x2="17" y2="12" />
                           <line x1="7" y1="8" x2="17" y2="8" />
@@ -406,9 +406,9 @@ export default function AddEditItemPage() {
               </div>
             </div>
 
-            {/* Subcategory Visual Selector */}
+            {/* Subcategory Visual Selector - Moved up for better spacing */}
             {watchedCategory === "meat_fish" && (
-              <div className="space-y-2">
+              <div className="space-y-2 -mt-2">
                 <FormLabel>Type</FormLabel>
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <div className="flex items-center gap-2 min-w-max">
@@ -438,7 +438,7 @@ export default function AddEditItemPage() {
             )}
 
             {watchedCategory === "produce" && (
-              <div className="space-y-2">
+              <div className="space-y-2 -mt-2">
                 <FormLabel>Type</FormLabel>
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <div className="flex items-center gap-2 min-w-max">
@@ -468,7 +468,7 @@ export default function AddEditItemPage() {
             )}
 
             {watchedCategory === "prepared_meals" && (
-              <div className="space-y-2">
+              <div className="space-y-2 -mt-2">
                 <FormLabel>Type</FormLabel>
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <div className="flex items-center gap-2 min-w-max">
@@ -498,7 +498,7 @@ export default function AddEditItemPage() {
             )}
 
             {watchedCategory === "frozen_goods" && (
-              <div className="space-y-2">
+              <div className="space-y-2 -mt-2">
                 <FormLabel>Type</FormLabel>
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <div className="flex items-center gap-2 min-w-max">
@@ -528,7 +528,7 @@ export default function AddEditItemPage() {
             )}
 
             {watchedCategory === "desserts" && (
-              <div className="space-y-2">
+              <div className="space-y-2 -mt-2">
                 <FormLabel>Type</FormLabel>
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <div className="flex items-center gap-2 min-w-max">
