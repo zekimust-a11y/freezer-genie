@@ -57,8 +57,22 @@
   directory = "netlify/functions"
   # Node version for functions  
   node_bundler = "esbuild"
-  # External node modules (don't bundle these)
-  external_node_modules = ["pg-native", "@neondatabase/serverless"]
+  
+# Configure each function individually to control bundling
+[functions."items"]
+  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
+  
+[functions."freezers"]
+  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
+  
+[functions."custom-locations"]
+  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
+  
+[functions."auth"]
+  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
+  
+[functions."_shared"]
+  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
 
 # Headers for security and performance
 [[headers]]
