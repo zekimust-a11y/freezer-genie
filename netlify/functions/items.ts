@@ -1,8 +1,8 @@
 import { Handler } from '@netlify/functions';
-import { storage } from "../../server/storage.js";
-import { insertFreezerItemSchema } from "../../shared/schema.js";
+import { storage } from "../../server/storage";
+import { insertFreezerItemSchema } from "../../shared/schema";
 import { fromError } from "zod-validation-error";
-import { handleOptions, parseBody, errorResponse, successResponse } from './_shared.js';
+import { handleOptions, parseBody, errorResponse, successResponse } from './_shared';
 
 export const handler: Handler = async (event, context) => {
   // Handle CORS preflight

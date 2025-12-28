@@ -55,12 +55,10 @@
 [functions]
   # Directory with serverless functions
   directory = "netlify/functions"
-  # Node version for functions
+  # Node version for functions  
   node_bundler = "esbuild"
-  # External node modules to include
-  external_node_modules = ["pg-native"]
-  # Include all dependencies
-  included_files = ["node_modules/**", "server/**", "shared/**"]
+  # External node modules (don't bundle these)
+  external_node_modules = ["pg-native", "@neondatabase/serverless"]
 
 # Headers for security and performance
 [[headers]]

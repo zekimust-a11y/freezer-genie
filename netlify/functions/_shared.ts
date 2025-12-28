@@ -1,5 +1,5 @@
-import { storage } from "../../server/storage.js";
-import { insertFreezerItemSchema, insertFreezerSchema, insertCustomLocationSchema } from "../../shared/schema.js";
+import { storage } from "../../server/storage";
+import { insertFreezerItemSchema, insertFreezerSchema, insertCustomLocationSchema } from "../../shared/schema";
 import { fromError } from "zod-validation-error";
 
 // Common response headers for CORS

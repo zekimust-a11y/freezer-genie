@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { handleOptions, successResponse } from './_shared.js';
+import { handleOptions, successResponse } from './_shared';
 
 export const handler: Handler = async (event, context) => {
   // Handle CORS preflight
