@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
+import { BrowserMultiFormatReader, NotFoundException, DecodeHintType } from '@zxing/library';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Camera, X, Loader2 } from "lucide-react";
@@ -70,28 +70,23 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
     
     try {
       console.log("Initializing ZXing barcode scanner...");
-      const codeReader = new BrowserMultiFormatReader();
+      // TRY_HARDER improves detection for smaller / lower-contrast barcodes
+      const hints = new Map();
+      hints.set(DecodeHintType.TRY_HARDER, true);
+      const codeReader = new BrowserMultiFormatReader(hints);
       codeReaderRef.current = codeReader;
-      
-      console.log("Getting video devices...");
-      const videoInputDevices = await codeReader.listVideoInputDevices();
-      
-      if (videoInputDevices.length === 0) {
-        throw new Error("No camera found");
-      }
-      
-      // Find back camera or use first available
-      const backCamera = videoInputDevices.find(device => 
-        device.label.toLowerCase().includes('back') || 
-        device.label.toLowerCase().includes('rear') ||
-        device.label.toLowerCase().includes('environment')
-      ) || videoInputDevices[0];
-      
-      console.log("Using camera:", backCamera.label);
-      console.log("Starting continuous decode...");
-      
-      await codeReader.decodeFromVideoDevice(
-        backCamera.deviceId,
+      // Prefer back camera, higher resolution to help decode smaller barcodes
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      };
+      console.log("Starting continuous decode with constraints:", constraints);
+
+      await codeReader.decodeFromConstraints(
+        constraints,
         videoRef.current,
         async (result, error) => {
           if (result) {
