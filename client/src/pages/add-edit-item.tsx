@@ -54,7 +54,7 @@ export default function AddEditItemPage() {
   const itemId = params?.id;
   const isEditing = !!itemId;
 
-  const { data: item, isLoading: isLoadingItem } = useQuery<FreezerItem>({
+  const { data: item, isLoading: isLoadingItem, error: itemError } = useQuery<FreezerItem>({
     queryKey: ["/api/items", itemId],
     queryFn: async () => {
       const response = await fetch(`/api/items/${itemId}`);
@@ -62,6 +62,7 @@ export default function AddEditItemPage() {
       return response.json();
     },
     enabled: isEditing,
+    retry: 1,
   });
 
   const freezers = getFreezers();
@@ -259,6 +260,15 @@ export default function AddEditItemPage() {
   };
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
+
+  if (isEditing && itemError) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 p-4">
+        <p className="text-destructive">Failed to load item</p>
+        <Button onClick={() => navigate("/")}>Go Back</Button>
+      </div>
+    );
+  }
 
   if (isEditing && isLoadingItem) {
     return (

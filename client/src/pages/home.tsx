@@ -258,19 +258,26 @@ export default function Home() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Snowflake className="h-6 w-6 text-[#1975D2]" />
-              <Select value={selectedFreezerId} onValueChange={handleFreezerChange}>
-                <SelectTrigger className="border-0 shadow-none p-0 h-auto gap-1 font-semibold text-lg" data-testid="select-freezer">
+              {hasMultipleFreezers ? (
+                <Select value={selectedFreezerId} onValueChange={handleFreezerChange}>
+                  <SelectTrigger className="border-0 shadow-none p-0 h-auto gap-1 font-semibold text-lg" data-testid="select-freezer">
+                    <Refrigerator className="h-4 w-4 text-muted-foreground" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {freezerOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id} data-testid={`select-freezer-${option.id}`}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <h1 className="font-semibold text-lg flex items-center gap-1">
                   <Refrigerator className="h-4 w-4 text-muted-foreground" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {freezerOptions.map((option) => (
-                    <SelectItem key={option.id} value={option.id} data-testid={`select-freezer-${option.id}`}>
-                      {option.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  {freezerOptions.find(f => f.id !== "all")?.name || "My Freezer"}
+                </h1>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <UserButton afterSignOutUrl="/login" />

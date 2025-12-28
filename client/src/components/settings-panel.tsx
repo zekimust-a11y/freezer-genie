@@ -694,24 +694,28 @@ export function SettingsPanel() {
           <CardTitle className="text-lg">My Freezers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <span className="text-sm font-medium text-muted-foreground">Name</span>
+            <span className="text-sm font-medium text-muted-foreground">Type</span>
+          </div>
           {freezers.map((freezer) => (
             <div
               key={freezer.id}
-              className="flex items-center gap-2 bg-muted p-2 rounded-md"
+              className="flex items-center gap-2"
             >
               <Refrigerator className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <Input
                 value={freezer.name}
                 onChange={(e) => handleFreezerNameChange(freezer.id, e.target.value)}
                 onBlur={() => handleFreezerNameBlur(freezer.id)}
-                className="w-1/2 h-8"
+                className="flex-1 h-8"
                 data-testid={`input-freezer-name-${freezer.id}`}
               />
               <Select 
                 value={freezer.type} 
                 onValueChange={(v) => handleFreezerTypeChange(freezer.id, v as FreezerType)}
               >
-                <SelectTrigger className="w-1/2 h-8" data-testid={`select-freezer-type-${freezer.id}`}>
+                <SelectTrigger className="flex-1 h-8" data-testid={`select-freezer-type-${freezer.id}`}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
