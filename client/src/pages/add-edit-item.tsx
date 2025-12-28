@@ -270,7 +270,7 @@ export default function AddEditItemPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-50 bg-background border-b" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="flex items-center gap-2 px-4 py-3">
+        <div className="max-w-6xl mx-auto flex items-center gap-2 px-4 py-3">
           <Button
             variant="ghost"
             size="icon"
@@ -285,7 +285,7 @@ export default function AddEditItemPage() {
         </div>
       </div>
 
-      <div className="px-4 py-4">
+      <div className="max-w-6xl mx-auto px-4 py-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
@@ -853,7 +853,7 @@ export default function AddEditItemPage() {
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
-        <div className="flex gap-3">
+        <div className="max-w-6xl mx-auto flex gap-3">
           <Button
             type="button"
             variant="outline"
