@@ -13,8 +13,8 @@ import {
   type Location,
   type User,
   type UpsertUser
-} from "@shared/schema";
-import { db } from "./db";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
