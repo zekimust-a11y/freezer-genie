@@ -186,10 +186,11 @@ export default function AddEditItemPage() {
       });
       navigate("/");
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error("Failed to add item:", error);
       toast({
         title: "Error",
-        description: "Failed to add item. Please try again.",
+        description: `Failed to add item: ${error.message}`,
         variant: "destructive",
       });
     },
@@ -214,10 +215,11 @@ export default function AddEditItemPage() {
       });
       navigate("/");
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error("Failed to update item:", error);
       toast({
         title: "Error",
-        description: "Failed to update item. Please try again.",
+        description: `Failed to update item: ${error.message}`,
         variant: "destructive",
       });
     },
