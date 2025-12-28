@@ -76,14 +76,21 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       
       console.log("Requesting camera access...");
       const config = {
-        fps: 10,
-        qrbox: { width: 300, height: 150 }, // Wide box for horizontal barcodes
+        fps: 5, // Slower FPS for better accuracy
+        qrbox: function(viewfinderWidth: number, viewfinderHeight: number) {
+          // Make the box as wide as possible, with good height for barcodes
+          const boxWidth = Math.floor(viewfinderWidth * 0.9);
+          const boxHeight = Math.floor(viewfinderHeight * 0.3);
+          console.log(`Scan box size: ${boxWidth}x${boxHeight}`);
+          return { width: boxWidth, height: boxHeight };
+        },
         aspectRatio: 1.777778,
         disableFlip: false,
-        // Don't restrict formats - let it scan everything
         experimentalFeatures: {
           useBarCodeDetectorIfSupported: true
-        }
+        },
+        rememberLastUsedCamera: true,
+        supportedScanTypes: [] // Empty means all types supported
       };
       
       await scanner.start(
