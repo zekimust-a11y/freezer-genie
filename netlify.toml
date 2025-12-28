@@ -55,24 +55,8 @@
 [functions]
   # Directory with serverless functions
   directory = "netlify/functions"
-  # Node version for functions  
-  node_bundler = "esbuild"
-  
-# Configure each function individually to control bundling
-[functions."items"]
-  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
-  
-[functions."freezers"]
-  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
-  
-[functions."custom-locations"]
-  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
-  
-[functions."auth"]
-  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
-  
-[functions."_shared"]
-  external_node_modules = ["pg", "pg-native", "drizzle-orm", "zod", "zod-validation-error"]
+  # Use default Node bundler (not esbuild) to avoid bundle size issues
+  node_bundler = "nft"
 
 # Headers for security and performance
 [[headers]]
