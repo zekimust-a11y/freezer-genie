@@ -70,12 +70,10 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
     
     try {
       console.log("Initializing ZXing barcode scanner...");
-      // TRY_HARDER improves detection for smaller / lower-contrast barcodes
-      const hints = new Map();
-      hints.set(DecodeHintType.TRY_HARDER, true);
-      const codeReader = new BrowserMultiFormatReader(hints);
+      const codeReader = new BrowserMultiFormatReader();
       codeReaderRef.current = codeReader;
-      // Get cameras and pick back camera first
+      
+      console.log("Getting video devices...");
       const videoInputDevices = await codeReader.listVideoInputDevices();
       if (videoInputDevices.length === 0) {
         throw new Error("No camera found");
