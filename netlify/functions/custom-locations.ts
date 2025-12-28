@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import { eq } from "drizzle-orm";
 import { fromError } from "zod-validation-error";
-import { customLocations, insertCustomLocationSchema } from "../../shared/schema";
+import { customLocations, insertCustomLocationSchema } from "./schema";
 
 const { Pool } = pg;
 
