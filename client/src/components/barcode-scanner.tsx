@@ -145,16 +145,16 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
             </div>
           ) : (
             <>
-              <div className="relative w-full">
+              <div className="relative w-full h-[300px] bg-muted rounded-md overflow-hidden">
                 {isInitializing && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-md z-10">
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 )}
                 <div 
                   id="barcode-scanner-container" 
                   ref={containerRef}
-                  className="w-full rounded-md overflow-hidden"
+                  className="w-full h-full"
                 />
               </div>
               <p className="text-sm text-muted-foreground text-center">
