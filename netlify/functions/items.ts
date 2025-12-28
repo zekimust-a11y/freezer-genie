@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { storage } from "../../server/storage";
+import { storage } from "./lib/storage";
 import { insertFreezerItemSchema } from "../../shared/schema";
 import { fromError } from "zod-validation-error";
 import { handleOptions, parseBody, errorResponse, successResponse } from './_shared';

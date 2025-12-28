@@ -1,4 +1,4 @@
-import { storage } from "../../server/storage";
+import { storage } from "./lib/storage";
 import { insertFreezerItemSchema, insertFreezerSchema, insertCustomLocationSchema } from "../../shared/schema";
 import { fromError } from "zod-validation-error";
 
