@@ -25,6 +25,7 @@
 
 1. In your Clerk dashboard, go to **"API Keys"**
 2. Copy your **Publishable Key** (starts with `pk_test_...`)
+3. Copy your **Secret Key** (starts with `sk_test_...`) - **Keep this secure!**
 
 ### Step 3: Configure Environment Variables
 
@@ -32,16 +33,24 @@
 Create a `.env` file in the project root:
 ```bash
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
+CLERK_SECRET_KEY=sk_test_your_secret_key_here
 DATABASE_URL=your_database_url_here
 ```
+
+⚠️ **Important**: Never commit `.env` to git! It's already in `.gitignore`.
 
 #### **For Netlify Deployment:**
 1. Go to your Netlify dashboard: https://app.netlify.com/sites/freezer-genie
 2. Click **"Site configuration"** → **"Environment variables"**
-3. Add the following variable:
+3. Add the following variables:
    - **Key**: `VITE_CLERK_PUBLISHABLE_KEY`
-   - **Value**: Your Clerk publishable key (starts with `pk_test_...`)
+     - **Value**: Your Clerk publishable key (starts with `pk_test_...`)
+   - **Key**: `CLERK_SECRET_KEY` ⚠️ **CRITICAL FOR SECURITY**
+     - **Value**: Your Clerk secret key (starts with `sk_test_...`)
+   - **Key**: `DATABASE_URL`
+     - **Value**: Your PostgreSQL connection string
 4. Click **"Save"**
+5. **Trigger a new deploy** for the changes to take effect
 
 ### Step 4: Configure Clerk Application Settings
 
@@ -164,6 +173,13 @@ Netlify will automatically:
 ### **"Missing Clerk Publishable Key" Error**
 - Make sure `VITE_CLERK_PUBLISHABLE_KEY` is set in Netlify environment variables
 - Redeploy after adding the variable
+
+### **"Missing CLERK_SECRET_KEY" Error or 401 Unauthorized**
+- ⚠️ **CRITICAL**: `CLERK_SECRET_KEY` must be set in Netlify environment variables
+- This is required for JWT verification on the backend
+- Get it from Clerk Dashboard → API Keys → Secret Keys
+- Add it to: Netlify Dashboard → Site Settings → Environment Variables
+- **Security**: This key should NEVER be exposed to the client or committed to git
 
 ### **Redirect Loop**
 - Check that Clerk paths are configured correctly:

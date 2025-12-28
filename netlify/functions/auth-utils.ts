@@ -1,4 +1,5 @@
 import { Handler, HandlerEvent } from '@netlify/functions';
+import { verifyToken } from '@clerk/backend';
 
 export interface AuthUser {
   id: string;
@@ -8,10 +9,11 @@ export interface AuthUser {
 }
 
 /**
- * Extract user from Clerk JWT token
+ * Extract and verify user from Clerk JWT token
  * The token is sent in the Authorization header as "Bearer <token>"
+ * This properly verifies the cryptographic signature using Clerk's backend SDK
  */
-export function getUserFromEvent(event: HandlerEvent): AuthUser | null {
+export async function getUserFromEvent(event: HandlerEvent): Promise<AuthUser | null> {
   const authHeader = event.headers['authorization'] || event.headers['Authorization'];
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -21,35 +23,57 @@ export function getUserFromEvent(event: HandlerEvent): AuthUser | null {
   const token = authHeader.substring(7); // Remove 'Bearer ' prefix
   
   try {
-    // Decode JWT payload (without verification for now - Clerk's middleware should handle this)
-    // In production, you'd want to verify the JWT signature
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
+    // Verify JWT signature using Clerk's backend SDK
+    // This validates the token hasn't been tampered with
+    const secretKey = process.env.CLERK_SECRET_KEY;
     
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+    if (!secretKey) {
+      console.error('CLERK_SECRET_KEY is not set');
+      return null;
+    }
+
+    const payload = await verifyToken(token, {
+      secretKey,
+    });
     
-    // Clerk JWT structure
+    // Clerk JWT structure - payload is now cryptographically verified
     if (payload.sub) {
+      // Get the actual email from the payload
+      // Clerk tokens include email_addresses array with the primary email
+      let email = '';
+      
+      if (payload.email) {
+        email = payload.email as string;
+      } else if (payload.email_addresses && Array.isArray(payload.email_addresses)) {
+        // Find the primary email from the email_addresses array
+        const emailAddresses = payload.email_addresses as any[];
+        const primaryEmail = emailAddresses.find((e: any) => e.id === payload.primary_email_address_id);
+        if (primaryEmail && primaryEmail.email_address) {
+          email = primaryEmail.email_address;
+        }
+      }
+      
       return {
         id: payload.sub,
-        email: payload.email || payload.primary_email_address_id || '',
-        fullName: payload.full_name || payload.name,
-        avatarUrl: payload.image_url || payload.picture,
+        email: email || '', // Now correctly using actual email, not ID
+        fullName: (payload.full_name || payload.name) as string | undefined,
+        avatarUrl: (payload.image_url || payload.picture) as string | undefined,
       };
     }
     
     return null;
   } catch (error) {
-    console.error('Error decoding token:', error);
+    console.error('Error verifying token:', error);
     return null;
   }
 }
 
 /**
  * Require authentication - returns 401 if not authenticated
+ * Now properly async to support JWT verification
  */
-export function requireAuth(event: HandlerEvent): { user: AuthUser } | { statusCode: 401; body: string; headers: Record<string, string> } {
-  const user = getUserFromEvent(event);
+export async function requireAuth(event: HandlerEvent): Promise<{ user: AuthUser } | { statusCode: 401; body: string; headers: Record<string, string> }> {
+  const user = await getUserFromEvent(event);
   
   if (!user) {
     return {
@@ -67,6 +91,7 @@ export function requireAuth(event: HandlerEvent): { user: AuthUser } | { statusC
 
 /**
  * Wrapper to create authenticated handlers
+ * Now properly async to support JWT verification
  */
 export function withAuth(
   handler: (event: HandlerEvent, user: AuthUser) => Promise<any>
@@ -85,7 +110,7 @@ export function withAuth(
       };
     }
 
-    const authResult = requireAuth(event);
+    const authResult = await requireAuth(event); // Now awaits the async verification
     
     if ('statusCode' in authResult) {
       return authResult; // Return 401 error

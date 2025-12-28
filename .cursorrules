@@ -1,5 +1,0 @@
-After making code changes, always:
-1. Stage the modified files with `git add`
-# 2. Commit with a descriptive message
-
-
