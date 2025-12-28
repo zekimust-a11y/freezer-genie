@@ -17,6 +17,7 @@ export async function getUserFromEvent(event: HandlerEvent): Promise<AuthUser | 
   const authHeader = event.headers['authorization'] || event.headers['Authorization'];
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No auth header or invalid format');
     return null;
   }
 
@@ -28,12 +29,19 @@ export async function getUserFromEvent(event: HandlerEvent): Promise<AuthUser | 
     const secretKey = process.env.CLERK_SECRET_KEY;
     
     if (!secretKey) {
-      console.error('CLERK_SECRET_KEY is not set');
+      console.error('CLERK_SECRET_KEY is not set in environment variables');
       return null;
     }
 
+    console.log('Verifying token with Clerk...');
     const payload = await verifyToken(token, {
       secretKey,
+    });
+    
+    console.log('Token verified successfully, payload:', {
+      sub: payload.sub,
+      hasEmail: !!payload.email,
+      hasEmailAddresses: !!payload.email_addresses,
     });
     
     // Clerk JWT structure - payload is now cryptographically verified
@@ -61,9 +69,15 @@ export async function getUserFromEvent(event: HandlerEvent): Promise<AuthUser | 
       };
     }
     
+    console.log('No sub in payload');
     return null;
   } catch (error) {
     console.error('Error verifying token:', error);
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'unknown',
+      message: error instanceof Error ? error.message : 'unknown',
+      stack: error instanceof Error ? error.stack : 'unknown',
+    });
     return null;
   }
 }
