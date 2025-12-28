@@ -38,11 +38,12 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
   const { toast } = useToast();
   const [isScanning, setIsScanning] = useState(false);
   const [isLookingUp, setIsLookingUp] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (open && !isScanning) {
+    if (open && !isScanning && !isInitializing) {
       startScanner();
     }
     
@@ -54,36 +55,17 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
   const startScanner = async () => {
     if (!containerRef.current) return;
     
+    setIsInitializing(true);
+    
     try {
       const scanner = new Html5Qrcode("barcode-scanner-container");
       scannerRef.current = scanner;
       
-      // Request camera permissions first
-      const cameras = await Html5Qrcode.getCameras();
-      if (!cameras || cameras.length === 0) {
-        throw new Error("No cameras found");
-      }
-      
-      // Get the back camera if available
-      const backCamera = cameras.find(camera => 
-        camera.label.toLowerCase().includes('back') || 
-        camera.label.toLowerCase().includes('rear')
-      ) || cameras[0];
-      
       await scanner.start(
-        backCamera.id || { facingMode: "environment" },
+        { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: function(viewfinderWidth, viewfinderHeight) {
-            // Make the scanning box responsive to viewport
-            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-            const qrboxSize = Math.floor(minEdge * 0.7);
-            return {
-              width: qrboxSize,
-              height: Math.floor(qrboxSize * 0.6)
-            };
-          },
-          aspectRatio: 16/9,
+          qrbox: { width: 250, height: 150 },
         },
         async (decodedText) => {
           setIsLookingUp(true);
@@ -114,8 +96,10 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       );
       
       setIsScanning(true);
+      setIsInitializing(false);
     } catch (error) {
       console.error("Error starting scanner:", error);
+      setIsInitializing(false);
       toast({
         title: "Camera error",
         description: "Could not access camera. Please check permissions.",
@@ -145,7 +129,7 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md max-w-[95vw]">
+      <DialogContent className="sm:max-w-lg w-[90vw] p-4">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Camera className="h-5 w-5" />
@@ -161,12 +145,18 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
             </div>
           ) : (
             <>
-              <div 
-                id="barcode-scanner-container" 
-                ref={containerRef}
-                className="w-full min-h-[300px] bg-black rounded-md overflow-hidden"
-                style={{ aspectRatio: '16/9' }}
-              />
+              <div className="relative w-full">
+                {isInitializing && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted rounded-md z-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                )}
+                <div 
+                  id="barcode-scanner-container" 
+                  ref={containerRef}
+                  className="w-full rounded-md overflow-hidden"
+                />
+              </div>
               <p className="text-sm text-muted-foreground text-center">
                 Point your camera at a product barcode
               </p>
