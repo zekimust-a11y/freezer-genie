@@ -55,8 +55,8 @@
 [functions]
   # Directory with serverless functions
   directory = "netlify/functions"
-  # Use default Node bundler (not esbuild) to avoid bundle size issues
-  node_bundler = "nft"
+  # Disable bundler since we're pre-bundling with esbuild
+  node_bundler = "none"
 
 # Headers for security and performance
 [[headers]]

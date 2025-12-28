@@ -3,4 +3,6 @@ dist
 .DS_Store
 server/public
 vite.config.ts.*
-*.tar.gz
+*.tar.gz# Built functions
+netlify/functions/*.mjs
+netlify/functions/*.mjs.map
