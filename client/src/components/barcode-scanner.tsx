@@ -44,7 +44,10 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
 
   useEffect(() => {
     if (open && !isScanning && !isInitializing) {
-      startScanner();
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        startScanner();
+      }, 100);
     }
     
     return () => {
@@ -53,21 +56,30 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
   }, [open]);
 
   const startScanner = async () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      console.log("Container ref not ready");
+      return;
+    }
     
     setIsInitializing(true);
     
     try {
+      console.log("Initializing scanner...");
       const scanner = new Html5Qrcode("barcode-scanner-container");
       scannerRef.current = scanner;
       
+      console.log("Requesting camera access...");
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 150 },
+        aspectRatio: 1.777778, // 16:9
+      };
+      
       await scanner.start(
         { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 150 },
-        },
+        config,
         async (decodedText) => {
+          console.log("Barcode detected:", decodedText);
           setIsLookingUp(true);
           await stopScanner();
           
@@ -92,17 +104,31 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
           setIsLookingUp(false);
           onOpenChange(false);
         },
-        () => {}
+        () => {
+          // Error callback - scanning errors, not camera errors
+        }
       );
       
+      console.log("Scanner started successfully");
       setIsScanning(true);
       setIsInitializing(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error starting scanner:", error);
+      console.error("Error details:", error.message, error.name);
       setIsInitializing(false);
+      
+      let errorMessage = "Could not access camera. Please check permissions.";
+      if (error.name === "NotAllowedError") {
+        errorMessage = "Camera permission denied. Please allow camera access in your browser settings.";
+      } else if (error.name === "NotFoundError") {
+        errorMessage = "No camera found on this device.";
+      } else if (error.name === "NotReadableError") {
+        errorMessage = "Camera is already in use by another application.";
+      }
+      
       toast({
         title: "Camera error",
-        description: "Could not access camera. Please check permissions.",
+        description: errorMessage,
         variant: "destructive",
       });
       onOpenChange(false);
@@ -145,10 +171,16 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
             </div>
           ) : (
             <>
-              <div className="relative w-full h-[300px] bg-muted rounded-md overflow-hidden">
+              <div className="relative w-full h-[300px] rounded-md overflow-hidden bg-black">
                 {isInitializing && (
-                  <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/80">
+                    <Loader2 className="h-8 w-8 animate-spin text-white mb-2" />
+                    <p className="text-sm text-white">Starting camera...</p>
+                  </div>
+                )}
+                {!isInitializing && !isScanning && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                    <p className="text-sm text-muted-foreground">Waiting for camera...</p>
                   </div>
                 )}
                 <div 
