@@ -4,5 +4,5 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz# Built functions
-netlify/functions/*.mjs
-netlify/functions/*.mjs.map
+netlify/functions/*.js
+netlify/functions/*.js.map

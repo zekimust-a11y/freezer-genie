@@ -18,8 +18,8 @@ async function buildFunctions() {
       bundle: true,
       platform: 'node',
       target: 'node18',
-      format: 'esm',
-      outfile: join(functionsDir, `${name}.mjs`),
+      format: 'cjs',  // Changed from esm to cjs for pg compatibility
+      outfile: join(functionsDir, `${name}.js`),  // Changed from .mjs to .js
       external: ['pg-native'],
       minify: false,
       sourcemap: true,
