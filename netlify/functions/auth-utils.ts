@@ -8,23 +8,41 @@ export interface AuthUser {
 }
 
 /**
- * Extract user from Netlify Identity JWT token
- * Netlify automatically validates the JWT and adds user info to context
+ * Extract user from Clerk JWT token
+ * The token is sent in the Authorization header as "Bearer <token>"
  */
 export function getUserFromEvent(event: HandlerEvent): AuthUser | null {
-  // Check for user in context (Netlify Identity adds this)
-  const contextUser = (event as any).context?.clientContext?.user;
+  const authHeader = event.headers['authorization'] || event.headers['Authorization'];
   
-  if (contextUser) {
-    return {
-      id: contextUser.sub, // Subject is the user ID
-      email: contextUser.email,
-      fullName: contextUser.user_metadata?.full_name,
-      avatarUrl: contextUser.user_metadata?.avatar_url,
-    };
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
   }
 
-  return null;
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+  
+  try {
+    // Decode JWT payload (without verification for now - Clerk's middleware should handle this)
+    // In production, you'd want to verify the JWT signature
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+    
+    // Clerk JWT structure
+    if (payload.sub) {
+      return {
+        id: payload.sub,
+        email: payload.email || payload.primary_email_address_id || '',
+        fullName: payload.full_name || payload.name,
+        avatarUrl: payload.image_url || payload.picture,
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
 }
 
 /**

@@ -1,12 +1,19 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
-import netlifyIdentity from 'netlify-identity-widget';
+
+// This will be set by the auth context
+let getAuthToken: (() => Promise<string | null>) | null = null;
+
+export function setAuthTokenGetter(getter: () => Promise<string | null>) {
+  getAuthToken = getter;
+}
 
 async function getAuthHeaders(): Promise<HeadersInit> {
-  const currentUser = netlifyIdentity.currentUser();
-  if (!currentUser) return {};
+  if (!getAuthToken) return {};
 
   try {
-    const token = await currentUser.jwt();
+    const token = await getAuthToken();
+    if (!token) return {};
+    
     return {
       'Authorization': `Bearer ${token}`,
     };

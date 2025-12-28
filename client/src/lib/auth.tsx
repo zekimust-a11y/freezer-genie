@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import netlifyIdentity from 'netlify-identity-widget';
+import { createContext, useContext, ReactNode, useEffect } from 'react';
+import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react';
+import { setAuthTokenGetter } from './queryClient';
 
 export interface User {
   id: string;
@@ -20,67 +21,33 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user: clerkUser, isLoaded } = useUser();
+  const { signOut, getToken: getClerkToken } = useClerkAuth();
 
-  useEffect(() => {
-    // Initialize Netlify Identity
-    netlifyIdentity.init();
-
-    // Check if user is already logged in
-    const currentUser = netlifyIdentity.currentUser();
-    if (currentUser) {
-      setUser({
-        id: currentUser.id,
-        email: currentUser.email || '',
-        fullName: currentUser.user_metadata?.full_name,
-        avatarUrl: currentUser.user_metadata?.avatar_url,
-      });
-    }
-    setLoading(false);
-
-    // Listen for login events
-    netlifyIdentity.on('login', (user) => {
-      if (user) {
-        setUser({
-          id: user.id,
-          email: user.email || '',
-          fullName: user.user_metadata?.full_name,
-          avatarUrl: user.user_metadata?.avatar_url,
-        });
-        netlifyIdentity.close();
+  const user: User | null = clerkUser
+    ? {
+        id: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress || '',
+        fullName: clerkUser.fullName || undefined,
+        avatarUrl: clerkUser.imageUrl || undefined,
       }
-    });
-
-    // Listen for logout events
-    netlifyIdentity.on('logout', () => {
-      setUser(null);
-    });
-
-    return () => {
-      netlifyIdentity.off('login');
-      netlifyIdentity.off('logout');
-    };
-  }, []);
+    : null;
 
   const login = () => {
-    netlifyIdentity.open('login');
+    window.location.href = '/sign-in';
   };
 
-  const logout = () => {
-    netlifyIdentity.logout();
+  const logout = async () => {
+    await signOut();
   };
 
   const signup = () => {
-    netlifyIdentity.open('signup');
+    window.location.href = '/sign-up';
   };
 
   const getToken = async (): Promise<string | null> => {
-    const currentUser = netlifyIdentity.currentUser();
-    if (!currentUser) return null;
-
     try {
-      const token = await currentUser.jwt();
+      const token = await getClerkToken();
       return token;
     } catch (error) {
       console.error('Error getting token:', error);
@@ -88,8 +55,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Set the token getter for the query client
+  useEffect(() => {
+    setAuthTokenGetter(getToken);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, signup, getToken }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        loading: !isLoaded, 
+        login, 
+        logout, 
+        signup, 
+        getToken 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -102,4 +83,3 @@ export function useAuth() {
   }
   return context;
 }
-

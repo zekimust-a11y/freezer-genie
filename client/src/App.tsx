@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { ClerkProvider, SignIn, SignUp } from "@clerk/clerk-react";
 import Home from "@/pages/home";
 import AddEditItemPage from "@/pages/add-edit-item";
 import LoginPage from "@/pages/login";
@@ -12,6 +13,12 @@ import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Clerk Publishable Key");
+}
 
 function ProtectedRoute({ component: Component }: { component: () => JSX.Element }) {
   const { user, loading } = useAuth();
@@ -41,6 +48,20 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 function Router() {
   return (
     <Switch>
+      <Route path="/sign-in">
+        {() => (
+          <div className="flex items-center justify-center min-h-screen">
+            <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
+          </div>
+        )}
+      </Route>
+      <Route path="/sign-up">
+        {() => (
+          <div className="flex items-center justify-center min-h-screen">
+            <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" />
+          </div>
+        )}
+      </Route>
       <Route path="/login" component={LoginPage} />
       <Route path="/">
         {() => <ProtectedRoute component={Home} />}
@@ -58,16 +79,18 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </ClerkProvider>
   );
 }
 
