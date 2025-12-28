@@ -124,8 +124,7 @@ export function AlertsPage({ items, onEditItem }: AlertsPageProps) {
       {!hasAlerts ? (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No use by alerts</p>
-          <p className="text-sm text-muted-foreground">All your items are fresh!</p>
+          <p className="text-muted-foreground">This is where you will be alerted to items nearing their use by date.</p>
         </div>
       ) : (
         <>

@@ -77,16 +77,9 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       console.log("Requesting camera access...");
       const config = {
         fps: 10,
-        qrbox: function(viewfinderWidth: number, viewfinderHeight: number) {
-          // Make scanning box 80% of the smaller dimension for better barcode detection
-          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-          const scanBoxSize = Math.floor(minEdge * 0.8);
-          return {
-            width: scanBoxSize,
-            height: Math.floor(scanBoxSize * 0.4) // Wider box for horizontal barcodes
-          };
-        },
+        qrbox: 250, // Full-width scanning for better detection
         aspectRatio: 1.777778, // 16:9
+        disableFlip: false,
         // Support multiple barcode formats
         formatsToSupport: [
           0, // QR_CODE
@@ -95,6 +88,9 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
           13, // UPC_A
           14, // UPC_E
         ],
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        }
       };
       
       await scanner.start(

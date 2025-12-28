@@ -120,10 +120,7 @@ export function ShoppingListPage({ items, onEditItem }: ShoppingListPageProps) {
       {lowStockItems.length === 0 ? (
         <div className="text-center py-12">
           <Check className="h-12 w-12 mx-auto mb-4 text-green-500 opacity-50" />
-          <p className="text-muted-foreground">Your freezer is well stocked!</p>
-          <p className="text-sm text-muted-foreground">
-            Set low stock thresholds on items to see them here when running low.
-          </p>
+          <p className="text-muted-foreground">This is where your shopping list will appear for all items low on stock.</p>
         </div>
       ) : (
         <div className="space-y-3">

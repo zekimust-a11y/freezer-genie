@@ -11,7 +11,7 @@ import { SettingsPanel, getFreezerOptions, getSelectedFreezer, setSelectedFreeze
 import { AlertsPage, getAlertCount } from "@/components/alerts-page";
 import { ShoppingListPage, getListCount } from "@/components/shopping-list-page";
 import { RecipesPage } from "@/components/recipes-page";
-import { useAuth } from "@/lib/auth";
+import { UserButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -287,18 +287,7 @@ export default function Home() {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.avatarUrl || undefined} style={{ objectFit: "cover" }} />
-                <AvatarFallback className="text-xs">{getUserInitials()}</AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={logout}
-                title="Log out"
-              >
-                <LogOut className="h-5 w-5" />
-              </Button>
+              <UserButton afterSignOutUrl="/login" />
               <Button
                 variant="ghost"
                 size="icon"
