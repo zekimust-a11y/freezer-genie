@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Camera, X, Loader2 } from "lucide-react";
@@ -77,16 +77,18 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       console.log("Requesting camera access...");
       const config = {
         fps: 10,
-        qrbox: 250, // Full-width scanning for better detection
-        aspectRatio: 1.777778, // 16:9
+        qrbox: 250,
+        aspectRatio: 1.777778,
         disableFlip: false,
-        // Support multiple barcode formats
+        // Support all major barcode formats for retail products
         formatsToSupport: [
-          0, // QR_CODE
-          8, // EAN_13 (most common in Ireland/EU)
-          9, // EAN_8
-          13, // UPC_A
-          14, // UPC_E
+          Html5QrcodeSupportedFormats.QR_CODE,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
         ],
         experimentalFeatures: {
           useBarCodeDetectorIfSupported: true
