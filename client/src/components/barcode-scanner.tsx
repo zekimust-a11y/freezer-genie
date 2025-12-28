@@ -75,18 +75,22 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       hints.set(DecodeHintType.TRY_HARDER, true);
       const codeReader = new BrowserMultiFormatReader(hints);
       codeReaderRef.current = codeReader;
-      // Prefer back camera, higher resolution to help decode smaller barcodes
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        }
-      };
-      console.log("Starting continuous decode with constraints:", constraints);
+      // Get cameras and pick back camera first
+      const videoInputDevices = await codeReader.listVideoInputDevices();
+      if (videoInputDevices.length === 0) {
+        throw new Error("No camera found");
+      }
+      const backCamera = videoInputDevices.find(device =>
+        device.label.toLowerCase().includes("back") ||
+        device.label.toLowerCase().includes("rear") ||
+        device.label.toLowerCase().includes("environment")
+      ) || videoInputDevices[0];
 
-      await codeReader.decodeFromConstraints(
-        constraints,
+      console.log("Using camera:", backCamera.label || backCamera.deviceId);
+      console.log("Starting continuous decode with decodeFromVideoDevice...");
+
+      await codeReader.decodeFromVideoDevice(
+        backCamera.deviceId,
         videoRef.current,
         async (result, error) => {
           if (result) {
@@ -187,7 +191,7 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
             </div>
           ) : (
             <>
-              <div className="relative w-full h-[400px] rounded-md overflow-hidden bg-black">
+              <div className="relative w-full h-[420px] rounded-md overflow-hidden bg-black">
                 {isInitializing && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/80">
                     <Loader2 className="h-8 w-8 animate-spin text-white mb-2" />

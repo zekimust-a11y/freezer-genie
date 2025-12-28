@@ -332,8 +332,8 @@ export default function AddEditItemPage() {
                       </div>
                       <Button
                         type="button"
-                        variant="outline"
-                        className="px-3"
+                        variant="default"
+                        className="px-4 min-w-[110px]"
                         onClick={() => setIsScannerOpen(true)}
                         data-testid="button-scan"
                       >
