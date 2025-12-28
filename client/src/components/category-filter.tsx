@@ -86,7 +86,7 @@ export function CategoryFilter({
   };
 
   return (
-    <div className="overflow-x-auto scrollbar-hide" data-testid="category-filter-container">
+    <div className="overflow-x-auto scrollbar-hide flex justify-center" data-testid="category-filter-container">
       <AnimatePresence mode="wait">
         {showSubmenu === "meat" ? (
           <motion.div
