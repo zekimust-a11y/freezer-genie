@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider, useAuth } from "@/lib/auth";
-import { SignIn, SignUp } from "@clerk/clerk-react";
 import Home from "@/pages/home";
 import AddEditItemPage from "@/pages/add-edit-item";
 import LoginPage from "@/pages/login";
@@ -42,20 +41,6 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 function Router() {
   return (
     <Switch>
-      <Route path="/sign-in">
-        {() => (
-          <div className="flex items-center justify-center min-h-screen">
-            <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
-          </div>
-        )}
-      </Route>
-      <Route path="/sign-up">
-        {() => (
-          <div className="flex items-center justify-center min-h-screen">
-            <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" />
-          </div>
-        )}
-      </Route>
       <Route path="/login" component={LoginPage} />
       <Route path="/">
         {() => <ProtectedRoute component={Home} />}

@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useEffect } from 'react';
-import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import { setAuthTokenGetter } from './queryClient';
 
 export interface User {
@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { user: clerkUser, isLoaded } = useUser();
-  const { signOut, getToken: getClerkToken } = useClerkAuth();
+  const { openSignIn, openSignUp, signOut } = useClerk();
 
   const user: User | null = clerkUser
     ? {
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     : null;
 
   const login = () => {
-    window.location.href = '/sign-in';
+    openSignIn({ redirectUrl: '/' });
   };
 
   const logout = async () => {
@@ -42,12 +42,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = () => {
-    window.location.href = '/sign-up';
+    openSignUp({ redirectUrl: '/' });
   };
 
   const getToken = async (): Promise<string | null> => {
+    if (!clerkUser) return null;
     try {
-      const token = await getClerkToken();
+      const token = await clerkUser.getToken();
       return token;
     } catch (error) {
       console.error('Error getting token:', error);
