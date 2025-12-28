@@ -58,11 +58,32 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       const scanner = new Html5Qrcode("barcode-scanner-container");
       scannerRef.current = scanner;
       
+      // Request camera permissions first
+      const cameras = await Html5Qrcode.getCameras();
+      if (!cameras || cameras.length === 0) {
+        throw new Error("No cameras found");
+      }
+      
+      // Get the back camera if available
+      const backCamera = cameras.find(camera => 
+        camera.label.toLowerCase().includes('back') || 
+        camera.label.toLowerCase().includes('rear')
+      ) || cameras[0];
+      
       await scanner.start(
-        { facingMode: "environment" },
+        backCamera.id || { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: { width: 250, height: 150 },
+          qrbox: function(viewfinderWidth, viewfinderHeight) {
+            // Make the scanning box responsive to viewport
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const qrboxSize = Math.floor(minEdge * 0.7);
+            return {
+              width: qrboxSize,
+              height: Math.floor(qrboxSize * 0.6)
+            };
+          },
+          aspectRatio: 16/9,
         },
         async (decodedText) => {
           setIsLookingUp(true);
@@ -100,6 +121,7 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
         description: "Could not access camera. Please check permissions.",
         variant: "destructive",
       });
+      onOpenChange(false);
     }
   };
 
@@ -123,7 +145,7 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-w-[95vw]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Camera className="h-5 w-5" />
@@ -142,7 +164,8 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
               <div 
                 id="barcode-scanner-container" 
                 ref={containerRef}
-                className="w-full aspect-video bg-muted rounded-md overflow-hidden"
+                className="w-full min-h-[300px] bg-black rounded-md overflow-hidden"
+                style={{ aspectRatio: '16/9' }}
               />
               <p className="text-sm text-muted-foreground text-center">
                 Point your camera at a product barcode
