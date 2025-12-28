@@ -10,9 +10,10 @@
   NODE_VERSION = "18"
 
 # Redirect API routes to specific Netlify Functions
+# Order matters: specific routes with wildcards first, then exact matches
 [[redirects]]
-  from = "/api/items/*"
-  to = "/.netlify/functions/items/:splat"
+  from = "/api/items/:id"
+  to = "/.netlify/functions/items/:id"
   status = 200
 
 [[redirects]]
@@ -21,8 +22,8 @@
   status = 200
 
 [[redirects]]
-  from = "/api/freezers/*"
-  to = "/.netlify/functions/freezers/:splat"
+  from = "/api/freezers/:id"
+  to = "/.netlify/functions/freezers/:id"
   status = 200
 
 [[redirects]]
@@ -31,8 +32,8 @@
   status = 200
 
 [[redirects]]
-  from = "/api/custom-locations/*"
-  to = "/.netlify/functions/custom-locations/:splat"
+  from = "/api/custom-locations/:id"
+  to = "/.netlify/functions/custom-locations/:id"
   status = 200
 
 [[redirects]]
@@ -41,8 +42,8 @@
   status = 200
 
 [[redirects]]
-  from = "/api/auth/*"
-  to = "/.netlify/functions/auth/:splat"
+  from = "/api/auth/user"
+  to = "/.netlify/functions/auth/user"
   status = 200
 
 # SPA fallback - redirect all non-API routes to index.html
