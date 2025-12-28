@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { BrowserMultiFormatReader, NotFoundException, DecodeHintType } from '@zxing/library';
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Camera, X, Loader2 } from "lucide-react";
@@ -216,7 +216,8 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
                 )}
               </div>
               <p className="text-sm text-muted-foreground text-center">
-                Position the barcode inside the frame
+                <strong>Hold steady and get close to the barcode</strong><br />
+                Position it in the center of the frame
               </p>
             </>
           )}
