@@ -252,9 +252,10 @@ export default function AddEditItemPage() {
     }
   };
 
-  const handleBarcodeDetected = (barcode: string) => {
+  const handleBarcodeDetected = (productName: string) => {
     setIsScannerOpen(false);
-    form.setValue("name", barcode);
+    setNameInputValue(productName);
+    form.setValue("name", productName, { shouldValidate: true });
   };
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
