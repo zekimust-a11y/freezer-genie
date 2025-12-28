@@ -82,11 +82,11 @@ export const handler: Handler = async (event) => {
         };
       }
       
-      const id = crypto.randomUUID();
+      const newId = crypto.randomUUID();
       const [item] = await db
         .insert(freezerItems)
         .values({
-          id,
+          id: newId,
           ...result.data,
           quantity: result.data.quantity ?? "1",
           unit: result.data.unit ?? "item",
