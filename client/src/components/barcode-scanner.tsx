@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Camera, X, Loader2 } from "lucide-react";
@@ -45,12 +45,11 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
   const [isScanning, setIsScanning] = useState(false);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 
   useEffect(() => {
     if (open && !isScanning && !isInitializing) {
-      // Small delay to ensure DOM is ready
       setTimeout(() => {
         startScanner();
       }, 100);
@@ -62,72 +61,73 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
   }, [open]);
 
   const startScanner = async () => {
-    if (!containerRef.current) {
-      console.log("Container ref not ready");
+    if (!videoRef.current) {
+      console.log("Video ref not ready");
       return;
     }
     
     setIsInitializing(true);
     
     try {
-      console.log("Initializing scanner...");
-      const scanner = new Html5Qrcode("barcode-scanner-container");
-      scannerRef.current = scanner;
+      console.log("Initializing ZXing barcode scanner...");
+      const codeReader = new BrowserMultiFormatReader();
+      codeReaderRef.current = codeReader;
       
-      console.log("Requesting camera access...");
-      const config = {
-        fps: 5, // Slower FPS for better accuracy
-        qrbox: function(viewfinderWidth: number, viewfinderHeight: number) {
-          // Make the box as wide as possible, with good height for barcodes
-          const boxWidth = Math.floor(viewfinderWidth * 0.9);
-          const boxHeight = Math.floor(viewfinderHeight * 0.3);
-          console.log(`Scan box size: ${boxWidth}x${boxHeight}`);
-          return { width: boxWidth, height: boxHeight };
-        },
-        aspectRatio: 1.777778,
-        disableFlip: false,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true
-        },
-        rememberLastUsedCamera: true,
-        supportedScanTypes: [] // Empty means all types supported
-      };
+      console.log("Getting video devices...");
+      const videoInputDevices = await codeReader.listVideoInputDevices();
       
-      await scanner.start(
-        { facingMode: "environment" },
-        config,
-        async (decodedText) => {
-          console.log("Barcode detected:", decodedText);
-          setIsLookingUp(true);
-          await stopScanner();
-          
-          const product = await lookupBarcode(decodedText);
-          
-          if (product) {
-            const productName = product.brand 
-              ? `${product.brand} ${product.name}` 
-              : product.name;
-            console.log("Setting product name:", productName);
-            onBarcodeScanned(productName);
-            toast({
-              title: "✅ Product found!",
-              description: productName,
-              duration: 3000,
-            });
-          } else {
-            toast({
-              title: "❌ Product not found",
-              description: `Barcode: ${decodedText}. Please enter the name manually.`,
-              variant: "destructive",
-              duration: 5000,
-            });
+      if (videoInputDevices.length === 0) {
+        throw new Error("No camera found");
+      }
+      
+      // Find back camera or use first available
+      const backCamera = videoInputDevices.find(device => 
+        device.label.toLowerCase().includes('back') || 
+        device.label.toLowerCase().includes('rear') ||
+        device.label.toLowerCase().includes('environment')
+      ) || videoInputDevices[0];
+      
+      console.log("Using camera:", backCamera.label);
+      console.log("Starting continuous decode...");
+      
+      await codeReader.decodeFromVideoDevice(
+        backCamera.deviceId,
+        videoRef.current,
+        async (result, error) => {
+          if (result) {
+            console.log("Barcode detected:", result.getText());
+            setIsLookingUp(true);
+            await stopScanner();
+            
+            const product = await lookupBarcode(result.getText());
+            
+            if (product) {
+              const productName = product.brand 
+                ? `${product.brand} ${product.name}` 
+                : product.name;
+              console.log("Setting product name:", productName);
+              onBarcodeScanned(productName);
+              toast({
+                title: "✅ Product found!",
+                description: productName,
+                duration: 3000,
+              });
+            } else {
+              toast({
+                title: "❌ Product not found",
+                description: `Barcode: ${result.getText()}. Please enter the name manually.`,
+                variant: "destructive",
+                duration: 5000,
+              });
+            }
+            
+            setIsLookingUp(false);
+            onOpenChange(false);
           }
           
-          setIsLookingUp(false);
-          onOpenChange(false);
-        },
-        () => {
-          // Error callback - scanning errors, not camera errors
+          if (error && !(error instanceof NotFoundException)) {
+            console.error("Decode error:", error);
+          }
         }
       );
       
@@ -136,13 +136,12 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       setIsInitializing(false);
     } catch (error: any) {
       console.error("Error starting scanner:", error);
-      console.error("Error details:", error.message, error.name);
       setIsInitializing(false);
       
       let errorMessage = "Could not access camera. Please check permissions.";
       if (error.name === "NotAllowedError") {
         errorMessage = "Camera permission denied. Please allow camera access in your browser settings.";
-      } else if (error.name === "NotFoundError") {
+      } else if (error.name === "NotFoundError" || error.message === "No camera found") {
         errorMessage = "No camera found on this device.";
       } else if (error.name === "NotReadableError") {
         errorMessage = "Camera is already in use by another application.";
@@ -158,14 +157,14 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
   };
 
   const stopScanner = async () => {
-    if (scannerRef.current) {
+    if (codeReaderRef.current) {
       try {
-        await scannerRef.current.stop();
-        scannerRef.current.clear();
+        console.log("Stopping scanner...");
+        codeReaderRef.current.reset();
       } catch (error) {
         console.error("Error stopping scanner:", error);
       }
-      scannerRef.current = null;
+      codeReaderRef.current = null;
     }
     setIsScanning(false);
   };
@@ -193,26 +192,32 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
             </div>
           ) : (
             <>
-              <div className="relative w-full h-[300px] rounded-md overflow-hidden bg-black">
+              <div className="relative w-full h-[400px] rounded-md overflow-hidden bg-black">
                 {isInitializing && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/80">
                     <Loader2 className="h-8 w-8 animate-spin text-white mb-2" />
                     <p className="text-sm text-white">Starting camera...</p>
                   </div>
                 )}
-                {!isInitializing && !isScanning && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                    <p className="text-sm text-muted-foreground">Waiting for camera...</p>
+                <video 
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  playsInline
+                  muted
+                />
+                {isScanning && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="border-2 border-white w-4/5 h-1/3 rounded-lg shadow-lg">
+                      <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+                      <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+                      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+                      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg" />
+                    </div>
                   </div>
                 )}
-                <div 
-                  id="barcode-scanner-container" 
-                  ref={containerRef}
-                  className="w-full h-full"
-                />
               </div>
               <p className="text-sm text-muted-foreground text-center">
-                Point your camera at a product barcode
+                Position the barcode inside the frame
               </p>
             </>
           )}
