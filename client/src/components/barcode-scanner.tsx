@@ -18,15 +18,21 @@ interface ProductInfo {
 
 async function lookupBarcode(barcode: string): Promise<ProductInfo | null> {
   try {
+    console.log("Looking up barcode:", barcode);
     const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
     const data = await response.json();
     
+    console.log("Product data received:", data);
+    
     if (data.status === 1 && data.product) {
-      return {
+      const product = {
         name: data.product.product_name || data.product.product_name_en || "Unknown Product",
         brand: data.product.brands,
       };
+      console.log("Product found:", product);
+      return product;
     }
+    console.log("Product not found in database");
     return null;
   } catch (error) {
     console.error("Error looking up barcode:", error);
@@ -71,8 +77,24 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
       console.log("Requesting camera access...");
       const config = {
         fps: 10,
-        qrbox: { width: 250, height: 150 },
+        qrbox: function(viewfinderWidth: number, viewfinderHeight: number) {
+          // Make scanning box 80% of the smaller dimension for better barcode detection
+          const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+          const scanBoxSize = Math.floor(minEdge * 0.8);
+          return {
+            width: scanBoxSize,
+            height: Math.floor(scanBoxSize * 0.4) // Wider box for horizontal barcodes
+          };
+        },
         aspectRatio: 1.777778, // 16:9
+        // Support multiple barcode formats
+        formatsToSupport: [
+          0, // QR_CODE
+          8, // EAN_13 (most common in Ireland/EU)
+          9, // EAN_8
+          13, // UPC_A
+          14, // UPC_E
+        ],
       };
       
       await scanner.start(
@@ -89,15 +111,19 @@ export function BarcodeScanner({ open, onOpenChange, onBarcodeScanned }: Barcode
             const productName = product.brand 
               ? `${product.brand} ${product.name}` 
               : product.name;
+            console.log("Setting product name:", productName);
             onBarcodeScanned(productName);
             toast({
-              title: "Product found",
+              title: "✅ Product found!",
               description: productName,
+              duration: 3000,
             });
           } else {
             toast({
-              title: "Product not found",
-              description: `Barcode: ${decodedText}. You can enter the name manually.`,
+              title: "❌ Product not found",
+              description: `Barcode: ${decodedText}. Please enter the name manually.`,
+              variant: "destructive",
+              duration: 5000,
             });
           }
           
