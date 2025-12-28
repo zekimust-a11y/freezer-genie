@@ -34,12 +34,16 @@ export const handler: Handler = async (event) => {
   }
 
   const db = getDb();
-  const path = event.path.replace('/.netlify/functions/items', '');
   const method = event.httpMethod;
+  
+  // Extract ID from path if present
+  // Path will be like /.netlify/functions/items or /.netlify/functions/items/some-id
+  const pathParts = event.path.split('/').filter(Boolean);
+  const id = pathParts.length > 3 ? pathParts[3] : null; // ['.netlify', 'functions', 'items', 'id']
 
   try {
     // GET /api/items - Get all freezer items
-    if (method === 'GET' && path === '') {
+    if (method === 'GET' && !id) {
       const items = await db.select().from(freezerItems);
       return {
         statusCode: 200,
@@ -49,8 +53,7 @@ export const handler: Handler = async (event) => {
     }
 
     // GET /api/items/:id - Get a single item by ID
-    if (method === 'GET' && path.startsWith('/')) {
-      const id = path.substring(1);
+    if (method === 'GET' && id) {
       const [item] = await db.select().from(freezerItems).where(eq(freezerItems.id, id));
       if (!item) {
         return {
@@ -67,7 +70,7 @@ export const handler: Handler = async (event) => {
     }
 
     // POST /api/items - Create a new item
-    if (method === 'POST' && path === '') {
+    if (method === 'POST' && !id) {
       const body = JSON.parse(event.body || '{}');
       const result = insertFreezerItemSchema.safeParse(body);
       if (!result.success) {
@@ -101,8 +104,7 @@ export const handler: Handler = async (event) => {
     }
 
     // PUT /api/items/:id - Update an existing item
-    if (method === 'PUT' && path.startsWith('/')) {
-      const id = path.substring(1);
+    if (method === 'PUT' && id) {
       const body = JSON.parse(event.body || '{}');
       const result = insertFreezerItemSchema.safeParse(body);
       if (!result.success) {
@@ -143,8 +145,7 @@ export const handler: Handler = async (event) => {
     }
 
     // DELETE /api/items/:id - Delete an item
-    if (method === 'DELETE' && path.startsWith('/')) {
-      const id = path.substring(1);
+    if (method === 'DELETE' && id) {
       const result = await db.delete(freezerItems).where(eq(freezerItems.id, id)).returning();
       if (result.length === 0) {
         return {
