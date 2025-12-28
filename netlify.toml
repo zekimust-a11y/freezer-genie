@@ -57,6 +57,10 @@
   directory = "netlify/functions"
   # Node version for functions
   node_bundler = "esbuild"
+  # External node modules to include
+  external_node_modules = ["pg-native"]
+  # Include all dependencies
+  included_files = ["node_modules/**", "server/**", "shared/**"]
 
 # Headers for security and performance
 [[headers]]

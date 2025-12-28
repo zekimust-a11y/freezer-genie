@@ -1,0 +1,12 @@
+{
+  "name": "freezer-genie-functions",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@netlify/functions": "^2.8.1",
+    "drizzle-orm": "^0.39.3",
+    "pg": "^8.16.3",
+    "zod": "^3.24.2",
+    "zod-validation-error": "^3.4.0"
+  }
+}
