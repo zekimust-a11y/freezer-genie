@@ -11,7 +11,11 @@ A modern freezer inventory management application built with React, TypeScript, 
 - 📋 **Shopping Lists**: Auto-generated shopping lists based on low stock items
 - 🍳 **Recipe Suggestions**: Get recipe ideas based on your freezer inventory
 - 📷 **Barcode Scanning**: Scan barcodes to quickly add items
-- 🎤 **Voice Control**: Voice commands for hands-free operation
+- 🎤 **Voice Control**: Natural language voice commands for hands-free operation (Siri-compatible)
+  - Ask: "Do I have pork chops?"
+  - Add items: "Add a bag of peas"
+  - Browse: "What vegetables are in my freezer?"
+  - [See complete guide →](./VOICE_CONTROL_GUIDE.md) | [Quick reference →](./VOICE_COMMANDS_QUICK_REFERENCE.md)
 
 ## Tech Stack
 

@@ -24,9 +24,16 @@ import {
 import { ArrowUpDown, Search, X, Snowflake, Refrigerator, LayoutGrid, Table, Settings, Share2, Mail, MessageCircle, Copy, CheckCheck } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { Card, CardContent } from "@/components/ui/card";
-import { VoiceControl, useVoiceCommands } from "@/components/voice-control";
+import { VoiceControl, useVoiceCommands, VoiceCommandResult } from "@/components/voice-control";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { FreezerItem, Category, MeatSubcategory, ProduceSubcategory, PreparedMealsSubcategory, FrozenGoodsSubcategory, Location } from "@shared/schema";
 
 type Tab = "inventory" | "alerts" | "list" | "recipes" | "settings";
@@ -53,6 +60,8 @@ export default function Home() {
   const [freezerOptions, setFreezerOptions] = useState(getFreezerOptions());
   const [hasMultipleFreezers, setHasMultipleFreezers] = useState(getFreezers().length > 1);
   const [copied, setCopied] = useState(false);
+  const [voiceResultOpen, setVoiceResultOpen] = useState(false);
+  const [voiceResult, setVoiceResult] = useState<VoiceCommandResult | null>(null);
 
   // Fetch freezers from API and sync to localStorage
   useEffect(() => {
@@ -147,27 +156,75 @@ export default function Home() {
   const { toast } = useToast();
 
   const handleVoiceCommand = (command: string) => {
-    const result = processCommand(command);
+    const result = processCommand(command, items);
     
     switch (result.action) {
+      case "query":
+        // Show query results in a dialog
+        setVoiceResult(result);
+        setVoiceResultOpen(true);
+        if (result.details?.foundItems && result.details.foundItems.length > 0) {
+          // If items found, also filter the view to show them
+          setActiveTab("inventory");
+          setSearchQuery(result.value || "");
+        }
+        toast({ 
+          title: "🎤 Voice Query", 
+          description: result.details?.message || result.value,
+          duration: 4000,
+        });
+        break;
       case "add":
-        navigate(`/add?name=${encodeURIComponent(result.value || "")}`);
-        toast({ title: "Adding item", description: result.value });
+        // Navigate to add page with pre-filled information
+        const params = new URLSearchParams();
+        if (result.details?.itemName) {
+          params.set("name", result.details.itemName);
+        }
+        if (result.details?.quantity) {
+          params.set("quantity", result.details.quantity);
+        }
+        if (result.details?.unit) {
+          params.set("unit", result.details.unit);
+        }
+        navigate(`/add?${params.toString()}`);
+        toast({ 
+          title: "🎤 Adding Item", 
+          description: result.details?.message || `Adding ${result.value}`,
+          duration: 3000,
+        });
         break;
       case "search":
         setSearchQuery(result.value || "");
         setActiveTab("inventory");
-        toast({ title: "Searching", description: result.value });
+        toast({ 
+          title: "🎤 Searching", 
+          description: result.value,
+          duration: 2000,
+        });
         break;
       case "tab":
         setActiveTab(result.value as Tab);
-        toast({ title: "Switched to", description: result.value });
+        toast({ 
+          title: "🎤 Navigating", 
+          description: `Switched to ${result.value}`,
+          duration: 2000,
+        });
         break;
       case "navigate":
         setActiveTab("inventory");
+        toast({ 
+          title: "🎤 Home", 
+          description: "Showing inventory",
+          duration: 2000,
+        });
         break;
       default:
-        toast({ title: "Didn't understand", description: `"${result.value}"`, variant: "destructive" });
+        toast({ 
+          title: "🎤 Didn't understand", 
+          description: result.details?.message || `"${result.value}"`, 
+          variant: "destructive",
+          duration: 5000,
+        });
     }
   };
 
@@ -280,6 +337,7 @@ export default function Home() {
               )}
             </div>
             <div className="flex items-center gap-2">
+              <VoiceControl onCommand={handleVoiceCommand} />
               <UserButton afterSignOutUrl="/login" />
               <Button
                 variant="ghost"
@@ -523,6 +581,72 @@ export default function Home() {
         alertCount={getAlertCount(items)}
         listCount={getListCount(items)}
       />
+
+      {/* Voice Query Results Dialog */}
+      <Dialog open={voiceResultOpen} onOpenChange={setVoiceResultOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="text-2xl">🎤</span>
+              Voice Query Results
+            </DialogTitle>
+            <DialogDescription>
+              {voiceResult?.details?.message}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {voiceResult?.details?.foundItems && voiceResult.details.foundItems.length > 0 && (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              <p className="text-sm font-medium text-muted-foreground mb-2">
+                Found {voiceResult.details.foundItems.length} item{voiceResult.details.foundItems.length > 1 ? 's' : ''}:
+              </p>
+              {voiceResult.details.foundItems.map((item: FreezerItem) => (
+                <Card key={item.id} className="hover-elevate cursor-pointer" onClick={() => {
+                  handleEditItem(item);
+                  setVoiceResultOpen(false);
+                }}>
+                  <CardContent className="p-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium">{item.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {formatQuantity(item.quantity)} {getUnitLabel(item.unit, typeof item.quantity === 'string' ? parseFloat(item.quantity) : item.quantity)}
+                        </p>
+                      </div>
+                      {item.expirationDate && (
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(item.expirationDate).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+          
+          {voiceResult?.action === "add" && (
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => {
+                const params = new URLSearchParams();
+                if (voiceResult.details?.itemName) {
+                  params.set("name", voiceResult.details.itemName);
+                }
+                if (voiceResult.details?.quantity) {
+                  params.set("quantity", voiceResult.details.quantity);
+                }
+                if (voiceResult.details?.unit) {
+                  params.set("unit", voiceResult.details.unit);
+                }
+                navigate(`/add?${params.toString()}`);
+                setVoiceResultOpen(false);
+              }}>
+                Add Item Now
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

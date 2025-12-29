@@ -46,13 +46,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export default function AddEditItemPage() {
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const [, params] = useRoute("/item/:id");
   const { toast } = useToast();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const itemId = params?.id;
   const isEditing = !!itemId;
+  
+  // Parse URL query parameters for pre-filling form (e.g., from voice commands)
+  const urlParams = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const searchParams = new URLSearchParams(window.location.search);
+    return {
+      name: searchParams.get('name') || undefined,
+      quantity: searchParams.get('quantity') || undefined,
+      unit: searchParams.get('unit') || undefined,
+    };
+  }, [location]);
 
   const { data: item, isLoading: isLoadingItem, error: itemError } = useQuery<FreezerItem>({
     queryKey: ["/api/items", itemId],
@@ -115,11 +126,11 @@ export default function AddEditItemPage() {
   const form = useForm<FreezerItemFormData>({
     resolver: zodResolver(freezerItemFormSchema),
     defaultValues: {
-      name: "",
+      name: urlParams?.name || "",
       category: getDefaultCategory(),
       subCategory: null,
-      quantity: 1,
-      unit: "item",
+      quantity: urlParams?.quantity ? parseFloat(urlParams.quantity) : 1,
+      unit: urlParams?.unit || "item",
       expirationDate: getDefaultExpiryDate(),
       notes: "",
       lowStockThreshold: getDefaultLowStock(),
@@ -151,8 +162,11 @@ export default function AddEditItemPage() {
       setSelectedTags(item.tags || []);
       setNotesInputValue(item.notes || "");
       setNameInputValue(item.name || "");
+    } else if (!isEditing && urlParams?.name) {
+      // Set name input value from URL params (e.g., from voice commands)
+      setNameInputValue(urlParams.name);
     }
-  }, [isEditing, item, form]);
+  }, [isEditing, item, form, urlParams]);
 
   const toggleTag = (tagId: string) => {
     setSelectedTags(prev => 
